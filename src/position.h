@@ -118,6 +118,7 @@ public:
 
   // Variant rule properties
   const Variant* variant() const;
+  RuleProfile rule_profile() const;
   Rank max_rank() const;
   File max_file() const;
   int ranks() const;
@@ -319,6 +320,8 @@ public:
   int game_ply() const;
   bool is_chess960() const;
   Thread* this_thread() const;
+  bool is_variant_game_end() const;
+  bool is_variant_game_end(Value& result, int ply = 0) const;
   bool is_immediate_game_end() const;
   bool is_immediate_game_end(Value& result, int ply = 0) const;
   bool is_optional_game_end() const;
@@ -395,6 +398,11 @@ extern std::ostream& operator<<(std::ostream& os, const Position& pos);
 inline const Variant* Position::variant() const {
   assert(var != nullptr);
   return var;
+}
+
+inline RuleProfile Position::rule_profile() const {
+  assert(var != nullptr);
+  return var->ruleProfile;
 }
 
 inline Rank Position::max_rank() const {
@@ -1140,8 +1148,16 @@ inline CountingRule Position::counting_rule() const {
 }
 
 inline bool Position::is_immediate_game_end() const {
+  return is_variant_game_end();
+}
+
+inline bool Position::is_immediate_game_end(Value& result, int ply) const {
+  return is_variant_game_end(result, ply);
+}
+
+inline bool Position::is_variant_game_end() const {
   Value result;
-  return is_immediate_game_end(result);
+  return is_variant_game_end(result);
 }
 
 inline bool Position::is_optional_game_end() const {
@@ -1155,7 +1171,7 @@ inline bool Position::is_draw(int ply) const {
 }
 
 inline bool Position::is_game_end(Value& result, int ply) const {
-  return is_immediate_game_end(result, ply) || is_optional_game_end(result, ply);
+  return is_variant_game_end(result, ply) || is_optional_game_end(result, ply);
 }
 
 inline Color Position::side_to_move() const {

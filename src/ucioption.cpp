@@ -89,6 +89,8 @@ void on_variant_change(const Option &o) {
     on_variant_set(o);
 
     const Variant* v = variants.find(o)->second;
+    if (CurrentProtocol != XBOARD)
+        sync_cout << "info string rules profile " << rule_profile_name(v->ruleProfile) << sync_endl;
     // Do not send setup command for known variants
     if (standard_variants.find(o) != standard_variants.end())
         return;

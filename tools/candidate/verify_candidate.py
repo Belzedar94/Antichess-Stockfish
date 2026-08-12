@@ -199,6 +199,9 @@ def main() -> int:
         "id name Fairy-Stockfish" in uci and "Fairy-Stockfish" in sf.info(),
         "binary and binding identity surface",
     )
+    check.equal(sf.rules_profile("antichess"), "LICHESS_ANTICHESS_V1", "binding exact rules profile")
+    for negative_profile in ("giveaway", "suicide", "losers"):
+        check.equal(sf.rules_profile(negative_profile), "NONE", f"{negative_profile} negative rules profile")
 
     classical = run_uci(
         engine,
@@ -212,6 +215,20 @@ def main() -> int:
         args.timeout,
     )
     check.true("info string classical evaluation enabled" in classical, "network-independent classical search")
+    check.true(
+        "info string rules profile LICHESS_ANTICHESS_V1" in classical,
+        "UCI exact rules profile handshake",
+    )
+    for negative_profile in ("giveaway", "suicide", "losers"):
+        negative_uci = run_uci(
+            engine,
+            ["uci", f"setoption name UCI_Variant value {negative_profile}"],
+            args.timeout,
+        )
+        check.true(
+            "info string rules profile NONE" in negative_uci,
+            f"{negative_profile} negative UCI rules profile",
+        )
     check.true(any(line.startswith("bestmove ") for line in classical.splitlines()), "classical bestmove")
 
     for fixture in document["position_fixtures"]:

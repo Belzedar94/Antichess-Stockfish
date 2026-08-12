@@ -383,6 +383,19 @@ extern "C" PyObject* pyffish_validateFen(PyObject* self, PyObject *args) {
     return Py_BuildValue("i", FEN::validate_fen(std::string(fen), variants.find(std::string(variant))->second, chess960));
 }
 
+extern "C" PyObject* pyffish_rulesProfile(PyObject* self, PyObject *args) {
+    const char *variant;
+    if (!PyArg_ParseTuple(args, "s", &variant)) {
+        return NULL;
+    }
+    auto it = variants.find(std::string(variant));
+    if (it == variants.end()) {
+        PyErr_SetString(PyExc_ValueError, "Unknown variant");
+        return NULL;
+    }
+    return Py_BuildValue("s", rule_profile_name(it->second->ruleProfile));
+}
+
 // INPUT variant, fen
 extern "C" PyObject* pyffish_getFogFEN(PyObject* self, PyObject *args) {
     PyObject* moveList = PyList_New(0);
@@ -421,6 +434,7 @@ static PyMethodDef PyFFishMethods[] = {
     {"is_optional_game_end", (PyCFunction)pyffish_isOptionalGameEnd, METH_VARARGS, "Get result from given FEN it rules enable game end by player."},
     {"has_insufficient_material", (PyCFunction)pyffish_hasInsufficientMaterial, METH_VARARGS, "Checks for insufficient material."},
     {"validate_fen", (PyCFunction)pyffish_validateFen, METH_VARARGS, "Validate an input FEN."},
+    {"rules_profile", (PyCFunction)pyffish_rulesProfile, METH_VARARGS, "Get the immutable rules profile for a variant."},
     {"get_fog_fen", (PyCFunction)pyffish_getFogFEN, METH_VARARGS, "Get Fog of War FEN from given FEN."},
     {NULL, NULL, 0, NULL},  // sentinel
 };

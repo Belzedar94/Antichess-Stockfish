@@ -2752,11 +2752,11 @@ bool Position::is_optional_game_end(Value& result, int ply, int countStarted) co
   return false;
 }
 
-/// Position::is_immediate_game_end() tests whether the position ends the game
+/// Position::is_variant_game_end() tests whether the position ends the game
 /// immediately by a variant rule, i.e., there are no more legal moves.
 /// It does not detect stalemates.
 
-bool Position::is_immediate_game_end(Value& result, int ply) const {
+bool Position::is_variant_game_end(Value& result, int ply) const {
 
   // Extinction
   // Extinction does not apply for pseudo-royal pieces, because they can not be captured

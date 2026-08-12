@@ -494,6 +494,11 @@ namespace ffish {
     return v->startFen;
   }
 
+  std::string rules_profile(std::string uciVariant) {
+    const Variant* v = get_variant(uciVariant);
+    return rule_profile_name(v->ruleProfile);
+  }
+
   int validate_fen(std::string fen, std::string uciVariant, bool chess960) {
     const Variant* v = get_variant(uciVariant);
     return FEN::validate_fen(fen, v, chess960);
@@ -759,6 +764,7 @@ EMSCRIPTEN_BINDINGS(ffish_js) {
   function("loadVariantConfig", &ffish::load_variant_config);
   function("capturesToHand", &ffish::captures_to_hand);
   function("startingFen", &ffish::starting_fen);
+  function("rulesProfile", &ffish::rules_profile);
   function("validateFen", select_overload<int(std::string)>(&ffish::validate_fen));
   function("validateFen", select_overload<int(std::string, std::string)>(&ffish::validate_fen));
   function("validateFen", select_overload<int(std::string, std::string, bool)>(&ffish::validate_fen));
