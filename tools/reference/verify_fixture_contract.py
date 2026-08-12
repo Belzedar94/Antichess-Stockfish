@@ -157,6 +157,21 @@ def validate(document: dict[str, Any]) -> tuple[int, int, int, int, int]:
     return tuple(len(document[category]) for category in categories)  # type: ignore[return-value]
 
 
+def validate_parser_boundaries(document: dict[str, Any]) -> int:
+    require(document["fixture_version"] == 1, "unsupported parser fixture version")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong parser rules profile")
+    require(document["scope"] == "PROJECT_FEN_BOUNDARY", "wrong parser fixture scope")
+    cases = document.get("cases")
+    require(isinstance(cases, list) and cases, "empty parser boundary cases")
+    ids = [case["id"] for case in cases]
+    require(len(ids) == len(set(ids)), "duplicate parser boundary fixture ID")
+    policies = {case["project_policy"] for case in cases}
+    require(policies == {"accept", "reject"}, "parser boundaries need accept and reject cases")
+    for case in cases:
+        require(len(case["fen"].split()) == 6, f"{case['id']}: parser FEN must have six fields")
+    return len(cases)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -165,13 +180,21 @@ def main() -> int:
         default="tests/antichess/fixtures/core-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--parser-fixtures",
+        default="tests/antichess/fixtures/parser-boundaries-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
+    parser_document = json.loads(args.parser_fixtures.read_text(encoding="utf-8"))
+    parser_count = validate_parser_boundaries(parser_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
-        f"{counts[3]} parser cases, {counts[4]} service results"
+        f"{counts[3]} core parser cases, {parser_count} boundary parser cases, "
+        f"{counts[4]} service results"
     )
     return 0
 

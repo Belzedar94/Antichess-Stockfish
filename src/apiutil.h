@@ -910,7 +910,7 @@ inline Validation check_number_of_kings(const std::string& fenBoard, const std::
 }
 
 
-inline Validation check_en_passant_square(const std::string& enPassantInfo) {
+inline Validation check_en_passant_square(const std::string& enPassantInfo, const Variant* v) {
     if (enPassantInfo.size() != 1 || enPassantInfo[0] != '-')
     {
         if (enPassantInfo.size() != 2)
@@ -918,14 +918,18 @@ inline Validation check_en_passant_square(const std::string& enPassantInfo) {
             std::cerr << "Invalid en-passant square '" << enPassantInfo << "'. Expects 2 characters. Actual: " << enPassantInfo.size() << " character(s)." << std::endl;
             return NOK;
         }
-        if (!isalpha(enPassantInfo[0]))
+        if (   enPassantInfo[0] < 'a'
+            || enPassantInfo[0] > char('a' + v->maxFile))
         {
-            std::cerr << "Invalid en-passant square '" << enPassantInfo << "'. Expects 1st character to be a letter." << std::endl;
+            std::cerr << "Invalid en-passant square '" << enPassantInfo
+                      << "'. File is outside the board geometry." << std::endl;
             return NOK;
         }
-        if (!isdigit(enPassantInfo[1]))
+        if (   enPassantInfo[1] < '1'
+            || enPassantInfo[1] > char('1' + v->maxRank))
         {
-            std::cerr << "Invalid en-passant square '" << enPassantInfo << "'. Expects 2nd character to be a digit." << std::endl;
+            std::cerr << "Invalid en-passant square '" << enPassantInfo
+                      << "'. Rank is outside the board geometry." << std::endl;
             return NOK;
         }
     }
@@ -1115,7 +1119,7 @@ inline FenValidation validate_fen(const std::string& fen, const Variant* v, bool
     {
         if (v->doubleStep && (v->pieceTypes & PAWN))
         {
-            if (check_en_passant_square(fenParts[3]) == NOK)
+            if (check_en_passant_square(fenParts[3], v) == NOK)
                 return FEN_INVALID_EN_PASSANT_SQ;
         }
         else if (v->countingRule && !check_digit_field(fenParts[3]))

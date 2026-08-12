@@ -168,18 +168,25 @@ def main() -> int:
         type=Path,
         default=Path("tests/antichess/fixtures/core-v1.json"),
     )
+    parser.add_argument(
+        "--parser-fixtures",
+        type=Path,
+        default=Path("tests/antichess/fixtures/parser-boundaries-v1.json"),
+    )
     parser.add_argument("--timeout", type=float, default=20.0)
     args = parser.parse_args()
 
     engine = args.engine.resolve()
     pyffish_dir = args.pyffish_dir.resolve()
     fixture_path = args.fixtures.resolve()
-    for path in (engine, pyffish_dir, fixture_path):
+    parser_fixture_path = args.parser_fixtures.resolve()
+    for path in (engine, pyffish_dir, fixture_path, parser_fixture_path):
         if not path.exists():
             raise RuntimeError(f"required path does not exist: {path}")
 
     sf = load_pyffish(pyffish_dir)
     document = json.loads(fixture_path.read_text(encoding="utf-8"))
+    parser_document = json.loads(parser_fixture_path.read_text(encoding="utf-8"))
     check = Verification()
 
     uci = run_uci(engine, ["uci"], args.timeout)
@@ -246,6 +253,14 @@ def main() -> int:
             accepted,
             fixture["project_policy"] == "accept",
             f"{fixture['id']} fail-closed parser policy",
+        )
+
+    for fixture in parser_document["cases"]:
+        accepted = sf.validate_fen(fixture["fen"], "antichess") == sf.FEN_OK
+        check.equal(
+            accepted,
+            fixture["project_policy"] == "accept",
+            f"{fixture['id']} parser geometry policy",
         )
 
     module_path = Path(sf.__file__).resolve()
