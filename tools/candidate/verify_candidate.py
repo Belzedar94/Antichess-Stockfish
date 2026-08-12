@@ -113,6 +113,7 @@ def verify_core_state(
 
     final_fen = expected["canonical_fen"]
     immediate, immediate_value = sf.is_immediate_game_end("antichess", initial_fen, moves)
+    automatic, automatic_value = sf.is_automatic_game_end("antichess", initial_fen, moves)
     optional, optional_value = sf.is_optional_game_end("antichess", initial_fen, moves)
     white_insufficient, black_insufficient = sf.has_insufficient_material(
         "antichess", initial_fen, moves
@@ -120,22 +121,20 @@ def verify_core_state(
 
     if expected["variant_end"]:
         check.equal(legal, [], f"{fixture_id} variant terminal move set")
+        check.equal(automatic, False, f"{fixture_id} decisive result precedes automatic draw")
         result = sf.game_result("antichess", initial_fen, moves)
         check.equal(result, VALUE_MATE, f"{fixture_id} side-to-move variant win")
         check.equal(expected["winner"], fen_turn(final_fen), f"{fixture_id} winner perspective")
     elif expected["status"] == "draw":
-        if fixture["family"] == "insufficient_material":
-            check.equal(
-                (white_insufficient, black_insufficient),
-                (True, True),
-                f"{fixture_id} automatic insufficient-material draw",
-            )
-        else:
-            check.equal(immediate, True, f"{fixture_id} automatic draw classification")
-            if immediate:
-                check.equal(immediate_value, 0, f"{fixture_id} automatic draw value")
+        check.equal(immediate, False, f"{fixture_id} automatic draw leaked into move generation")
+        check.equal(automatic, True, f"{fixture_id} automatic draw classification")
+        if automatic:
+            check.equal(automatic_value, 0, f"{fixture_id} automatic draw value")
+        if fixture["family"] == "fifty_move":
+            check.equal(optional, False, f"{fixture_id} 100-halfmove draw is not claimable")
     else:
         check.equal(immediate, False, f"{fixture_id} unexpected immediate end")
+        check.equal(automatic, False, f"{fixture_id} unexpected automatic end")
         if expected["threefold"] and not expected["fivefold"]:
             check.equal(optional, True, f"{fixture_id} threefold claim availability")
             if optional:
@@ -143,7 +142,7 @@ def verify_core_state(
         elif not expected["end"]:
             check.equal(optional, False, f"{fixture_id} unexpected optional end")
 
-    if fixture["family"] == "one_sided_cannot_win":
+    if fixture["family"] in {"insufficient_material", "one_sided_cannot_win"}:
         turn = fen_turn(final_fen)
         by_color = {"white": white_insufficient, "black": black_insufficient}
         other = "black" if turn == "white" else "white"
@@ -241,6 +240,46 @@ def main() -> int:
             f"{fixture_id} UCI legal moves",
         )
         verify_core_state(check, sf, fixture, fen, [])
+
+    positions_by_id = {
+        fixture["id"]: fixture for fixture in document["position_fixtures"]
+    }
+    fifty = positions_by_id["fifty_move_at_threshold"]
+    fifty_search = run_uci(
+        engine,
+        [
+            "uci",
+            "setoption name UCI_Variant value antichess",
+            "isready",
+            f"position fen {fifty['fen']}",
+            "go depth 2",
+        ],
+        args.timeout,
+    )
+    check.true("info depth 0 score cp 0" in fifty_search, "UCI 100-halfmove automatic draw score")
+    fifty_bestmoves = [line.split()[1] for line in fifty_search.splitlines() if line.startswith("bestmove ")]
+    check.true(
+        len(fifty_bestmoves) == 1 and fifty_bestmoves[0] in fifty["expected"]["legal_moves"],
+        "UCI automatic draw legal fallback move",
+    )
+
+    precedence = positions_by_id["variant_end_precedes_fifty_move_draw"]
+    precedence_search = run_uci(
+        engine,
+        [
+            "uci",
+            "setoption name UCI_Variant value antichess",
+            "isready",
+            f"position fen {precedence['fen']}",
+            "go depth 2",
+        ],
+        args.timeout,
+    )
+    check.true("info depth 0 score mate 0" in precedence_search, "UCI variant win precedes 100-halfmove draw")
+    check.true(
+        any(line in {"bestmove (none)", "bestmove 0000"} for line in precedence_search.splitlines()),
+        "UCI decisive terminal has no move",
+    )
 
     for fixture in document["history_fixtures"]:
         check.equal(

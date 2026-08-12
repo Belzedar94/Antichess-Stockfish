@@ -324,6 +324,8 @@ public:
   bool is_variant_game_end(Value& result, int ply = 0) const;
   bool is_immediate_game_end() const;
   bool is_immediate_game_end(Value& result, int ply = 0) const;
+  bool is_automatic_game_end(Value& result, bool hasLegalMoves, int ply = 0) const;
+  bool is_automatic_fifty_move_draw() const;
   bool is_optional_game_end() const;
   bool is_optional_game_end(Value& result, int ply = 0, int countStarted = 0) const;
   bool is_game_end(Value& result, int ply = 0) const;

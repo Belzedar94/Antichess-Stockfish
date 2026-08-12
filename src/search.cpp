@@ -190,11 +190,14 @@ void MainThread::search() {
 
   Eval::NNUE::verify();
 
-  if (rootMoves.empty() || (CurrentProtocol == XBOARD && rootPos.is_optional_game_end()))
+  Value automaticResult = VALUE_NONE;
+  bool automaticEnd = rootPos.is_automatic_game_end(automaticResult, !rootMoves.empty());
+  if (rootMoves.empty() || automaticEnd || (CurrentProtocol == XBOARD && rootPos.is_optional_game_end()))
   {
       rootMoves.emplace_back(MOVE_NONE);
       Value variantResult;
-      Value result =  rootPos.is_game_end(variantResult) ? variantResult
+      Value result =  automaticEnd                       ? automaticResult
+                    : rootPos.is_game_end(variantResult) ? variantResult
                     : rootPos.checkers()                 ? rootPos.checkmate_value()
                                                          : rootPos.stalemate_value();
       if (CurrentProtocol == XBOARD)
@@ -714,8 +717,23 @@ namespace {
 
     if (!rootNode)
     {
-        Value variantResult;
-        if (pos.is_game_end(variantResult, ss->ply))
+      Value variantResult;
+        if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1)
+        {
+            if (pos.is_variant_game_end(variantResult, ss->ply))
+                return variantResult;
+            if (pos.is_automatic_fifty_move_draw())
+            {
+                bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+                if (!hasLegalMoves)
+                    return pos.stalemate_value(ss->ply);
+                if (pos.is_automatic_game_end(variantResult, hasLegalMoves, ss->ply))
+                    return variantResult;
+            }
+            if (pos.is_optional_game_end(variantResult, ss->ply))
+                return variantResult;
+        }
+        else if (pos.is_game_end(variantResult, ss->ply))
             return variantResult;
 
         // Step 2. Check for aborted search and immediate draw
@@ -1547,7 +1565,22 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     Value gameResult;
-    if (pos.is_game_end(gameResult, ss->ply))
+    if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1)
+    {
+        if (pos.is_variant_game_end(gameResult, ss->ply))
+            return gameResult;
+        if (pos.is_automatic_fifty_move_draw())
+        {
+            bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+            if (!hasLegalMoves)
+                return pos.stalemate_value(ss->ply);
+            if (pos.is_automatic_game_end(gameResult, hasLegalMoves, ss->ply))
+                return gameResult;
+        }
+        if (pos.is_optional_game_end(gameResult, ss->ply))
+            return gameResult;
+    }
+    else if (pos.is_game_end(gameResult, ss->ply))
         return gameResult;
 
     // Check for maximum ply reached

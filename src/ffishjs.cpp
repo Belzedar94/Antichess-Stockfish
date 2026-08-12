@@ -279,11 +279,23 @@ public:
     return Stockfish::has_insufficient_material(WHITE, pos) && Stockfish::has_insufficient_material(BLACK, pos);
   }
 
+  bool is_automatic_game_end() const {
+    Value result;
+    return pos.is_automatic_game_end(result, MoveList<LEGAL>(pos).size());
+  }
+
   bool is_game_over() const {
     return is_game_over(false);
   }
 
   bool is_game_over(bool claim_draw) const {
+    if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1) {
+      bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+      Value result;
+      if (!hasLegalMoves || pos.is_automatic_game_end(result, hasLegalMoves))
+        return true;
+      return claim_draw && pos.is_optional_game_end();
+    }
     if (is_insufficient_material())
       return true;
     if (claim_draw && pos.is_optional_game_end())
@@ -298,18 +310,28 @@ public:
   std::string result(bool claim_draw) const {
     Value result;
     bool gameEnd = pos.is_immediate_game_end(result);
-    if (!gameEnd) {
-      if (is_insufficient_material()) {
+    if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1) {
+      bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+      if (!gameEnd && !hasLegalMoves) {
+        gameEnd = true;
+        result = pos.checkers() ? pos.checkmate_value() : pos.stalemate_value();
+      }
+      if (!gameEnd)
+        gameEnd = pos.is_automatic_game_end(result, hasLegalMoves);
+      if (!gameEnd && claim_draw)
+        gameEnd = pos.is_optional_game_end(result);
+    } else {
+      if (!gameEnd && is_insufficient_material()) {
         gameEnd = true;
         result = VALUE_DRAW;
       }
+      if (!gameEnd && MoveList<LEGAL>(pos).size() == 0) {
+        gameEnd = true;
+        result = pos.checkers() ? pos.checkmate_value() : pos.stalemate_value();
+      }
+      if (!gameEnd && claim_draw)
+        gameEnd = pos.is_optional_game_end(result);
     }
-    if (!gameEnd && MoveList<LEGAL>(pos).size() == 0) {
-      gameEnd = true;
-      result = pos.checkers() ? pos.checkmate_value() : pos.stalemate_value();
-    }
-    if (!gameEnd && claim_draw)
-      gameEnd = pos.is_optional_game_end(result);
 
     if (!gameEnd)
       return "*";
@@ -714,6 +736,7 @@ EMSCRIPTEN_BINDINGS(ffish_js) {
     .function("gamePly", &Board::game_ply)
     .function("hasInsufficientMaterial", &Board::has_insufficient_material)
     .function("isInsufficientMaterial", &Board::is_insufficient_material)
+    .function("isAutomaticGameEnd", &Board::is_automatic_game_end)
     .function("isGameOver", select_overload<bool() const>(&Board::is_game_over))
     .function("isGameOver", select_overload<bool(bool) const>(&Board::is_game_over))
     .function("result", select_overload<std::string() const>(&Board::result))

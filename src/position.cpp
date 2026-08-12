@@ -2621,7 +2621,8 @@ bool Position::see_ge(Move m, Value threshold) const {
 bool Position::is_optional_game_end(Value& result, int ply, int countStarted) const {
 
   // n-move rule
-  if (n_move_rule() && st->rule50 > (2 * n_move_rule() - 1) && (!checkers() || MoveList<LEGAL>(*this).size()))
+  if (   rule_profile() != RuleProfile::LICHESS_ANTICHESS_V1
+      && n_move_rule() && st->rule50 > (2 * n_move_rule() - 1) && (!checkers() || MoveList<LEGAL>(*this).size()))
   {
       int offset = 0;
       if (var->chasingRule == AXF_CHASING && st->pliesFromNull >= 20)
@@ -2747,6 +2748,24 @@ bool Position::is_optional_game_end(Value& result, int ply, int countStarted) co
           result = VALUE_DRAW;
           return true;
       }
+  }
+
+  return false;
+}
+
+bool Position::is_automatic_fifty_move_draw() const {
+  return    rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1
+         && rule50_count() >= 100;
+}
+
+bool Position::is_automatic_game_end(Value& result, bool hasLegalMoves, int) const {
+  if (!hasLegalMoves || rule_profile() != RuleProfile::LICHESS_ANTICHESS_V1)
+      return false;
+
+  if (is_automatic_fifty_move_draw())
+  {
+      result = VALUE_DRAW;
+      return true;
   }
 
   return false;
