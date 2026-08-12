@@ -32,3 +32,7 @@ jobs:
           python -m json.tool RULES/AUTHORITY.lock.json >/dev/null
           python -m json.tool schemas/receipt.schema.json >/dev/null
           python -m json.tool schemas/BASELINE_MANIFEST.schema.json >/dev/null
+          python -m json.tool schemas/antichess-fixtures-v1.schema.json >/dev/null
+          python -m json.tool tests/antichess/fixtures/core-v1.json >/dev/null
+      - name: Verify frozen Antichess fixture contract
+        run: python tools/reference/verify_fixture_contract.py

@@ -1,0 +1,873 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "authority_lock": "RULES/AUTHORITY.lock.json",
+  "field_authority": {
+    "valid_position_fen_and_complete_legal_moves": [
+      "scalachess:cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "chessops:736c40ced7130d453d85e7979c360b797474c9a7"
+    ],
+    "history_and_automatic_results": [
+      "scalachess:cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "lila:13895e5856db0f854f6ab76394fffce852ebd5c9"
+    ],
+    "one_sided_cannot_win_and_service_results": [
+      "scalachess:cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "lila:13895e5856db0f854f6ab76394fffce852ebd5c9"
+    ],
+    "malformed_fen_policy": [
+      "project_fail_closed_boundary",
+      "chessops:736c40ced7130d453d85e7979c360b797474c9a7"
+    ],
+    "limitations": [
+      "chessops does not reconstruct repetition history from a lone FEN",
+      "chessops halfmove counters are not used here as an automatic fifty-move referee",
+      "chessops color-specific insufficient-material methods are not substituted for lila service predicates"
+    ]
+  },
+  "position_fixtures": [
+    {
+      "id": "initial_position",
+      "family": "identity",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+        "legal_moves": ["a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4", "d2d3", "d2d4", "e2e3", "e2e4", "f2f3", "f2f4", "g1f3", "g1h3", "g2g3", "g2g4", "h2h3", "h2h4"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "mandatory_capture_single",
+      "family": "mandatory_capture",
+      "fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+        "legal_moves": ["e4d5"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "mandatory_capture_free_choice",
+      "family": "mandatory_capture",
+      "fen": "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1",
+        "legal_moves": ["d4c5", "d4e5"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "king_ignores_rook_attack",
+      "family": "nonroyal_king",
+      "fen": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+        "legal_moves": ["e1d1", "e1d2", "e1e2", "e1f1", "e1f2"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "adjacent_king_capture",
+      "family": "nonroyal_king",
+      "fen": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+        "legal_moves": ["e4e5"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "kingless_play",
+      "family": "nonroyal_king",
+      "fen": "8/7p/8/8/8/8/R7/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/7p/8/8/8/8/R7/8 w - - 0 1",
+        "legal_moves": ["a2a1", "a2a3", "a2a4", "a2a5", "a2a6", "a2a7", "a2a8", "a2b2", "a2c2", "a2d2", "a2e2", "a2f2", "a2g2", "a2h2"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "multiple_white_kings",
+      "family": "nonroyal_king",
+      "fen": "K3K3/8/8/8/8/8/8/7k w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "K3K3/8/8/8/8/8/8/7k w - - 0 1",
+        "legal_moves": ["a8a7", "a8b7", "a8b8", "e8d7", "e8d8", "e8e7", "e8f7", "e8f8"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "castling_text_is_stripped",
+      "family": "castling",
+      "fen": "r3k2r/8/8/8/8/8/P6P/R3K2R w KQkq - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "r3k2r/8/8/8/8/8/P6P/R3K2R w - - 0 1",
+        "legal_moves": ["a1b1", "a1c1", "a1d1", "a2a3", "a2a4", "e1d1", "e1d2", "e1e2", "e1f1", "e1f2", "h1f1", "h1g1", "h2h3", "h2h4"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "en_passant_only_capture",
+      "family": "en_passant",
+      "fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+        "legal_moves": ["e5d6"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": "d6"
+      }
+    },
+    {
+      "id": "en_passant_among_captures",
+      "family": "en_passant",
+      "fen": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+        "legal_moves": ["e4d5", "e4f5", "e5d6"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": "d6"
+      }
+    },
+    {
+      "id": "ineffective_en_passant_is_stripped",
+      "family": "en_passant",
+      "fen": "8/7p/8/8/8/8/P7/8 w - e4 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/7p/8/8/8/8/P7/8 w - - 0 1",
+        "legal_moves": ["a2a3", "a2a4"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "quiet_promotion_all_roles",
+      "family": "promotion",
+      "fen": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+        "legal_moves": ["a7a8b", "a7a8k", "a7a8n", "a7a8q", "a7a8r"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "capture_promotion_all_roles",
+      "family": "promotion",
+      "fen": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+        "legal_moves": ["a7b8b", "a7b8k", "a7b8n", "a7b8q", "a7b8r"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "side_to_move_has_no_pieces",
+      "family": "terminal",
+      "fen": "7k/p7/8/8/8/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "7k/p7/8/8/8/8/8/8 w - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "white",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "blocked_pawn_stalemate_win",
+      "family": "terminal",
+      "fen": "8/p7/P7/8/8/8/8/8 b - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/p7/P7/8/8/8/8/8 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "variant_end_precedes_fifty_move_draw",
+      "family": "terminal_precedence",
+      "fen": "8/p7/P7/8/8/8/8/8 b - - 100 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/p7/P7/8/8/8/8/8 b - - 100 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 100,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "opposite_bishops_automatic_draw",
+      "family": "insufficient_material",
+      "fen": "8/8/8/6b1/8/3B4/4B3/5B2 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/6b1/8/3B4/4B3/5B2 w - - 0 1",
+        "legal_moves": ["d3a6", "d3b1", "d3b5", "d3c2", "d3c4", "d3e4", "d3f5", "d3g6", "d3h7", "e2d1", "e2f3", "e2g4", "e2h5", "f1g2", "f1h3"],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "opposite_bishops_near_negative",
+      "family": "insufficient_material",
+      "fen": "8/8/5b2/8/8/3B4/3B4/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/5b2/8/8/3B4/3B4/8 w - - 0 1",
+        "legal_moves": ["d2a5", "d2b4", "d2c1", "d2c3", "d2e1", "d2e3", "d2f4", "d2g5", "d2h6", "d3a6", "d3b1", "d3b5", "d3c2", "d3c4", "d3e2", "d3e4", "d3f1", "d3f5", "d3g6", "d3h7"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "knights_opposite_colors_white_to_move",
+      "family": "one_sided_cannot_win",
+      "fen": "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
+        "legal_moves": ["g6e5", "g6e7", "g6f4", "g6f8", "g6h4", "g6h8"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": true,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "knights_same_colors_black_to_move",
+      "family": "one_sided_cannot_win",
+      "fen": "8/8/3n4/8/5N2/8/8/8 b - - 1 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/3n4/8/5N2/8/8/8 b - - 1 1",
+        "legal_moves": ["d6b5", "d6b7", "d6c4", "d6c8", "d6e4", "d6e8", "d6f5", "d6f7"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": true,
+        "halfmove_clock": 1,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "knights_opposite_colors_black_to_move",
+      "family": "one_sided_cannot_win",
+      "fen": "7n/8/8/8/8/1N6/8/8 b - - 1 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "7n/8/8/8/8/1N6/8/8 b - - 1 1",
+        "legal_moves": ["h8f7", "h8g6"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": true,
+        "opponent_insufficient": false,
+        "halfmove_clock": 1,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "fifty_move_below_threshold",
+      "family": "fifty_move",
+      "fen": "8/8/3n4/8/8/8/R7/8 w - - 99 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/3n4/8/8/8/R7/8 w - - 99 1",
+        "legal_moves": ["a2a1", "a2a3", "a2a4", "a2a5", "a2a6", "a2a7", "a2a8", "a2b2", "a2c2", "a2d2", "a2e2", "a2f2", "a2g2", "a2h2"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 99,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "fifty_move_at_threshold",
+      "family": "fifty_move",
+      "fen": "8/8/3n4/8/8/8/R7/8 w - - 100 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/3n4/8/8/8/R7/8 w - - 100 1",
+        "legal_moves": ["a2a1", "a2a3", "a2a4", "a2a5", "a2a6", "a2a7", "a2a8", "a2b2", "a2c2", "a2d2", "a2e2", "a2f2", "a2g2", "a2h2"],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 100,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "orthodox_checkmate_is_ongoing",
+      "family": "orthodox_negative",
+      "fen": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3",
+        "legal_moves": ["a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4", "d2d3", "d2d4", "e1f2", "e2e3", "e2e4", "f1g2", "f1h3", "f3f4", "g1h3", "g4g5", "h2h3"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 1,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "direct_post_final_capture",
+      "family": "terminal",
+      "fen": "8/8/8/3P4/8/8/8/R7 b - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "8/8/8/3P4/8/8/8/R7 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    }
+  ],
+  "history_fixtures": [
+    {
+      "id": "threefold_claimable_current_position",
+      "family": "repetition",
+      "initial_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "moves": ["g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1", "f6g8"],
+      "expected": {
+        "canonical_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 8 5",
+        "legal_moves": ["a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4", "d2d3", "d2d4", "e2e3", "e2e4", "f2f3", "f2f4", "g1f3", "g1h3", "g2g3", "g2g4", "h2h3", "h2h4"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": true,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 8,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "fivefold_automatic_draw",
+      "family": "repetition",
+      "initial_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "moves": ["g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1", "f6g8"],
+      "expected": {
+        "canonical_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 16 9",
+        "legal_moves": ["a2a3", "a2a4", "b1a3", "b1c3", "b2b3", "b2b4", "c2c3", "c2c4", "d2d3", "d2d4", "e2e3", "e2e4", "f2f3", "f2f4", "g1f3", "g1h3", "g2g3", "g2g4", "h2h3", "h2h4"],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": true,
+        "fivefold": true,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 16,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "en_passant_captures_final_piece",
+      "family": "en_passant_transition",
+      "initial_fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "moves": ["e5d6"],
+      "expected": {
+        "canonical_fen": "8/8/3P4/8/8/8/8/8 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "ordinary_capture_captures_final_piece",
+      "family": "terminal_transition",
+      "initial_fen": "8/8/8/3p4/4B3/8/8/8 w - - 0 1",
+      "moves": ["e4d5"],
+      "expected": {
+        "canonical_fen": "8/8/8/3B4/8/8/8/8 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "quiet_king_promotion_transition",
+      "family": "promotion_transition",
+      "initial_fen": "7n/P7/8/8/8/8/8/8 w - - 0 1",
+      "moves": ["a7a8k"],
+      "expected": {
+        "canonical_fen": "K6n/8/8/8/8/8/8/8 b - - 0 1",
+        "legal_moves": ["h8f7", "h8g6"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "capture_king_promotion_final_piece",
+      "family": "promotion_transition",
+      "initial_fen": "1r6/P7/8/8/8/8/8/8 w - - 0 1",
+      "moves": ["a7b8k"],
+      "expected": {
+        "canonical_fen": "1K6/8/8/8/8/8/8/8 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "move_creates_stalemate_win",
+      "family": "terminal_transition",
+      "initial_fen": "8/p7/8/P7/8/8/8/8 w - - 0 1",
+      "moves": ["a5a6"],
+      "expected": {
+        "canonical_fen": "8/p7/P7/8/8/8/8/8 b - - 0 1",
+        "legal_moves": [],
+        "end": true,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": true,
+        "status": "variant_end",
+        "winner": "black",
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    }
+  ],
+  "move_rejection_fixtures": [
+    {
+      "id": "reject_quiet_when_capture_exists",
+      "family": "mandatory_capture",
+      "fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+      "move": "e4e5",
+      "reason": "quiet move suppressed by compulsory capture"
+    },
+    {
+      "id": "reject_castling_even_with_rights_text",
+      "family": "castling",
+      "fen": "r3k2r/8/8/8/8/8/P6P/R3K2R w KQkq - 0 1",
+      "move": "e1g1",
+      "reason": "castling is unavailable in this profile"
+    },
+    {
+      "id": "reject_missing_promotion_suffix",
+      "family": "promotion",
+      "fen": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "move": "a7a8",
+      "reason": "UCI promotion must name q r b n or k"
+    },
+    {
+      "id": "reject_quiet_when_en_passant_exists",
+      "family": "en_passant",
+      "fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "move": "e5e6",
+      "reason": "en passant is a compulsory capture"
+    }
+  ],
+  "parser_fixtures": [
+    {
+      "id": "reject_malformed_en_passant_square",
+      "family": "fen_boundary",
+      "fen": "8/7p/8/8/8/8/P7/8 w - z9 0 1",
+      "project_policy": "reject",
+      "authority_observations": {
+        "scalachess": "low-level FullFen input accepted and normalized z9 to absent EP",
+        "chessops": "rejected with ERR_EP_SQUARE"
+      },
+      "notes": "Project-owned boundaries are intentionally stricter for malformed transport syntax; valid-position semantics are unchanged."
+    }
+  ],
+  "service_result_fixtures": [
+    {
+      "id": "same_square_knights_black_flags",
+      "position_fixture": "knights_same_colors_black_to_move",
+      "event": "timeout",
+      "actor": "black",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "outoftime"
+    },
+    {
+      "id": "same_square_knights_black_resigns",
+      "position_fixture": "knights_same_colors_black_to_move",
+      "event": "resign",
+      "actor": "black",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "insufficient_material_claim"
+    },
+    {
+      "id": "same_square_knights_white_resigns",
+      "position_fixture": "knights_same_colors_black_to_move",
+      "event": "resign",
+      "actor": "white",
+      "expected_result": "win",
+      "winner": "black",
+      "status": "resign"
+    },
+    {
+      "id": "same_square_knights_white_claims_disconnect",
+      "position_fixture": "knights_same_colors_black_to_move",
+      "event": "disconnect_claim",
+      "actor": "white",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "timeout",
+      "notes": "Actor is the non-moving claimant; white cannot convert this position."
+    },
+    {
+      "id": "same_square_knights_black_cannot_lose_claim",
+      "position_fixture": "knights_same_colors_black_to_move",
+      "event": "cannot_lose_claim",
+      "actor": "black",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "insufficient_material_claim"
+    },
+    {
+      "id": "opposite_square_knights_black_flags",
+      "position_fixture": "knights_opposite_colors_black_to_move",
+      "event": "timeout",
+      "actor": "black",
+      "expected_result": "win",
+      "winner": "white",
+      "status": "outoftime"
+    },
+    {
+      "id": "opposite_square_knights_black_resigns",
+      "position_fixture": "knights_opposite_colors_black_to_move",
+      "event": "resign",
+      "actor": "black",
+      "expected_result": "win",
+      "winner": "white",
+      "status": "resign"
+    },
+    {
+      "id": "opposite_square_knights_white_resigns",
+      "position_fixture": "knights_opposite_colors_black_to_move",
+      "event": "resign",
+      "actor": "white",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "insufficient_material_claim"
+    },
+    {
+      "id": "opposite_square_knights_white_claims_disconnect",
+      "position_fixture": "knights_opposite_colors_black_to_move",
+      "event": "disconnect_claim",
+      "actor": "white",
+      "expected_result": "win",
+      "winner": "white",
+      "status": "timeout",
+      "notes": "Actor is the non-moving claimant; white can convert this position."
+    },
+    {
+      "id": "opposite_square_knights_white_cannot_lose_claim",
+      "position_fixture": "knights_opposite_colors_black_to_move",
+      "event": "cannot_lose_claim",
+      "actor": "white",
+      "expected_result": "draw",
+      "winner": null,
+      "status": "insufficient_material_claim"
+    }
+  ]
+}

@@ -56,7 +56,23 @@ The history rules are:
 - fifth occurrence: the draw is automatic;
 - 100 halfmoves without a pawn move or capture: the fifty-move draw is
   automatic;
-- no orthodox insufficient-material draw applies.
+- orthodox checkmating-material rules do not apply, but the pinned Antichess
+  implementation has its own forced-impossibility draw and one-sided
+  cannot-win classifiers, described below.
+
+### Antichess-specific insufficient material
+
+An automatic draw is declared when the board contains only bishops and pawns,
+each side's bishops occupy a single square colour, the two sides' bishops are
+on opposite square colours, and every remaining pawn is both blocked by a pawn
+and unable to interact with the opposite bishop colour under the pinned
+implementation.
+
+Separate one-sided classifiers are used when a player flags, disconnects,
+resigns, or claims that the opponent cannot win. The pinned implementation has
+turn- and square-colour-dependent cases for exactly one knight per side. These
+classifiers do not by themselves replace the automatic-draw predicate. Their
+exact player/opponent perspective and clock result must be fixture-tested.
 
 Any service-wide maximum game length is an operational platform limit and is
 not part of this rules profile unless separately versioned by the referee
@@ -74,15 +90,28 @@ The following are closed requirements:
   equivalent played transition;
 - UCI and PGN round trips must preserve king promotions.
 
-The following parser policies remain **OPEN-P3** until checked against the
-pinned authority and all three executable roles:
+The project input boundary is deliberately fail-closed:
 
-- whether an input FEN containing non-empty castling rights is rejected or
-  accepted and canonicalized to `-`;
-- acceptance and canonicalization of malformed or ineffective en-passant
-  fields;
-- exact claim-on-current-position versus claim-by-announced-move behavior;
-- the match runner’s explicit claim action and its result-reason encoding.
+- a syntactically valid FEN containing castling-right text is accepted, but
+  the rights are ignored and canonical output contains `-`;
+- a syntactically valid, effective en-passant square is accepted and retained;
+- a syntactically valid but ineffective en-passant square is accepted and
+  canonicalized to `-`;
+- a malformed en-passant token, including `z9`, is rejected before it reaches
+  the rules implementation.
+
+The last rule is stricter than the pinned low-level scalachess `FullFen`
+wrapper, which assumes already-validated text and can treat a malformed token
+as an absent en-passant square. It does not change legal play for any valid
+FEN. The independent parser rejects the malformed token, and every public
+Antichess-Stockfish entry point must do the same. See `INC-DIALECT-002`.
+
+A threefold claim is available only for the current position after the move
+that creates the third occurrence; this profile does not add a claim by an
+announced future move. Lichess may immediately submit that claim for a bot or
+for a player whose auto-claim preference applies. The deterministic match
+runner claim policy and result-reason encoding remain **OPEN-P3** and must be
+versioned as part of the referee contract.
 
 No strength work may begin while an OPEN-P3 item remains.
 
@@ -115,8 +144,12 @@ states, not only perft counts:
 11. fifth-occurrence automatic draw;
 12. fifty-move threshold;
 13. variant-win versus automatic-draw precedence;
-14. positions invalid only under orthodox king-safety rules;
-15. rejection or explicit separation of `suicide`, `giveaway`, and `losers`.
+14. Antichess-specific automatic insufficient-material positives and
+    near-negative cases;
+15. one-sided cannot-win cases combined with flag, disconnect, resignation,
+    and draw-claim results;
+16. positions invalid only under orthodox king-safety rules;
+17. rejection or explicit separation of `suicide`, `giveaway`, and `losers`.
 
 ## Orthodox-assumption quarantine
 

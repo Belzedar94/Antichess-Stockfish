@@ -6,5 +6,7 @@ schemas/** text eol=lf
 RULES/** text eol=lf
 docs/** text eol=lf
 tools/receipts/** text eol=lf
+tools/reference/** text eol=lf
+tests/antichess/** text eol=lf
 .github/workflows/antichess-governance.yml text eol=lf
 UPSTREAM.lock text eol=lf

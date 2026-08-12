@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Belzedar94/Antichess-Stockfish/schemas/antichess-fixtures-v1.schema.json",
+  "title": "LICHESS_ANTICHESS_V1 differential fixtures",
+  "type": "object",
+  "required": [
+    "fixture_version",
+    "profile",
+    "authority_lock",
+    "field_authority",
+    "position_fixtures",
+    "history_fixtures",
+    "move_rejection_fixtures",
+    "parser_fixtures",
+    "service_result_fixtures"
+  ],
+  "properties": {
+    "fixture_version": { "const": 1 },
+    "profile": { "const": "LICHESS_ANTICHESS_V1" },
+    "authority_lock": { "const": "RULES/AUTHORITY.lock.json" },
+    "field_authority": { "type": "object" },
+    "position_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/positionFixture" }
+    },
+    "history_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/historyFixture" }
+    },
+    "move_rejection_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/moveRejectionFixture" }
+    },
+    "parser_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/parserFixture" }
+    },
+    "service_result_fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/serviceResultFixture" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "fixtureId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]+$"
+    },
+    "uciMove": {
+      "type": "string",
+      "pattern": "^[a-h][1-8][a-h][1-8][qrbnk]?$"
+    },
+    "expectedState": {
+      "type": "object",
+      "required": [
+        "canonical_fen",
+        "legal_moves",
+        "end",
+        "automatic_draw",
+        "threefold",
+        "fivefold",
+        "variant_end",
+        "status",
+        "winner",
+        "check",
+        "player_insufficient",
+        "opponent_insufficient",
+        "halfmove_clock",
+        "effective_ep"
+      ],
+      "properties": {
+        "canonical_fen": { "type": "string", "minLength": 7 },
+        "legal_moves": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/uciMove" }
+        },
+        "end": { "type": "boolean" },
+        "automatic_draw": { "type": "boolean" },
+        "threefold": { "type": "boolean" },
+        "fivefold": { "type": "boolean" },
+        "variant_end": { "type": "boolean" },
+        "status": {
+          "type": ["string", "null"],
+          "enum": [null, "draw", "variant_end"]
+        },
+        "winner": {
+          "type": ["string", "null"],
+          "enum": [null, "white", "black"]
+        },
+        "check": { "const": false },
+        "player_insufficient": { "type": "boolean" },
+        "opponent_insufficient": { "type": "boolean" },
+        "halfmove_clock": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "effective_ep": {
+          "type": ["string", "null"],
+          "pattern": "^[a-h][36]$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "positionFixture": {
+      "type": "object",
+      "required": ["id", "family", "fen", "input_policy", "expected"],
+      "properties": {
+        "id": { "$ref": "#/$defs/fixtureId" },
+        "family": { "type": "string", "minLength": 3 },
+        "fen": { "type": "string", "minLength": 7 },
+        "input_policy": { "const": "accept" },
+        "expected": { "$ref": "#/$defs/expectedState" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "historyFixture": {
+      "type": "object",
+      "required": ["id", "family", "initial_fen", "moves", "expected"],
+      "properties": {
+        "id": { "$ref": "#/$defs/fixtureId" },
+        "family": { "type": "string", "minLength": 3 },
+        "initial_fen": { "type": "string", "minLength": 7 },
+        "moves": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/uciMove" }
+        },
+        "expected": { "$ref": "#/$defs/expectedState" },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "moveRejectionFixture": {
+      "type": "object",
+      "required": ["id", "family", "fen", "move", "reason"],
+      "properties": {
+        "id": { "$ref": "#/$defs/fixtureId" },
+        "family": { "type": "string", "minLength": 3 },
+        "fen": { "type": "string", "minLength": 7 },
+        "move": { "$ref": "#/$defs/uciMove" },
+        "reason": { "type": "string", "minLength": 3 }
+      },
+      "additionalProperties": false
+    },
+    "parserFixture": {
+      "type": "object",
+      "required": ["id", "family", "fen", "project_policy", "authority_observations"],
+      "properties": {
+        "id": { "$ref": "#/$defs/fixtureId" },
+        "family": { "type": "string", "minLength": 3 },
+        "fen": { "type": "string", "minLength": 7 },
+        "project_policy": { "enum": ["accept", "reject"] },
+        "authority_observations": {
+          "type": "object",
+          "required": ["scalachess", "chessops"],
+          "properties": {
+            "scalachess": { "type": "string", "minLength": 3 },
+            "chessops": { "type": "string", "minLength": 3 }
+          },
+          "additionalProperties": false
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "serviceResultFixture": {
+      "type": "object",
+      "required": ["id", "position_fixture", "event", "actor", "expected_result", "winner", "status"],
+      "properties": {
+        "id": { "$ref": "#/$defs/fixtureId" },
+        "position_fixture": { "$ref": "#/$defs/fixtureId" },
+        "event": {
+          "enum": ["timeout", "resign", "disconnect_claim", "cannot_lose_claim"]
+        },
+        "actor": { "enum": ["white", "black"] },
+        "expected_result": { "enum": ["draw", "win"] },
+        "winner": {
+          "type": ["string", "null"],
+          "enum": [null, "white", "black"]
+        },
+        "status": {
+          "enum": ["outoftime", "resign", "timeout", "insufficient_material_claim"]
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

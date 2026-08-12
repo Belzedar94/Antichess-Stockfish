@@ -11,7 +11,7 @@ append-only; a gate transition adds a new receipt or addendum.
 | --- | --- | --- | --- |
 | P0 | Root, repository, worktree, remotes, namespaces, resources | PASS | Public repository created from preserved upstream ancestry; D0 receipt |
 | P1 | Primary research and authority dossier | PASS | Pinned Lichess/scalachess/lila sources and explicit negative profiles |
-| P2 | Executable dialect, source, reference, referee, evaluator, distribution | IN_PROGRESS | Parser/EP/claim boundaries and referee remain open |
+| P2 | Executable dialect, source, reference, referee, evaluator, distribution | IN_PROGRESS | Core fixture contract and FEN policy frozen; deterministic claim policy and exact referee remain open |
 | P3 | Pristine reproducible build and UCI surface | PENDING | Clean release/debug builds, options, network-independent smoke |
 | P4 | Differential legal/result/notation correctness | PENDING | Full move sets, terminals, clocks, persistence, special moves |
 | P5 | Evaluator and legacy-network boundary | PENDING | Classical baseline plus isolated positive/negative loader receipt |
