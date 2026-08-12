@@ -36,3 +36,20 @@
   dataset decoder, and model container tooling.
 - **Gate:** P2 parser policy is closed. P3/P4 remain blocked until the public
   engine and referee demonstrate fail-closed rejection with the same fixture.
+
+## INC-BASELINE-001 - Variant-name and legal-move conformance masked terminal drift
+
+- **Symptom:** the upstream-derived candidate exposed an exact `antichess` UCI
+  option and matched every frozen legal-move set, yet failed seven of 211
+  candidate checks.
+- **False inference:** a matching variant name, mandatory-capture perft, and
+  ordinary search smoke establish a valid Lichess Antichess baseline.
+- **Cause:** generic engine paths classified 50-move and repetition outcomes as
+  claimable rather than automatic, omitted the pinned Antichess-specific
+  automatic and one-sided insufficient-material predicates, and accepted an
+  out-of-board en-passant token.
+- **Prevention:** freeze full terminal, history, material-perspective, and parser
+  fixtures before source changes; run them through both the UCI binary and the
+  exact-source binding; preserve the failing receipt before repair.
+- **Gate:** P4 is `FAIL_CURRENT_CANDIDATE` and the project state is
+  `NO_VALID_BASELINE` until all seven discrepancies close without regression.

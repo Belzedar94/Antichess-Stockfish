@@ -12,8 +12,8 @@ append-only; a gate transition adds a new receipt or addendum.
 | P0 | Root, repository, worktree, remotes, namespaces, resources | PASS | Public repository created from preserved upstream ancestry; D0 receipt |
 | P1 | Primary research and authority dossier | PASS | Pinned Lichess/scalachess/lila sources and explicit negative profiles |
 | P2 | Executable dialect, source, reference, referee, evaluator, distribution | IN_PROGRESS | Core fixture contract and FEN policy frozen; deterministic claim policy and exact referee remain open |
-| P3 | Pristine reproducible build and UCI surface | PENDING | Clean release/debug builds, options, network-independent smoke |
-| P4 | Differential legal/result/notation correctness | PENDING | Full move sets, terminals, clocks, persistence, special moves |
+| P3 | Pristine reproducible build and UCI surface | IN_PROGRESS | First clean release build and network-independent smoke pass; debug, dual-build reproducibility, and sanitizers remain |
+| P4 | Differential legal/result/notation correctness | FAIL_CURRENT_CANDIDATE | 204/211 candidate checks pass; seven terminal/parser discrepancies are frozen in an E1 receipt before repair |
 | P5 | Evaluator and legacy-network boundary | PENDING | Classical baseline plus isolated positive/negative loader receipt |
 | P6 | Sanitizers, deterministic bench, CI, baseline manifest/tag | PENDING | No unresolved correctness or asset dependency |
 | P7 | Search-hypothesis readiness | BLOCKED_BY_P6 | One hypothesis per branch and preregistered local experiment |
@@ -34,3 +34,5 @@ append-only; a gate transition adds a new receipt or addendum.
   mapping passes the same differential fixtures in the production path.
 - No redistribution or release alias for the legacy network while its license
   remains unresolved.
+- The current upstream-derived candidate is `NO_VALID_BASELINE` until every
+  discrepancy in the pre-repair E1 receipt is closed by the same verifier.
