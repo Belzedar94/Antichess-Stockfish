@@ -1,3 +1,26 @@
+# Antichess-Stockfish Project Rules
+
+These project-specific rules take precedence over the inherited upstream guide
+below.
+
+- The normative profile is `LICHESS_ANTICHESS_V1`; do not infer rules from the
+  words antichess, suicide, giveaway, or losers.
+- Do not change search, evaluation, pruning, move ordering, time management,
+  NNUE, books, or strength infrastructure until P6 is passed in
+  `docs/gates/GATE_INDEX.md`.
+- Candidate-engine output must never be used to manufacture fixture
+  expectations. Preserve the authority/reference/referee/candidate separation.
+- Receipts are append-only. Never modify or delete a committed file under
+  `receipts/`; add an addendum instead.
+- Never commit NNUE bytes. The known legacy antichess network is local-only and
+  diagnostic-only until its redistribution license and training contract are
+  resolved.
+- Only `https://belzedar.duckdns.org` may be treated as official OpenBench, and
+  no Antichess workload is allowed until a versioned worker/referee contract
+  passes the differential fixtures.
+- Public documentation, commits, pull requests, releases, and announcements are
+  written in English.
+
 # Fairy-Stockfish Development Guide
 
 ## Repository Overview

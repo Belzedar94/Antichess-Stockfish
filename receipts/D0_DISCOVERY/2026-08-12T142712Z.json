@@ -1,0 +1,84 @@
+{
+  "receipt_version": 1,
+  "receipt_id": "D0_DISCOVERY-2026-08-12T142712Z",
+  "evidence_class": "D0_DISCOVERY",
+  "created_at_utc": "2026-08-12T14:27:12Z",
+  "project": {
+    "id": "antichess-stockfish",
+    "repository": "Belzedar94/Antichess-Stockfish",
+    "public_url": "https://github.com/Belzedar94/Antichess-Stockfish",
+    "visibility": "PUBLIC",
+    "rules_profile": "LICHESS_ANTICHESS_V1"
+  },
+  "owner_authorization": {
+    "profile_selection": "AUTHORIZED",
+    "public_repository_creation": "AUTHORIZED",
+    "authorization_record": "The owner explicitly authorized both decisions in the private operating thread."
+  },
+  "bootstrap": {
+    "expected_root_preexisted": false,
+    "initialized_normative_parent": false,
+    "duplicate_local_worktree_found": false,
+    "duplicate_github_repository_found": false,
+    "github_created_at_utc": "2026-08-12T14:24:35Z",
+    "origin": "https://github.com/Belzedar94/Antichess-Stockfish.git",
+    "upstream": "https://github.com/fairy-stockfish/Fairy-Stockfish.git",
+    "default_branch": "main",
+    "upstream_commit": "c19b5f6c66894fdb0e88d0dd100e3885f744760a",
+    "upstream_tree": "5f243edc1ec2498610b3ed40923cf99718104fc8",
+    "base_tag": "upstream-fairy-stockfish-c19b5f6c",
+    "base_tag_object": "0dd79da553c982d331a18c9df5188ab94b898a21",
+    "history_preserved": true,
+    "foreign_branches_pushed": false,
+    "foreign_tags_pushed": false
+  },
+  "portfolio": {
+    "project_namespace": "antichess-stockfish",
+    "campaign_prefix": "ANTICHESS-",
+    "ports": [],
+    "cpu_lease": null,
+    "gpu_lease": null,
+    "official_openbench_tests": [],
+    "foreign_resource_reuse": false
+  },
+  "openbench": {
+    "official_url": "https://belzedar.duckdns.org",
+    "server_http_snapshot": "200",
+    "antichess_contract": "ABSENT_AT_PINNED_PRODUCTION_REVISION",
+    "production_revision": "91d5f3b184e7bff5699fa0017e87d9d3666d1b04",
+    "initial_worker_observation": {
+      "observed_at_utc_approximate": "2026-08-12T13:53:00Z",
+      "pid": 8856,
+      "threads": 24,
+      "target": "https://belzedar.duckdns.org",
+      "action_taken": "NONE"
+    },
+    "later_worker_observation": {
+      "observed_at_utc": "2026-08-12T14:30:08Z",
+      "previous_pid_present": false,
+      "targeted_matching_worker_detected": false,
+      "action_taken": "NONE",
+      "interpretation": "No handoff or resource authorization inferred."
+    }
+  },
+  "architecture_review": {
+    "performed_before_bootstrap": true,
+    "outcome": "CONDITIONAL_GO_BOOTSTRAP_HARD_NO_GO_STRENGTH",
+    "public_summary": "Close the executable profile, independent roles, fixtures, clean builds, sanitizers, and deterministic baseline before strength work.",
+    "private_evidence_retained": true
+  },
+  "gate_state": {
+    "P0": "PASS",
+    "P1": "PASS",
+    "P2": "IN_PROGRESS",
+    "P3_TO_P16": "NOT_OPEN"
+  },
+  "declared_gaps": [
+    "FEN castling-right and en-passant normalization policy",
+    "Executable threefold claim action and exact referee result reason",
+    "Independent full-move-set fixture agreement",
+    "Network-independent clean build and baseline",
+    "Legacy network redistribution license, dataset, and label contract",
+    "Official OpenBench Antichess worker/referee mapping"
+  ]
+}

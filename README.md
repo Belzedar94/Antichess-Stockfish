@@ -1,3 +1,25 @@
+# Antichess-Stockfish
+
+Antichess-Stockfish is an unofficial GPLv3 derivative of Fairy-Stockfish being
+specialized for the frozen `LICHESS_ANTICHESS_V1` rules profile. The public
+protocol token `antichess` maps to that profile only. `suicide`, `giveaway`,
+and `losers` are different rulesets and are not aliases.
+
+The project is still in correctness-baseline work. No strength, NNUE, release,
+or official OpenBench claim is authorized until the gate index and immutable
+receipts say otherwise. In particular, no neural-network file is bundled or
+downloaded by default.
+
+See [`RULES/LICHESS_ANTICHESS_V1.md`](RULES/LICHESS_ANTICHESS_V1.md),
+[`docs/gates/GATE_INDEX.md`](docs/gates/GATE_INDEX.md), and
+[`UPSTREAM.lock`](UPSTREAM.lock) for the current contract and provenance.
+
+## Upstream
+
+The repository preserves Fairy-Stockfish history through commit
+`c19b5f6c66894fdb0e88d0dd100e3885f744760a`, tagged locally as
+`upstream-fairy-stockfish-c19b5f6c`. The upstream documentation follows.
+
 # Fairy-Stockfish
 
 ## Overview

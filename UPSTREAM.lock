@@ -1,0 +1,41 @@
+format_version = 1
+project = "Belzedar94/Antichess-Stockfish"
+profile = "LICHESS_ANTICHESS_V1"
+created_at_utc = "2026-08-12T14:27:12Z"
+
+[source]
+repository = "https://github.com/fairy-stockfish/Fairy-Stockfish.git"
+default_branch_at_import = "master"
+commit = "c19b5f6c66894fdb0e88d0dd100e3885f744760a"
+tree = "5f243edc1ec2498610b3ed40923cf99718104fc8"
+project_base_tag = "upstream-fairy-stockfish-c19b5f6c"
+history_preserved = true
+checkout_clean = true
+foreign_branches_pushed = false
+foreign_tags_pushed = false
+submodules = []
+
+[license]
+spdx = "GPL-3.0-or-later"
+path = "Copying.txt"
+git_blob = "818433ecc0e094a4db1023c68b33f24344643ad8"
+sha256 = "0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b"
+
+[relevant_source_blobs]
+"src/variant.cpp" = "e722d2593893ea174e6e7dfed0fcd74c65b8ae80"
+"src/variant.h" = "0e6d44c34f266cca5dabbe20b190a899557553e2"
+"src/movegen.cpp" = "a7b6a9f9f4fda8ab27edb9170538a4bef8844cf2"
+"src/position.cpp" = "352b6d58e1a1946b1f67a8a5da95337a62864f4c"
+"src/uci.cpp" = "584977aadeb467e9f47d0d1d27f8ac1b296dfa28"
+"src/evaluate.cpp" = "ce30aa0453b05428b0ce12f42901139d7cc49869"
+"src/search.cpp" = "651f6bd9ef094bff36f246fee12568250f055492"
+
+[network_policy]
+public_baseline_requires_network = false
+bundled_network = false
+implicit_download = false
+legacy_network_role = "DIAGNOSTIC_ONLY"
+legacy_network_filename = "antichess-dd3cbe53cd4e.nnue"
+legacy_network_size = 953248
+legacy_network_sha256 = "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc"
+legacy_network_redistribution_license = "UNRESOLVED"

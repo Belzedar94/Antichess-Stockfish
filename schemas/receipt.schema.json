@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Belzedar94/Antichess-Stockfish/schemas/receipt.schema.json",
+  "title": "Antichess-Stockfish evidence receipt",
+  "type": "object",
+  "required": [
+    "receipt_version",
+    "receipt_id",
+    "evidence_class",
+    "created_at_utc"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": 1
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "evidence_class": {
+      "enum": [
+        "D0_DISCOVERY",
+        "E1_ENGINEERING",
+        "M2_MODEL_SELECTION",
+        "S3_STRENGTH",
+        "R4_RELEASE",
+        "P5_POST_RELEASE"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "addendum_to_receipt_id": {
+      "type": "string",
+      "minLength": 8
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,34 @@
+name: Antichess governance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  receipts-and-assets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify receipts and public asset boundary
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            python tools/receipts/verify_receipts.py --base "${{ github.event.pull_request.base.sha }}"
+          else
+            python tools/receipts/verify_receipts.py
+          fi
+      - name: Parse locked JSON and schemas
+        run: |
+          python -m json.tool RULES/AUTHORITY.lock.json >/dev/null
+          python -m json.tool schemas/receipt.schema.json >/dev/null
+          python -m json.tool schemas/BASELINE_MANIFEST.schema.json >/dev/null
