@@ -192,6 +192,32 @@ def validate_repetition_boundaries(document: dict[str, Any]) -> tuple[int, int]:
     return len(positions), len(histories)
 
 
+def validate_search_boundaries(document: dict[str, Any]) -> tuple[int, int]:
+    require(document["fixture_version"] == 1, "unsupported search fixture version")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong search rules profile")
+    require(
+        document["scope"] == "SEARCH_TERMINAL_AND_CLAIM_POLICY",
+        "wrong search fixture scope",
+    )
+    cases = document.get("cases")
+    isolation_cases = document.get("tt_isolation_cases")
+    require(isinstance(cases, list) and cases, "empty search boundary cases")
+    require(isinstance(isolation_cases, list) and isolation_cases, "empty TT isolation cases")
+    ids = [case["id"] for case in [*cases, *isolation_cases]]
+    require(len(ids) == len(set(ids)), "duplicate search boundary fixture ID")
+    for case in cases:
+        require(case["depth"] > 0, f"{case['id']}: non-positive search depth")
+        require(case["expected"]["bestmoves"], f"{case['id']}: no legal bestmove contract")
+    for case in isolation_cases:
+        require(case["claim_moves"], f"{case['id']}: no claim history")
+        require(case["depth"] > 0, f"{case['id']}: non-positive isolation depth")
+        require(
+            case["expected"]["warmed_raw_score_equals_fresh_raw_score"],
+            f"{case['id']}: TT isolation equality is not required",
+        )
+    return len(cases), len(isolation_cases)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -210,6 +236,11 @@ def main() -> int:
         default="tests/antichess/fixtures/repetition-boundaries-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--search-fixtures",
+        default="tests/antichess/fixtures/search-boundaries-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
@@ -217,12 +248,15 @@ def main() -> int:
     parser_count = validate_parser_boundaries(parser_document)
     repetition_document = json.loads(args.repetition_fixtures.read_text(encoding="utf-8"))
     repetition_counts = validate_repetition_boundaries(repetition_document)
+    search_document = json.loads(args.search_fixtures.read_text(encoding="utf-8"))
+    search_counts = validate_search_boundaries(search_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
         f"{counts[3]} core parser cases, {parser_count} boundary parser cases, "
         f"{counts[4]} service results, {repetition_counts[0]} repetition position cases, "
-        f"{repetition_counts[1]} repetition history cases"
+        f"{repetition_counts[1]} repetition history cases, {search_counts[0]} search cases, "
+        f"{search_counts[1]} TT isolation cases"
     )
     return 0
 

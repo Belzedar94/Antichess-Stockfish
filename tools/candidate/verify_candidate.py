@@ -7,15 +7,20 @@ import argparse
 import hashlib
 import importlib
 import json
+import queue
 import re
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 from types import ModuleType
 from typing import Any
 
 
 PERFT_MOVE = re.compile(r"^([a-h][1-8][a-h][1-8][qrbnk]?):\s+[0-9]+$")
+UCI_SCORE = re.compile(r"\bscore (cp|mate) (-?[0-9]+)\b")
+UCI_DEPTH = re.compile(r"^info depth ([0-9]+)\b")
 VALUE_MATE = 32000
 
 
@@ -54,6 +59,116 @@ def run_uci(engine: Path, commands: list[str], timeout: float) -> str:
     if completed.returncode != 0:
         raise RuntimeError(f"engine exited {completed.returncode}:\n{completed.stdout[-4000:]}")
     return completed.stdout
+
+
+class UciSession:
+    def __init__(self, engine: Path, timeout: float) -> None:
+        self.timeout = timeout
+        self.process = subprocess.Popen(
+            [str(engine)],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+        )
+        self.lines: queue.Queue[str | None] = queue.Queue()
+        self.reader = threading.Thread(target=self._read_output, daemon=True)
+        self.reader.start()
+        self.command("uci")
+        self.wait_for(lambda line: line == "uciok", "uciok")
+        self.command("setoption name UCI_Variant value antichess")
+        self.command("setoption name Use NNUE value false")
+        self.command("setoption name Threads value 1")
+        self.command("setoption name Hash value 16")
+        self.ready()
+
+    def _read_output(self) -> None:
+        assert self.process.stdout is not None
+        for line in self.process.stdout:
+            self.lines.put(line.rstrip("\r\n"))
+        self.lines.put(None)
+
+    def command(self, command: str) -> None:
+        if self.process.poll() is not None:
+            raise RuntimeError(f"engine exited before command {command!r}")
+        assert self.process.stdin is not None
+        self.process.stdin.write(command + "\n")
+        self.process.stdin.flush()
+
+    def wait_for(self, predicate: Any, label: str) -> list[str]:
+        output: list[str] = []
+        deadline = time.monotonic() + self.timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RuntimeError(f"timeout waiting for {label}:\n" + "\n".join(output[-100:]))
+            try:
+                line = self.lines.get(timeout=remaining)
+            except queue.Empty as exc:
+                raise RuntimeError(f"timeout waiting for {label}") from exc
+            if line is None:
+                raise RuntimeError(
+                    f"engine exited {self.process.poll()} while waiting for {label}:\n"
+                    + "\n".join(output[-100:])
+                )
+            output.append(line)
+            if predicate(line):
+                return output
+
+    def ready(self) -> None:
+        self.command("isready")
+        self.wait_for(lambda line: line == "readyok", "readyok")
+
+    def clear(self) -> None:
+        self.command("setoption name Clear Hash")
+        self.ready()
+
+    def search(self, fen: str, moves: list[str], depth: int) -> dict[str, Any]:
+        position = f"position fen {fen}"
+        if moves:
+            position += " moves " + " ".join(moves)
+        self.command(position)
+        self.command(f"go depth {depth}")
+        output = self.wait_for(lambda line: line.startswith("bestmove "), "bestmove")
+        info_lines = [line for line in output if UCI_DEPTH.match(line) and UCI_SCORE.search(line)]
+        if not info_lines:
+            raise RuntimeError("search returned no scored depth info:\n" + "\n".join(output[-100:]))
+        info = info_lines[-1]
+        depth_match = UCI_DEPTH.match(info)
+        score_match = UCI_SCORE.search(info)
+        assert depth_match is not None and score_match is not None
+        bestmove = output[-1].split()[1]
+        return {
+            "depth": int(depth_match.group(1)),
+            "score_type": score_match.group(1),
+            "score": int(score_match.group(2)),
+            "bestmove": bestmove,
+            "output": output,
+        }
+
+    def close(self) -> None:
+        if self.process.poll() is None:
+            self.command("quit")
+            try:
+                self.process.wait(timeout=self.timeout)
+            except subprocess.TimeoutExpired:
+                self.process.terminate()
+                self.process.wait(timeout=5)
+
+    def __enter__(self) -> "UciSession":
+        return self
+
+    def __exit__(self, *_: Any) -> None:
+        self.close()
+
+
+def score_rank(result: dict[str, Any]) -> int:
+    if result["score_type"] == "mate":
+        return VALUE_MATE if result["score"] > 0 else -VALUE_MATE
+    return int(result["score"])
 
 
 def uci_moves(engine: Path, fen: str, moves: list[str], timeout: float) -> list[str]:
@@ -177,6 +292,11 @@ def main() -> int:
         type=Path,
         default=Path("tests/antichess/fixtures/repetition-boundaries-v1.json"),
     )
+    parser.add_argument(
+        "--search-fixtures",
+        type=Path,
+        default=Path("tests/antichess/fixtures/search-boundaries-v1.json"),
+    )
     parser.add_argument("--timeout", type=float, default=20.0)
     args = parser.parse_args()
 
@@ -185,7 +305,15 @@ def main() -> int:
     fixture_path = args.fixtures.resolve()
     parser_fixture_path = args.parser_fixtures.resolve()
     repetition_fixture_path = args.repetition_fixtures.resolve()
-    for path in (engine, pyffish_dir, fixture_path, parser_fixture_path, repetition_fixture_path):
+    search_fixture_path = args.search_fixtures.resolve()
+    for path in (
+        engine,
+        pyffish_dir,
+        fixture_path,
+        parser_fixture_path,
+        repetition_fixture_path,
+        search_fixture_path,
+    ):
         if not path.exists():
             raise RuntimeError(f"required path does not exist: {path}")
 
@@ -193,6 +321,7 @@ def main() -> int:
     document = json.loads(fixture_path.read_text(encoding="utf-8"))
     parser_document = json.loads(parser_fixture_path.read_text(encoding="utf-8"))
     repetition_document = json.loads(repetition_fixture_path.read_text(encoding="utf-8"))
+    search_document = json.loads(search_fixture_path.read_text(encoding="utf-8"))
     check = Verification()
 
     uci = run_uci(engine, ["uci"], args.timeout)
@@ -367,6 +496,42 @@ def main() -> int:
         )
         check.equal(automatic, fixture["expected"]["automatic"], f"{fixture['id']} automatic classification")
         check.equal(claimable, fixture["expected"]["claimable"], f"{fixture['id']} claimable classification")
+
+    with UciSession(engine, args.timeout) as session:
+        for fixture in search_document["cases"]:
+            session.clear()
+            result = session.search(fixture["initial_fen"], fixture["moves"], fixture["depth"])
+            expected = fixture["expected"]
+            check.true(result["depth"] >= fixture["depth"], f"{fixture['id']} completed search depth")
+            check.true(result["bestmove"] in expected["bestmoves"], f"{fixture['id']} legal policy move")
+            if "score_type" in expected:
+                check.equal(result["score_type"], expected["score_type"], f"{fixture['id']} score type")
+                check.equal(result["score"], expected["score"], f"{fixture['id']} score value")
+            if "minimum_score_cp" in expected:
+                check.true(
+                    score_rank(result) >= expected["minimum_score_cp"],
+                    f"{fixture['id']} virtual claim floor",
+                )
+
+        for fixture in search_document["tt_isolation_cases"]:
+            session.clear()
+            claim = session.search(
+                fixture["initial_fen"],
+                fixture["claim_moves"],
+                fixture["depth"],
+            )
+            warmed_raw = session.search(fixture["initial_fen"], [], fixture["depth"])
+            session.clear()
+            fresh_raw = session.search(fixture["initial_fen"], [], fixture["depth"])
+            check.true(
+                score_rank(claim) >= fixture["expected"]["claim_minimum_score_cp"],
+                f"{fixture['id']} claim score floor",
+            )
+            check.equal(
+                (warmed_raw["score_type"], warmed_raw["score"]),
+                (fresh_raw["score_type"], fresh_raw["score"]),
+                f"{fixture['id']} no claim-history TT score leak",
+            )
 
     module_path = Path(sf.__file__).resolve()
     print(f"engine_sha256={sha256(engine)}")
