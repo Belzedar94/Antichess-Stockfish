@@ -1569,14 +1569,12 @@ moves_loop: // When in check, search starts from here
     {
         if (pos.is_variant_game_end(gameResult, ss->ply))
             return gameResult;
-        if (pos.is_automatic_draw())
-        {
-            bool hasLegalMoves = MoveList<LEGAL>(pos).size();
-            if (!hasLegalMoves)
-                return pos.stalemate_value(ss->ply);
-            if (pos.is_automatic_game_end(gameResult, hasLegalMoves, ss->ply))
-                return gameResult;
-        }
+        bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+        if (!hasLegalMoves)
+            return pos.stalemate_value(ss->ply);
+        if (   pos.is_automatic_draw()
+            && pos.is_automatic_game_end(gameResult, hasLegalMoves, ss->ply))
+            return gameResult;
         if (pos.is_optional_game_end(gameResult, ss->ply))
             return gameResult;
     }
