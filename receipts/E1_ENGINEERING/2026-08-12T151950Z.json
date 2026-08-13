@@ -1,0 +1,101 @@
+{
+  "receipt_version": 1,
+  "receipt_id": "E1_ENGINEERING-2026-08-12T151950Z",
+  "evidence_class": "E1_ENGINEERING",
+  "created_at_utc": "2026-08-12T15:19:50Z",
+  "scope": "PINNED_PRIMARY_AND_INDEPENDENT_REFERENCE_CONFORMANCE",
+  "status": "PASS_REFERENCE_ONLY",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "explicit_non_claims": [
+    "This receipt does not validate the candidate engine.",
+    "This receipt does not validate an independent match referee.",
+    "This receipt does not establish a valid baseline, strength result, or release asset."
+  ],
+  "fixture_contract": {
+    "path": "tests/antichess/fixtures/core-v1.json",
+    "sha256": "19a2464e7382aecbe7f99f938e39eb281291344007873c6d285d165f6b097d02",
+    "schema_path": "schemas/antichess-fixtures-v1.schema.json",
+    "schema_sha256": "a0968e7563425a59e03f01e962e481f3bc1c1b5f918996544db3cadc4ba9048e",
+    "counts": {
+      "positions": 25,
+      "histories": 7,
+      "rejected_moves": 4,
+      "parser_cases": 1,
+      "service_results": 10
+    },
+    "repository_contract_verifier": "PASS"
+  },
+  "primary_authority": {
+    "repository": "https://github.com/lichess-org/scalachess.git",
+    "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+    "tree": "f5410eb2a6ddb6ef7092317533f704158c86a4fc",
+    "tracked_worktree": "CLEAN",
+    "probe": {
+      "path": "tools/reference/scalachess/ScalachessProbe.scala",
+      "sha256": "90d4cd43e2704bdccf582cffac1cdb7cac716c8945edfe64cdb50cc81bc3e211",
+      "candidate_dependencies": false
+    },
+    "upstream_test": {
+      "command": "testKit/Test/testOnly chess.AntichessVariantTest",
+      "result": "PASS",
+      "tests_total": 29,
+      "tests_passed": 29,
+      "tests_failed": 0,
+      "tests_ignored": 0
+    },
+    "differential_fixture_run": {
+      "command": "python tools/reference/scalachess/verify_fixtures.py --scalachess-root <pinned> --java <temurin-java> --sbt-launcher <sbt-launcher>",
+      "result": "PASS",
+      "positions": 25,
+      "histories": 7,
+      "rejected_moves": 4
+    }
+  },
+  "independent_reference": {
+    "repository": "https://github.com/niklasf/chessops.git",
+    "commit": "736c40ced7130d453d85e7979c360b797474c9a7",
+    "tree": "d555da3d103eef217c7a894e7a994c4f55313a42",
+    "tracked_worktree": "CLEAN",
+    "package_lock_sha256": "0afd69099cd9cba6efacf660aae06796b75cb490b8ebf7951aadf206e7b99f0d",
+    "upstream_test": {
+      "command": "npm test -- --maxWorkers=2",
+      "result": "PASS",
+      "test_files_passed": 11,
+      "tests_passed": 196,
+      "tests_failed": 0
+    },
+    "differential_fixture_run": {
+      "command": "node tools/reference/chessops/verify_fixtures.mjs --chessops-root <pinned> --fixtures tests/antichess/fixtures/core-v1.json",
+      "result": "PASS",
+      "positions": 25,
+      "transitions": 7,
+      "rejected_moves": 4,
+      "parser_cases": 1
+    },
+    "dependency_audit": {
+      "production_vulnerabilities": 0,
+      "development_high_vulnerabilities": 3,
+      "development_critical_vulnerabilities": 0,
+      "disposition": "Recorded as reference-tool development dependencies; not shipped or linked into candidate artifacts."
+    }
+  },
+  "toolchain": {
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "version": "21.0.12+8 LTS",
+      "archive_sha256": "9ba963ee2371874a74185d18bc7bb2ab9407df7683300855ed7606e0662321d0"
+    },
+    "sbt_launcher": {
+      "version": "2.0.6",
+      "sha256": "4a70d6d5e52ec6bfb6c0e117867e55468d84eef9f0e3828d31456ed860a3bd42"
+    },
+    "node": "24.15.0",
+    "npm": "11.13.0",
+    "python": "3.12.0"
+  },
+  "gate_effect": {
+    "P2": "IN_PROGRESS_REFERENCE_ROLES_PASS",
+    "P3": "PENDING_CANDIDATE_BUILD",
+    "P4": "PENDING_CANDIDATE_AND_REFEREE_CONFORMANCE"
+  }
+}

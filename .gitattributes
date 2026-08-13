@@ -1,1 +1,12 @@
 README.md merge=ours
+
+# Evidence hashes are byte identities and must not depend on checkout platform.
+receipts/** text eol=lf
+schemas/** text eol=lf
+RULES/** text eol=lf
+docs/** text eol=lf
+tools/receipts/** text eol=lf
+tools/reference/** text eol=lf
+tests/antichess/** text eol=lf
+.github/workflows/antichess-governance.yml text eol=lf
+UPSTREAM.lock text eol=lf

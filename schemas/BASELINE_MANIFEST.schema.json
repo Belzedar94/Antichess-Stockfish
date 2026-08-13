@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Belzedar94/Antichess-Stockfish/schemas/BASELINE_MANIFEST.schema.json",
+  "title": "Antichess-Stockfish P6 baseline manifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "project",
+    "upstream",
+    "rules",
+    "roles",
+    "fixtures",
+    "build",
+    "evaluator",
+    "gates"
+  ],
+  "properties": {
+    "manifest_version": { "const": 1 },
+    "project": {
+      "type": "object",
+      "required": ["commit", "tree"]
+    },
+    "upstream": {
+      "type": "object",
+      "required": ["repository", "commit", "tree"]
+    },
+    "rules": {
+      "type": "object",
+      "required": ["profile", "profile_sha256", "uci_mapping"]
+    },
+    "roles": {
+      "type": "object",
+      "required": ["authority", "reference", "referee", "candidate"]
+    },
+    "fixtures": {
+      "type": "object",
+      "required": ["version", "sha256"]
+    },
+    "build": {
+      "type": "object",
+      "required": ["toolchain", "flags", "binary_sha256", "bench"]
+    },
+    "evaluator": {
+      "type": "object",
+      "required": ["public_baseline_mode", "external_file_access", "legacy_network"]
+    },
+    "gates": {
+      "type": "object",
+      "required": ["P2", "P3", "P4", "P5", "P6"]
+    }
+  },
+  "additionalProperties": true
+}

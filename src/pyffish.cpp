@@ -353,6 +353,23 @@ extern "C" PyObject* pyffish_isOptionalGameEnd(PyObject* self, PyObject *args) {
     return Py_BuildValue("(Oi)", gameEnd ? Py_True : Py_False, result);
 }
 
+extern "C" PyObject* pyffish_isAutomaticGameEnd(PyObject* self, PyObject *args) {
+    PyObject *moveList;
+    Position pos;
+    const char *fen, *variant;
+    Value result = VALUE_NONE;
+    int chess960 = false;
+    if (!PyArg_ParseTuple(args, "ssO!|p", &variant, &fen, &PyList_Type, &moveList, &chess960)) {
+        return NULL;
+    }
+
+    StateListPtr states(new std::deque<StateInfo>(1));
+    buildPosition(pos, states, variant, fen, moveList, chess960);
+    bool hasLegalMoves = MoveList<LEGAL>(pos).size();
+    bool gameEnd = pos.is_automatic_game_end(result, hasLegalMoves);
+    return Py_BuildValue("(Oi)", gameEnd ? Py_True : Py_False, result);
+}
+
 // INPUT variant, fen, move list
 extern "C" PyObject* pyffish_hasInsufficientMaterial(PyObject* self, PyObject *args) {
     PyObject *moveList;
@@ -381,6 +398,19 @@ extern "C" PyObject* pyffish_validateFen(PyObject* self, PyObject *args) {
     }
 
     return Py_BuildValue("i", FEN::validate_fen(std::string(fen), variants.find(std::string(variant))->second, chess960));
+}
+
+extern "C" PyObject* pyffish_rulesProfile(PyObject* self, PyObject *args) {
+    const char *variant;
+    if (!PyArg_ParseTuple(args, "s", &variant)) {
+        return NULL;
+    }
+    auto it = variants.find(std::string(variant));
+    if (it == variants.end()) {
+        PyErr_SetString(PyExc_ValueError, "Unknown variant");
+        return NULL;
+    }
+    return Py_BuildValue("s", rule_profile_name(it->second->ruleProfile));
 }
 
 // INPUT variant, fen
@@ -418,9 +448,11 @@ static PyMethodDef PyFFishMethods[] = {
     {"piece_to_partner", (PyCFunction)pyffish_pieceToPartner, METH_VARARGS, "Get unpromoted captured piece from given FEN and movelist."},
     {"game_result", (PyCFunction)pyffish_gameResult, METH_VARARGS, "Get result from given FEN, considering variant end, checkmate, and stalemate."},
     {"is_immediate_game_end", (PyCFunction)pyffish_isImmediateGameEnd, METH_VARARGS, "Get result from given FEN if variant rules ends the game."},
+    {"is_automatic_game_end", (PyCFunction)pyffish_isAutomaticGameEnd, METH_VARARGS, "Get an automatic result after decisive terminal precedence."},
     {"is_optional_game_end", (PyCFunction)pyffish_isOptionalGameEnd, METH_VARARGS, "Get result from given FEN it rules enable game end by player."},
     {"has_insufficient_material", (PyCFunction)pyffish_hasInsufficientMaterial, METH_VARARGS, "Checks for insufficient material."},
     {"validate_fen", (PyCFunction)pyffish_validateFen, METH_VARARGS, "Validate an input FEN."},
+    {"rules_profile", (PyCFunction)pyffish_rulesProfile, METH_VARARGS, "Get the immutable rules profile for a variant."},
     {"get_fog_fen", (PyCFunction)pyffish_getFogFEN, METH_VARARGS, "Get Fog of War FEN from given FEN."},
     {NULL, NULL, 0, NULL},  // sentinel
 };

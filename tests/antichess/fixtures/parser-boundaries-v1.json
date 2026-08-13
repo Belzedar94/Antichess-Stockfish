@@ -1,0 +1,32 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "scope": "PROJECT_FEN_BOUNDARY",
+  "cases": [
+    {
+      "id": "reject_file_beyond_board",
+      "fen": "8/7p/8/8/8/8/P7/8 w - i1 0 1",
+      "project_policy": "reject"
+    },
+    {
+      "id": "reject_zero_rank",
+      "fen": "8/7p/8/8/8/8/P7/8 w - a0 0 1",
+      "project_policy": "reject"
+    },
+    {
+      "id": "reject_uppercase_file",
+      "fen": "8/7p/8/8/8/8/P7/8 w - A3 0 1",
+      "project_policy": "reject"
+    },
+    {
+      "id": "accept_valid_effective_square",
+      "fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "project_policy": "accept"
+    },
+    {
+      "id": "accept_valid_ineffective_square",
+      "fen": "8/7p/8/8/8/8/P7/8 w - e4 0 1",
+      "project_policy": "accept"
+    }
+  ]
+}

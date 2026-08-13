@@ -509,7 +509,7 @@ template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*);
 template<>
 ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
 
-  if (pos.is_immediate_game_end())
+  if (pos.is_variant_game_end())
       return moveList;
 
   ExtMove* cur = moveList;

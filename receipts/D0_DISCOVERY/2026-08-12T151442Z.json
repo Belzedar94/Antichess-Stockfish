@@ -1,0 +1,74 @@
+{
+  "receipt_version": 1,
+  "receipt_id": "D0_DISCOVERY-2026-08-12T151442Z",
+  "evidence_class": "D0_DISCOVERY",
+  "created_at_utc": "2026-08-12T15:14:42Z",
+  "addendum_to_receipt_id": "D0_DISCOVERY-2026-08-12T142712Z",
+  "incident": {
+    "id": "INC-DIALECT-002",
+    "symptom": "The low-level scalachess FullFen path normalized malformed en-passant token z9 to no square while the pinned chessops parser rejected it.",
+    "false_inference": "Acceptance by Fen.read proves that an input string is valid FEN and belongs to the public dialect contract.",
+    "cause": "FullFen is an opaque string wrapper and the reader assumes validation has already occurred; invalid square text becomes None.",
+    "prevention": "Project-owned engine, referee, dataset, and model-tool boundaries reject malformed FEN syntax before rules execution while retaining Lichess semantics for valid FEN.",
+    "gate_effect": "P2 FEN policy is closed; P3 and P4 require the negative parser fixture to pass in candidate and referee."
+  },
+  "authority_conflict_resolution": {
+    "valid_castling_text": "accepted and canonicalized to no rights",
+    "valid_effective_en_passant": "accepted and retained",
+    "valid_ineffective_en_passant": "accepted and canonicalized to no square",
+    "malformed_en_passant": "rejected fail-closed by every project-owned public boundary",
+    "semantic_scope": "The stricter syntax boundary does not alter any valid Antichess position or legal move."
+  },
+  "pinned_evidence": [
+    {
+      "repository": "https://github.com/lichess-org/scalachess.git",
+      "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "files": [
+        {
+          "path": "core/src/main/scala/format/Fen.scala",
+          "git_blob": "4ea4df4c483a35e3fb0ce59211533c039695f128"
+        },
+        {
+          "path": "core/src/main/scala/format/FenReader.scala",
+          "git_blob": "8b5016bf506645b1ef1e451aa69b9de6e8edd5e6"
+        }
+      ],
+      "observation": "z9 was accepted by the low-level probe and canonicalized to '-'."
+    },
+    {
+      "repository": "https://github.com/lichess-org/lila.git",
+      "commit": "13895e5856db0f854f6ab76394fffce852ebd5c9",
+      "files": [
+        {
+          "path": "modules/common/src/main/Form.scala",
+          "git_blob": "f230c6a3c559af3d783b21d511cbd413144edaf3"
+        },
+        {
+          "path": "modules/setup/src/main/ValidFen.scala",
+          "git_blob": "bf2ddfa4c6e1a9e61befaf9c6ca940549d5f9ced"
+        },
+        {
+          "path": "app/controllers/UserAnalysis.scala",
+          "git_blob": "7ee046e52f876c3ada70274abb09c9b61c2e30d6"
+        }
+      ],
+      "observation": "Public service paths clean and parse FullFen text but do not supply a strict EP token validator before the low-level reader."
+    },
+    {
+      "repository": "https://github.com/niklasf/chessops.git",
+      "commit": "736c40ced7130d453d85e7979c360b797474c9a7",
+      "path": "src/fen.ts",
+      "git_blob": "ed373765da44a129e55fe5d982f67d4e13224813",
+      "observation": "The same z9 input was rejected with ERR_EP_SQUARE."
+    }
+  ],
+  "fixture_contract": {
+    "path": "tests/antichess/fixtures/core-v1.json",
+    "positions": 25,
+    "histories": 7,
+    "rejected_moves": 4,
+    "parser_cases": 1,
+    "service_results": 10,
+    "status": "FROZEN_PENDING_CANDIDATE_AND_REFEREE_EXECUTION"
+  }
+}

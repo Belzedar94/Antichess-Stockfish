@@ -1,0 +1,49 @@
+{
+  "receipt_version": 1,
+  "receipt_id": "D0_DISCOVERY-2026-08-12T143735Z",
+  "evidence_class": "D0_DISCOVERY",
+  "created_at_utc": "2026-08-12T14:37:35Z",
+  "addendum_to_receipt_id": "D0_DISCOVERY-2026-08-12T142712Z",
+  "incident": {
+    "id": "INC-DIALECT-001",
+    "symptom": "The public rules page omitted Antichess-specific automatic-draw and one-sided cannot-win predicates present in the pinned executable implementation.",
+    "false_inference": "No insufficient-material semantics applied because orthodox mating material is irrelevant.",
+    "cause": "The initial rule summary did not yet trace the full auto-draw and timeout/disconnection call graph.",
+    "prevention": "Enumerate every terminal predicate and external result path from pinned executable authority, then add positive and near-negative fixtures.",
+    "gate_effect": "P2 remains open and P4 gains mandatory insufficient-material and clock-perspective fixtures."
+  },
+  "pinned_evidence": [
+    {
+      "repository": "https://github.com/lichess-org/scalachess.git",
+      "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "path": "core/src/main/scala/variant/Antichess.scala",
+      "git_blob": "2a74dac19c55413f253e164f0ad0cd7ea0398773",
+      "functions": [
+        "isInsufficientMaterial",
+        "playerHasInsufficientMaterial",
+        "opponentHasInsufficientMaterial"
+      ]
+    },
+    {
+      "repository": "https://github.com/lichess-org/scalachess.git",
+      "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "path": "test-kit/src/test/scala/AntichessVariantTest.scala",
+      "git_blob": "321491dbfe6dfd3b316184753cf4e3923afffb36"
+    },
+    {
+      "repository": "https://github.com/lichess-org/lila.git",
+      "commit": "13895e5856db0f854f6ab76394fffce852ebd5c9",
+      "paths": [
+        "modules/round/src/main/RoundGame.scala",
+        "modules/round/src/main/Finisher.scala",
+        "modules/round/src/main/RoundAsyncActor.scala",
+        "modules/round/src/main/Drawer.scala"
+      ]
+    }
+  ],
+  "corrected_gate_state": {
+    "P1": "PASS_WITH_APPEND_ONLY_CORRECTION",
+    "P2": "IN_PROGRESS",
+    "P4": "PENDING_EXPANDED_FIXTURE_FAMILIES"
+  }
+}

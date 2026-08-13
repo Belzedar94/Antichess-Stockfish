@@ -33,9 +33,26 @@
 
 namespace Stockfish {
 
+enum class RuleProfile {
+  NONE,
+  LICHESS_ANTICHESS_V1,
+};
+
+inline const char* rule_profile_name(RuleProfile profile) {
+  switch (profile)
+  {
+  case RuleProfile::LICHESS_ANTICHESS_V1:
+      return "LICHESS_ANTICHESS_V1";
+  case RuleProfile::NONE:
+      return "NONE";
+  }
+  return "NONE";
+}
+
 /// Variant struct stores information needed to determine the rules of a variant.
 
 struct Variant {
+  RuleProfile ruleProfile = RuleProfile::NONE;
   std::string variantTemplate = "fairy";
   std::string pieceToCharTable = "-";
   int pocketSize = 0;
@@ -220,6 +237,7 @@ struct Variant {
 
   // Reset values that always need to be redefined
   Variant* init() {
+      ruleProfile = RuleProfile::NONE;
       nnueAlias = "";
       endgameEval = EG_EVAL_CHESS;
       return this;

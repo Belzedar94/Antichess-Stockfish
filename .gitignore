@@ -15,6 +15,12 @@ src/-lstdc++.res
 # Neural network for the NNUE evaluation
 **/*.nnue
 
+# Project-local evidence and diagnostic assets. These paths must never be
+# committed or used implicitly by a public baseline.
+/.local/
+/.reference-cache/
+/artifacts/local/
+
 
 # Build/test artifacts
 *.exe

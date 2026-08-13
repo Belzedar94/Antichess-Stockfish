@@ -419,6 +419,7 @@ namespace {
     // https://lichess.org/variant/antichess
     Variant* antichess_variant() {
         Variant* v = giveaway_variant()->init();
+        v->ruleProfile = RuleProfile::LICHESS_ANTICHESS_V1;
         v->startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1";
         v->castling = false;
         v->endgameEval = EG_EVAL_ANTI;

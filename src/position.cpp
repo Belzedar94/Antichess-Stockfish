@@ -2620,6 +2620,16 @@ bool Position::see_ge(Move m, Value threshold) const {
 
 bool Position::is_optional_game_end(Value& result, int ply, int countStarted) const {
 
+  if (rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1)
+  {
+      if (is_claimable_threefold_draw())
+      {
+          result = VALUE_DRAW;
+          return true;
+      }
+      return false;
+  }
+
   // n-move rule
   if (n_move_rule() && st->rule50 > (2 * n_move_rule() - 1) && (!checkers() || MoveList<LEGAL>(*this).size()))
   {
@@ -2752,11 +2762,65 @@ bool Position::is_optional_game_end(Value& result, int ply, int countStarted) co
   return false;
 }
 
-/// Position::is_immediate_game_end() tests whether the position ends the game
+bool Position::is_automatic_fifty_move_draw() const {
+  return    rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1
+         && rule50_count() >= 100;
+}
+
+int Position::repetition_count() const {
+  int count = 1;
+  int end = captures_to_hand() ? st->pliesFromNull : std::min(st->rule50, st->pliesFromNull);
+  StateInfo* stp = st;
+
+  for (int i = 2; i <= end; i += 2)
+  {
+      if (!stp->previous || !stp->previous->previous)
+          break;
+      stp = stp->previous->previous;
+      if (stp->key == st->key)
+          ++count;
+  }
+  return count;
+}
+
+bool Position::is_claimable_threefold_draw() const {
+  return    rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1
+         && repetition_count() >= 3;
+}
+
+bool Position::is_automatic_fivefold_draw() const {
+  return    rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1
+         && repetition_count() >= 5;
+}
+
+bool Position::is_automatic_draw() const {
+  return is_automatic_fifty_move_draw() || is_automatic_fivefold_draw();
+}
+
+bool Position::is_automatic_game_end(Value& result, bool hasLegalMoves, int) const {
+  if (!hasLegalMoves || rule_profile() != RuleProfile::LICHESS_ANTICHESS_V1)
+      return false;
+
+  if (is_automatic_fifty_move_draw())
+  {
+      result = VALUE_DRAW;
+      return true;
+  }
+
+  if (is_automatic_fivefold_draw())
+  {
+      result = VALUE_DRAW;
+      return true;
+  }
+
+  return false;
+}
+
+/// Position::is_variant_game_end() tests whether the position ends the game
 /// immediately by a variant rule, i.e., there are no more legal moves.
 /// It does not detect stalemates.
 
-bool Position::is_immediate_game_end(Value& result, int ply) const {
+bool Position::is_variant_game_end(Value& result, int ply) const {
 
   // Extinction
   // Extinction does not apply for pseudo-royal pieces, because they can not be captured
