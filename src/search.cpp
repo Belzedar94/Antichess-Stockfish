@@ -722,7 +722,7 @@ namespace {
         {
             if (pos.is_variant_game_end(variantResult, ss->ply))
                 return variantResult;
-            if (pos.is_automatic_fifty_move_draw())
+            if (pos.is_automatic_draw())
             {
                 bool hasLegalMoves = MoveList<LEGAL>(pos).size();
                 if (!hasLegalMoves)
@@ -1569,7 +1569,7 @@ moves_loop: // When in check, search starts from here
     {
         if (pos.is_variant_game_end(gameResult, ss->ply))
             return gameResult;
-        if (pos.is_automatic_fifty_move_draw())
+        if (pos.is_automatic_draw())
         {
             bool hasLegalMoves = MoveList<LEGAL>(pos).size();
             if (!hasLegalMoves)

@@ -172,6 +172,26 @@ def validate_parser_boundaries(document: dict[str, Any]) -> int:
     return len(cases)
 
 
+def validate_repetition_boundaries(document: dict[str, Any]) -> tuple[int, int]:
+    require(document["fixture_version"] == 1, "unsupported repetition fixture version")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong repetition rules profile")
+    require(document["scope"] == "REPETITION_CLASSIFICATION", "wrong repetition fixture scope")
+    positions = document.get("position_cases")
+    histories = document.get("history_cases")
+    require(isinstance(positions, list) and positions, "empty repetition position cases")
+    require(isinstance(histories, list) and histories, "empty repetition history cases")
+    ids = [case["id"] for case in [*positions, *histories]]
+    require(len(ids) == len(set(ids)), "duplicate repetition boundary fixture ID")
+    for case in positions:
+        require(not case["expected"]["claimable"], f"{case['id']}: FEN invented a repetition claim")
+        require(not case["expected"]["automatic"], f"{case['id']}: FEN invented an automatic repetition")
+    for case in histories:
+        require(case["moves"], f"{case['id']}: empty repetition history")
+        require(case["expected"]["claimable"], f"{case['id']}: history is not claimable")
+        require(not case["expected"]["automatic"], f"{case['id']}: fourfold became automatic")
+    return len(positions), len(histories)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -185,16 +205,24 @@ def main() -> int:
         default="tests/antichess/fixtures/parser-boundaries-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--repetition-fixtures",
+        default="tests/antichess/fixtures/repetition-boundaries-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
     parser_document = json.loads(args.parser_fixtures.read_text(encoding="utf-8"))
     parser_count = validate_parser_boundaries(parser_document)
+    repetition_document = json.loads(args.repetition_fixtures.read_text(encoding="utf-8"))
+    repetition_counts = validate_repetition_boundaries(repetition_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
         f"{counts[3]} core parser cases, {parser_count} boundary parser cases, "
-        f"{counts[4]} service results"
+        f"{counts[4]} service results, {repetition_counts[0]} repetition position cases, "
+        f"{repetition_counts[1]} repetition history cases"
     )
     return 0
 

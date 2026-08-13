@@ -172,6 +172,11 @@ def main() -> int:
         type=Path,
         default=Path("tests/antichess/fixtures/parser-boundaries-v1.json"),
     )
+    parser.add_argument(
+        "--repetition-fixtures",
+        type=Path,
+        default=Path("tests/antichess/fixtures/repetition-boundaries-v1.json"),
+    )
     parser.add_argument("--timeout", type=float, default=20.0)
     args = parser.parse_args()
 
@@ -179,13 +184,15 @@ def main() -> int:
     pyffish_dir = args.pyffish_dir.resolve()
     fixture_path = args.fixtures.resolve()
     parser_fixture_path = args.parser_fixtures.resolve()
-    for path in (engine, pyffish_dir, fixture_path, parser_fixture_path):
+    repetition_fixture_path = args.repetition_fixtures.resolve()
+    for path in (engine, pyffish_dir, fixture_path, parser_fixture_path, repetition_fixture_path):
         if not path.exists():
             raise RuntimeError(f"required path does not exist: {path}")
 
     sf = load_pyffish(pyffish_dir)
     document = json.loads(fixture_path.read_text(encoding="utf-8"))
     parser_document = json.loads(parser_fixture_path.read_text(encoding="utf-8"))
+    repetition_document = json.loads(repetition_fixture_path.read_text(encoding="utf-8"))
     check = Verification()
 
     uci = run_uci(engine, ["uci"], args.timeout)
@@ -289,6 +296,32 @@ def main() -> int:
         )
         verify_core_state(check, sf, fixture, fixture["initial_fen"], fixture["moves"])
 
+    histories_by_id = {
+        fixture["id"]: fixture for fixture in document["history_fixtures"]
+    }
+    fivefold = histories_by_id["fivefold_automatic_draw"]
+    fivefold_position = f"position fen {fivefold['initial_fen']} moves " + " ".join(fivefold["moves"])
+    fivefold_search = run_uci(
+        engine,
+        [
+            "uci",
+            "setoption name UCI_Variant value antichess",
+            "isready",
+            fivefold_position,
+            "go depth 2",
+        ],
+        args.timeout,
+    )
+    check.true("info depth 0 score cp 0" in fivefold_search, "UCI fivefold automatic draw score")
+    fivefold_bestmoves = [
+        line.split()[1] for line in fivefold_search.splitlines() if line.startswith("bestmove ")
+    ]
+    check.true(
+        len(fivefold_bestmoves) == 1
+        and fivefold_bestmoves[0] in fivefold["expected"]["legal_moves"],
+        "UCI fivefold automatic draw legal fallback move",
+    )
+
     positions_by_fen = {
         fixture["fen"]: fixture for fixture in document["position_fixtures"]
     }
@@ -318,6 +351,22 @@ def main() -> int:
             fixture["project_policy"] == "accept",
             f"{fixture['id']} parser geometry policy",
         )
+
+    for fixture in repetition_document["position_cases"]:
+        automatic, automatic_value = sf.is_automatic_game_end("antichess", fixture["fen"], [])
+        claimable, claimable_value = sf.is_optional_game_end("antichess", fixture["fen"], [])
+        check.equal(automatic, fixture["expected"]["automatic"], f"{fixture['id']} automatic classification")
+        check.equal(claimable, fixture["expected"]["claimable"], f"{fixture['id']} claimable classification")
+
+    for fixture in repetition_document["history_cases"]:
+        automatic, automatic_value = sf.is_automatic_game_end(
+            "antichess", fixture["initial_fen"], fixture["moves"]
+        )
+        claimable, claimable_value = sf.is_optional_game_end(
+            "antichess", fixture["initial_fen"], fixture["moves"]
+        )
+        check.equal(automatic, fixture["expected"]["automatic"], f"{fixture['id']} automatic classification")
+        check.equal(claimable, fixture["expected"]["claimable"], f"{fixture['id']} claimable classification")
 
     module_path = Path(sf.__file__).resolve()
     print(f"engine_sha256={sha256(engine)}")

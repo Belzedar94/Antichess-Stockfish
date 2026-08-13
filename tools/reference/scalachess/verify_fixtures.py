@@ -129,6 +129,11 @@ def main() -> int:
         type=Path,
         default=Path(__file__).resolve().with_name("ScalachessProbe.scala"),
     )
+    parser.add_argument(
+        "--repetition-fixtures",
+        type=Path,
+        default=project_root / "tests" / "antichess" / "fixtures" / "repetition-boundaries-v1.json",
+    )
     args = parser.parse_args()
 
     scalachess_root = args.scalachess_root.resolve()
@@ -136,7 +141,8 @@ def main() -> int:
     sbt_launcher = args.sbt_launcher.resolve()
     fixture_path = args.fixtures.resolve()
     probe_source = args.probe_source.resolve()
-    for path in (scalachess_root, java, sbt_launcher, fixture_path, probe_source):
+    repetition_fixture_path = args.repetition_fixtures.resolve()
+    for path in (scalachess_root, java, sbt_launcher, fixture_path, probe_source, repetition_fixture_path):
         require(path.exists(), f"required path does not exist: {path}")
 
     commit = git(scalachess_root, "rev-parse", "HEAD")
@@ -145,15 +151,22 @@ def main() -> int:
     require(not tracked_status, f"pinned scalachess checkout has tracked changes:\n{tracked_status}")
 
     document = json.loads(fixture_path.read_text(encoding="utf-8"))
+    repetition_document = json.loads(repetition_fixture_path.read_text(encoding="utf-8"))
     positions = document["position_fixtures"]
     histories = document["history_fixtures"]
-    encoded_positions = [encode(fixture["fen"]) for fixture in positions]
+    repetition_positions = repetition_document["position_cases"]
+    repetition_histories = repetition_document["history_cases"]
+    encoded_positions = [encode(fixture["fen"]) for fixture in [*positions, *repetition_positions]]
     encoded_histories = [
         encode("\n".join([fixture["initial_fen"], *fixture["moves"]])) for fixture in histories
+    ] + [
+        encode("\n".join([fixture["initial_fen"], *fixture["moves"]]))
+        for fixture in repetition_histories
     ]
 
     source_directory = probe_source.parent.as_posix().replace('"', '\\"')
     commands = [
+        'set scalachess / Compile / scalacOptions -= "-Werror"',
         "set scalachess / semanticdbEnabled := false",
         f'set scalachess / Compile / unmanagedSourceDirectories += file("{source_directory}")',
         "scalachess/runMain antichess.reference.ScalachessProbe --fens64 "
@@ -164,6 +177,9 @@ def main() -> int:
     completed = subprocess.run(
         [
             str(java),
+            "-Xms128m",
+            "-Xmx768m",
+            "-XX:+UseSerialGC",
             "-Dsbt.task.cpus=2",
             "-jar",
             str(sbt_launcher),
@@ -183,8 +199,34 @@ def main() -> int:
 
     batches = parse_batches(completed.stdout)
     require(set(batches) == {"positions", "histories"}, f"unexpected probe batches: {sorted(batches)}")
-    verify_batch(positions, batches["positions"], "positions")
-    verify_batch(histories, batches["histories"], "histories")
+    require(
+        len(batches["positions"]) == len(positions) + len(repetition_positions),
+        "combined position fixture count mismatch",
+    )
+    require(
+        len(batches["histories"]) == len(histories) + len(repetition_histories),
+        "combined history fixture count mismatch",
+    )
+    verify_batch(positions, batches["positions"][: len(positions)], "positions")
+    verify_batch(histories, batches["histories"][: len(histories)], "histories")
+
+    for fixture, observed in zip(
+        repetition_positions,
+        batches["positions"][len(positions) :],
+        strict=True,
+    ):
+        require(observed["threefold"] == "false", f"{fixture['id']}: FEN invented threefold")
+        require(observed["fivefold"] == "false", f"{fixture['id']}: FEN invented fivefold")
+        require(observed["auto_draw"] == str(fixture["expected"]["automatic"]).lower(), f"{fixture['id']}: automatic mismatch")
+
+    for fixture, observed in zip(
+        repetition_histories,
+        batches["histories"][len(histories) :],
+        strict=True,
+    ):
+        require(observed["threefold"] == str(fixture["expected"]["claimable"]).lower(), f"{fixture['id']}: claimable mismatch")
+        require(observed["fivefold"] == "false", f"{fixture['id']}: fourfold became fivefold")
+        require(observed["auto_draw"] == str(fixture["expected"]["automatic"]).lower(), f"{fixture['id']}: automatic mismatch")
 
     positions_by_fen = {
         fixture["fen"]: batches["positions"][index]
@@ -199,7 +241,9 @@ def main() -> int:
     probe_sha256 = hashlib.sha256(probe_source.read_bytes()).hexdigest()
     print(
         f"scalachess {commit}: verified {len(positions)} positions, {len(histories)} histories, "
-        f"and {len(document['move_rejection_fixtures'])} rejected moves; probe sha256 {probe_sha256}"
+        f"and {len(document['move_rejection_fixtures'])} rejected moves, plus "
+        f"{len(repetition_positions)} repetition position and {len(repetition_histories)} repetition history boundary; "
+        f"probe sha256 {probe_sha256}"
     )
     return 0
 
