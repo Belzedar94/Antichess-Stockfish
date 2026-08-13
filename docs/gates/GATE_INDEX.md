@@ -13,7 +13,7 @@ append-only; a gate transition adds a new receipt or addendum.
 | P1 | Primary research and authority dossier | PASS | Pinned Lichess/scalachess/lila sources and explicit negative profiles |
 | P2 | Executable dialect, source, reference, referee, evaluator, distribution | IN_PROGRESS | Core fixture contract and FEN policy frozen; deterministic claim policy and exact referee remain open |
 | P3 | Pristine reproducible build and UCI surface | IN_PROGRESS | First clean release build and network-independent smoke pass; debug, dual-build reproducibility, and sanitizers remain |
-| P4 | Differential legal/result/notation correctness | FAIL_CURRENT_CANDIDATE | EP, automatic 100-halfmove, and automatic fifth-repetition boundaries repaired: 269/273 checks pass; four frozen material assertions and claim-search semantics remain |
+| P4 | Differential legal/result/notation correctness | FAIL_CURRENT_CANDIDATE | EP, 100-halfmove, fifth-repetition, qsearch no-moves, and claim-search boundaries repaired: 324/328 checks pass; four frozen material assertions remain |
 | P5 | Evaluator and legacy-network boundary | PENDING | Classical baseline plus isolated positive/negative loader receipt |
 | P6 | Sanitizers, deterministic bench, CI, baseline manifest/tag | PENDING | No unresolved correctness or asset dependency |
 | P7 | Search-hypothesis readiness | BLOCKED_BY_P6 | One hypothesis per branch and preregistered local experiment |
