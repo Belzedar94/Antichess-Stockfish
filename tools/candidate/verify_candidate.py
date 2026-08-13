@@ -171,6 +171,78 @@ def score_rank(result: dict[str, Any]) -> int:
     return int(result["score"])
 
 
+def run_xboard_claim_case(engine: Path, fixture: dict[str, Any], timeout: float) -> str:
+    process = subprocess.Popen(
+        [str(engine)],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
+    )
+    lines: queue.Queue[str | None] = queue.Queue()
+
+    def read_output() -> None:
+        assert process.stdout is not None
+        for line in process.stdout:
+            lines.put(line.rstrip("\r\n"))
+        lines.put(None)
+
+    threading.Thread(target=read_output, daemon=True).start()
+
+    def command(value: str) -> None:
+        assert process.stdin is not None
+        process.stdin.write(value + "\n")
+        process.stdin.flush()
+
+    def wait_for(predicate: Any, label: str) -> list[str]:
+        output: list[str] = []
+        deadline = time.monotonic() + timeout
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RuntimeError(f"timeout waiting for XBoard {label}")
+            try:
+                line = lines.get(timeout=remaining)
+            except queue.Empty as exc:
+                raise RuntimeError(f"timeout waiting for XBoard {label}") from exc
+            if line is None:
+                raise RuntimeError(
+                    f"engine exited {process.poll()} while waiting for XBoard {label}:\n"
+                    + "\n".join(output[-100:])
+                )
+            output.append(line)
+            if predicate(line):
+                return output
+
+    try:
+        command("xboard")
+        command("protover 2")
+        wait_for(lambda line: line == "feature done=1", "feature handshake")
+        command("variant antichess")
+        command("force")
+        command(f"setboard {fixture['initial_fen']}")
+        for move in fixture["moves"]:
+            command(f"usermove {move}")
+        command(f"sd {fixture['depth']}")
+        command("go")
+        output = wait_for(
+            lambda line: line.startswith("move ") or line.startswith("1/2-1/2 "),
+            "claim or move",
+        )
+        return output[-1]
+    finally:
+        if process.poll() is None:
+            command("quit")
+            try:
+                process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                process.terminate()
+                process.wait(timeout=5)
+
+
 def uci_moves(engine: Path, fen: str, moves: list[str], timeout: float) -> list[str]:
     position = f"position fen {fen}"
     if moves:
@@ -297,6 +369,11 @@ def main() -> int:
         type=Path,
         default=Path("tests/antichess/fixtures/search-boundaries-v1.json"),
     )
+    parser.add_argument(
+        "--claim-protocol-fixtures",
+        type=Path,
+        default=Path("tests/antichess/fixtures/protocol-claim-boundaries-v1.json"),
+    )
     parser.add_argument("--timeout", type=float, default=20.0)
     args = parser.parse_args()
 
@@ -306,6 +383,7 @@ def main() -> int:
     parser_fixture_path = args.parser_fixtures.resolve()
     repetition_fixture_path = args.repetition_fixtures.resolve()
     search_fixture_path = args.search_fixtures.resolve()
+    claim_protocol_fixture_path = args.claim_protocol_fixtures.resolve()
     for path in (
         engine,
         pyffish_dir,
@@ -313,6 +391,7 @@ def main() -> int:
         parser_fixture_path,
         repetition_fixture_path,
         search_fixture_path,
+        claim_protocol_fixture_path,
     ):
         if not path.exists():
             raise RuntimeError(f"required path does not exist: {path}")
@@ -322,6 +401,9 @@ def main() -> int:
     parser_document = json.loads(parser_fixture_path.read_text(encoding="utf-8"))
     repetition_document = json.loads(repetition_fixture_path.read_text(encoding="utf-8"))
     search_document = json.loads(search_fixture_path.read_text(encoding="utf-8"))
+    claim_protocol_document = json.loads(
+        claim_protocol_fixture_path.read_text(encoding="utf-8")
+    )
     check = Verification()
 
     uci = run_uci(engine, ["uci"], args.timeout)
@@ -499,6 +581,13 @@ def main() -> int:
 
     with UciSession(engine, args.timeout) as session:
         for fixture in search_document["cases"]:
+            prefix: list[str] = []
+            for move in fixture["moves"]:
+                check.true(
+                    move in sf.legal_moves("antichess", fixture["initial_fen"], prefix),
+                    f"{fixture['id']} legal history move {move}",
+                )
+                prefix.append(move)
             session.clear()
             result = session.search(fixture["initial_fen"], fixture["moves"], fixture["depth"])
             expected = fixture["expected"]
@@ -514,6 +603,13 @@ def main() -> int:
                 )
 
         for fixture in search_document["tt_isolation_cases"]:
+            prefix = []
+            for move in fixture["claim_moves"]:
+                check.true(
+                    move in sf.legal_moves("antichess", fixture["initial_fen"], prefix),
+                    f"{fixture['id']} legal history move {move}",
+                )
+                prefix.append(move)
             session.clear()
             claim = session.search(
                 fixture["initial_fen"],
@@ -532,6 +628,20 @@ def main() -> int:
                 (fresh_raw["score_type"], fresh_raw["score"]),
                 f"{fixture['id']} no claim-history TT score leak",
             )
+
+    for fixture in claim_protocol_document["cases"]:
+        prefix = []
+        for move in fixture["moves"]:
+            check.true(
+                move in sf.legal_moves("antichess", fixture["initial_fen"], prefix),
+                f"{fixture['id']} legal XBoard history move {move}",
+            )
+            prefix.append(move)
+        check.equal(
+            run_xboard_claim_case(engine, fixture, args.timeout),
+            fixture["expected"]["line"],
+            f"{fixture['id']} XBoard claim policy",
+        )
 
     module_path = Path(sf.__file__).resolve()
     print(f"engine_sha256={sha256(engine)}")

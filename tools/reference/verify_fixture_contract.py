@@ -218,6 +218,23 @@ def validate_search_boundaries(document: dict[str, Any]) -> tuple[int, int]:
     return len(cases), len(isolation_cases)
 
 
+def validate_claim_protocol_boundaries(document: dict[str, Any]) -> int:
+    require(document["fixture_version"] == 1, "unsupported claim protocol fixture version")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong claim protocol profile")
+    require(document["scope"] == "CLAIM_PROTOCOL_POLICY", "wrong claim protocol scope")
+    cases = document.get("cases")
+    require(isinstance(cases, list) and cases, "empty claim protocol cases")
+    ids = [case["id"] for case in cases]
+    require(len(ids) == len(set(ids)), "duplicate claim protocol fixture ID")
+    actions = {case["expected"]["action"] for case in cases}
+    require(actions == {"claim", "move"}, "claim protocol fixtures need claim and move actions")
+    for case in cases:
+        require(case["moves"], f"{case['id']}: no repetition history")
+        require(case["depth"] > 0, f"{case['id']}: non-positive protocol depth")
+        require(case["expected"]["line"], f"{case['id']}: empty protocol line")
+    return len(cases)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -241,6 +258,11 @@ def main() -> int:
         default="tests/antichess/fixtures/search-boundaries-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--claim-protocol-fixtures",
+        default="tests/antichess/fixtures/protocol-claim-boundaries-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
@@ -250,13 +272,17 @@ def main() -> int:
     repetition_counts = validate_repetition_boundaries(repetition_document)
     search_document = json.loads(args.search_fixtures.read_text(encoding="utf-8"))
     search_counts = validate_search_boundaries(search_document)
+    claim_protocol_document = json.loads(
+        args.claim_protocol_fixtures.read_text(encoding="utf-8")
+    )
+    claim_protocol_count = validate_claim_protocol_boundaries(claim_protocol_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
         f"{counts[3]} core parser cases, {parser_count} boundary parser cases, "
         f"{counts[4]} service results, {repetition_counts[0]} repetition position cases, "
         f"{repetition_counts[1]} repetition history cases, {search_counts[0]} search cases, "
-        f"{search_counts[1]} TT isolation cases"
+        f"{search_counts[1]} TT isolation cases, {claim_protocol_count} claim protocol cases"
     )
     return 0
 

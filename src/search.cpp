@@ -190,16 +190,24 @@ void MainThread::search() {
 
   Eval::NNUE::verify();
 
+  bool exactAntichess = rootPos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1;
   Value automaticResult = VALUE_NONE;
   bool automaticEnd = rootPos.is_automatic_game_end(automaticResult, !rootMoves.empty());
-  if (rootMoves.empty() || automaticEnd || (CurrentProtocol == XBOARD && rootPos.is_optional_game_end()))
+  bool optionalProtocolEnd =    !exactAntichess
+                             && CurrentProtocol == XBOARD
+                             && rootPos.is_optional_game_end();
+  if (rootMoves.empty() || automaticEnd || optionalProtocolEnd)
   {
       rootMoves.emplace_back(MOVE_NONE);
       Value variantResult;
-      Value result =  automaticEnd                       ? automaticResult
-                    : rootPos.is_game_end(variantResult) ? variantResult
-                    : rootPos.checkers()                 ? rootPos.checkmate_value()
-                                                         : rootPos.stalemate_value();
+      Value result = automaticEnd ? automaticResult
+                   : exactAntichess
+                   ? (  rootPos.is_variant_game_end(variantResult) ? variantResult
+                      : rootPos.checkers()                          ? rootPos.checkmate_value()
+                                                                    : rootPos.stalemate_value())
+                   : rootPos.is_game_end(variantResult) ? variantResult
+                   : rootPos.checkers()                 ? rootPos.checkmate_value()
+                                                        : rootPos.stalemate_value();
       if (CurrentProtocol == XBOARD)
       {
           // rotate MOVE_NONE to front (for optional game end)
@@ -266,6 +274,15 @@ void MainThread::search() {
 
   if (CurrentProtocol == XBOARD)
   {
+      if (   exactAntichess
+          && rootPos.is_claimable_threefold_draw()
+          && bestThread->rootMoves[0].score == VALUE_DRAW)
+      {
+          if (!ponder)
+              sync_cout << "1/2-1/2 {Draw by repetition}" << sync_endl;
+          return;
+      }
+
       Move bestMove = bestThread->rootMoves[0].pv[0];
       // Wait for virtual drop to become real
       if (rootPos.two_boards() && rootPos.virtual_drop(bestMove))
@@ -661,10 +678,15 @@ namespace {
     constexpr bool PvNode = nodeType != NonPV;
     constexpr bool rootNode = nodeType == Root;
     const Depth maxNextDepth = rootNode ? depth : depth + 1;
+    const bool exactAntichess = pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1;
+    // The board-only TT key does not encode the reversible repetition history.
+    const bool historySensitive = exactAntichess && pos.rule50_count() > 0;
+    const bool claimableDraw = exactAntichess && pos.is_claimable_threefold_draw();
 
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
-    if (   !rootNode
+    if (   !exactAntichess
+        && !rootNode
         && pos.rule50_count() >= 3
         && alpha < VALUE_DRAW
         && pos.has_game_cycle(ss->ply))
@@ -689,7 +711,7 @@ namespace {
 
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
+    Move ttMove, move, excludedMove, bestMove, claimFallback;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, probCutBeta;
     bool givesCheck, improving, didLMR, priorCapture;
@@ -706,6 +728,7 @@ namespace {
     moveCount          = captureCount = quietCount = ss->moveCount = 0;
     bestValue          = -VALUE_INFINITE;
     maxValue           = VALUE_INFINITE;
+    claimFallback      = MOVE_NONE;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -718,29 +741,39 @@ namespace {
     if (!rootNode)
     {
       Value variantResult;
-        if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1)
+        if (exactAntichess)
         {
             if (pos.is_variant_game_end(variantResult, ss->ply))
                 return variantResult;
-            if (pos.is_automatic_draw())
+            if (pos.is_automatic_draw() || claimableDraw)
             {
                 bool hasLegalMoves = MoveList<LEGAL>(pos).size();
                 if (!hasLegalMoves)
                     return pos.stalemate_value(ss->ply);
-                if (pos.is_automatic_game_end(variantResult, hasLegalMoves, ss->ply))
+                if (   pos.is_automatic_draw()
+                    && pos.is_automatic_game_end(variantResult, hasLegalMoves, ss->ply))
                     return variantResult;
             }
-            if (pos.is_optional_game_end(variantResult, ss->ply))
-                return variantResult;
         }
         else if (pos.is_game_end(variantResult, ss->ply))
             return variantResult;
 
+        if (claimableDraw)
+        {
+            if (VALUE_DRAW >= beta)
+                return VALUE_DRAW;
+            bestValue = VALUE_DRAW;
+            alpha = std::max(alpha, VALUE_DRAW);
+        }
+
         // Step 2. Check for aborted search and immediate draw
-        if (   Threads.stop.load(std::memory_order_relaxed)
-            || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos)
-                                                        : value_draw(pos.this_thread());
+        if (Threads.stop.load(std::memory_order_relaxed))
+            return value_draw(pos.this_thread());
+        if (ss->ply >= MAX_PLY)
+        {
+            Value maxPlyValue = !ss->inCheck ? evaluate(pos) : value_draw(pos.this_thread());
+            return claimableDraw ? std::max(VALUE_DRAW, maxPlyValue) : maxPlyValue;
+        }
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -752,6 +785,14 @@ namespace {
         beta = std::min(mate_in(ss->ply+1), beta);
         if (alpha >= beta)
             return alpha;
+    }
+
+    if (rootNode && claimableDraw)
+    {
+        if (VALUE_DRAW >= beta)
+            return VALUE_DRAW;
+        bestValue = VALUE_DRAW;
+        alpha = std::max(alpha, VALUE_DRAW);
     }
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
@@ -776,7 +817,9 @@ namespace {
     excludedMove = ss->excludedMove;
     posKey = excludedMove == MOVE_NONE ? pos.key() : pos.key() ^ make_key(excludedMove);
     tte = TT.probe(posKey, ss->ttHit);
-    ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
+    ttValue = ss->ttHit && !historySensitive
+            ? value_from_tt(tte->value(), ss->ply, pos.rule50_count())
+            : VALUE_NONE;
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ss->ttHit    ? tte->move() : MOVE_NONE;
     if (!excludedMove)
@@ -921,7 +964,8 @@ namespace {
             ss->staticEval = eval = -(ss-1)->staticEval;
 
         // Save static evaluation into transposition table
-        tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
+        if (!historySensitive)
+            tte->save(posKey, VALUE_NONE, ss->ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
 
     // Use static evaluation difference to improve quiet move ordering
@@ -1056,9 +1100,10 @@ namespace {
                 if (value >= probCutBeta)
                 {
                     // if transposition table doesn't have equal or more deep info write probCut data into it
-                    if ( !(ss->ttHit
-                       && tte->depth() >= depth - 3
-                       && ttValue != VALUE_NONE))
+                    if (   !historySensitive
+                        && !(ss->ttHit
+                          && tte->depth() >= depth - 3
+                          && ttValue != VALUE_NONE))
                         tte->save(posKey, value_to_tt(value, ss->ply), ttPv,
                             BOUND_LOWER,
                             depth - 3, move, ss->staticEval);
@@ -1141,6 +1186,9 @@ moves_loop: // When in check, search starts from here
           continue;
 
       ss->moveCount = ++moveCount;
+
+      if (rootNode && claimableDraw && claimFallback == MOVE_NONE)
+          claimFallback = move;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000 && is_uci_dialect(CurrentProtocol))
           sync_cout << "info depth " << depth
@@ -1493,6 +1541,16 @@ moves_loop: // When in check, search starts from here
                     ss->inCheck  ? pos.checkmate_value(ss->ply)
                                  : pos.stalemate_value(ss->ply);
 
+    // If the virtual claim remains best at root, attach its draw score to a legal UCI fallback.
+    else if (rootNode && claimableDraw && !bestMove)
+    {
+        assert(claimFallback != MOVE_NONE);
+        RootMove& rm = *std::find(thisThread->rootMoves.begin(),
+                                  thisThread->rootMoves.end(), claimFallback);
+        rm.score = VALUE_DRAW;
+        rm.selDepth = thisThread->selDepth;
+    }
+
     // If there is a move which produces search value greater than alpha we update stats of searched moves
     else if (bestMove)
         update_all_stats(pos, ss, bestMove, bestValue, beta, prevSq,
@@ -1516,7 +1574,9 @@ moves_loop: // When in check, search starts from here
         ss->ttPv = ss->ttPv && (ss+1)->ttPv;
 
     // Write gathered information in transposition table
-    if (!excludedMove && !(rootNode && thisThread->pvIdx))
+    if (   !historySensitive
+        && !excludedMove
+        && !(rootNode && thisThread->pvIdx))
         tte->save(posKey, value_to_tt(bestValue, ss->ply), ss->ttPv,
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
@@ -1535,6 +1595,10 @@ moves_loop: // When in check, search starts from here
 
     static_assert(nodeType != Root);
     constexpr bool PvNode = nodeType == PV;
+    const bool exactAntichess = pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1;
+    // Keep qsearch on the same history-sensitive TT boundary as regular search.
+    const bool historySensitive = exactAntichess && pos.rule50_count() > 0;
+    const bool claimableDraw = exactAntichess && pos.is_claimable_threefold_draw();
 
     assert(alpha >= -VALUE_INFINITE && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -1565,7 +1629,7 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     Value gameResult;
-    if (pos.rule_profile() == RuleProfile::LICHESS_ANTICHESS_V1)
+    if (exactAntichess)
     {
         if (pos.is_variant_game_end(gameResult, ss->ply))
             return gameResult;
@@ -1575,19 +1639,26 @@ moves_loop: // When in check, search starts from here
         if (   pos.is_automatic_draw()
             && pos.is_automatic_game_end(gameResult, hasLegalMoves, ss->ply))
             return gameResult;
-        if (pos.is_optional_game_end(gameResult, ss->ply))
-            return gameResult;
     }
     else if (pos.is_game_end(gameResult, ss->ply))
         return gameResult;
 
     // Check for maximum ply reached
     if (ss->ply >= MAX_PLY)
-        return !ss->inCheck ? evaluate(pos) : VALUE_DRAW;
+    {
+        Value maxPlyValue = !ss->inCheck ? evaluate(pos) : VALUE_DRAW;
+        return claimableDraw ? std::max(VALUE_DRAW, maxPlyValue) : maxPlyValue;
+    }
 
     // Safeguard against too deep recursions in quiescence search
     if (depth < DEPTH_QS_MAX && !ss->inCheck)
-        return evaluate(pos);
+    {
+        Value deepValue = evaluate(pos);
+        return claimableDraw ? std::max(VALUE_DRAW, deepValue) : deepValue;
+    }
+
+    if (claimableDraw && VALUE_DRAW >= beta)
+        return VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1599,7 +1670,9 @@ moves_loop: // When in check, search starts from here
     // Transposition table lookup
     posKey = pos.key();
     tte = TT.probe(posKey, ss->ttHit);
-    ttValue = ss->ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
+    ttValue = ss->ttHit && !historySensitive
+            ? value_from_tt(tte->value(), ss->ply, pos.rule50_count())
+            : VALUE_NONE;
     ttMove = ss->ttHit ? tte->move() : MOVE_NONE;
     pvHit = ss->ttHit && tte->is_pv();
 
@@ -1615,7 +1688,8 @@ moves_loop: // When in check, search starts from here
     if (ss->inCheck)
     {
         ss->staticEval = VALUE_NONE;
-        bestValue = futilityBase = -VALUE_INFINITE;
+        bestValue = claimableDraw ? VALUE_DRAW : -VALUE_INFINITE;
+        futilityBase = -VALUE_INFINITE;
     }
     else
     {
@@ -1637,11 +1711,14 @@ moves_loop: // When in check, search starts from here
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
                                              : -(ss-1)->staticEval;
 
+        if (claimableDraw)
+            bestValue = std::max(bestValue, VALUE_DRAW);
+
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)
         {
             // Save gathered info in transposition table
-            if (!ss->ttHit)
+            if (!historySensitive && !ss->ttHit)
                 tte->save(posKey, value_to_tt(bestValue, ss->ply), false, BOUND_LOWER,
                           DEPTH_NONE, MOVE_NONE, ss->staticEval);
 
@@ -1771,10 +1848,11 @@ moves_loop: // When in check, search starts from here
     }
 
     // Save gathered info in transposition table
-    tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit,
-              bestValue >= beta ? BOUND_LOWER :
-              PvNode && bestValue > oldAlpha  ? BOUND_EXACT : BOUND_UPPER,
-              ttDepth, bestMove, ss->staticEval);
+    if (!historySensitive)
+        tte->save(posKey, value_to_tt(bestValue, ss->ply), pvHit,
+                  bestValue >= beta ? BOUND_LOWER :
+                  PvNode && bestValue > oldAlpha  ? BOUND_EXACT : BOUND_UPPER,
+                  ttDepth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

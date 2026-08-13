@@ -58,6 +58,21 @@ but must continue looking for a win and must not store a history-dependent
 claim as an exact transposition-table result. Protocol and referee APIs expose
 claimable and automatic outcomes separately.
 
+For the exact profile, the virtual option is a literal draw floor in both
+regular and quiescence search. A decisive no-legal-move result is checked first.
+If every continuation scores below the floor, UCI reports the draw with a legal
+fallback move because UCI has no claim command; XBoard emits the draw claim and
+does not play the fallback. A continuation that scores above the floor remains
+the principal variation.
+
+The existing board-only TT key cannot encode the reversible repetition
+history. Until a separately verified repetition-context key exists, exact
+Antichess suppresses TT value use and value writes whenever `rule50_count()` is
+nonzero. Board-local move ordering and static evaluation may still be read.
+After a capture or pawn move resets the reversible segment, ordinary TT value
+use resumes. The generic upcoming-cycle shortcut is not used by the exact
+profile because it is not the pinned current-position claim predicate.
+
 Bindings will add an explicit automatic-outcome API. Existing
 `is_immediate_game_end` keeps its move-generation-safe board-terminal meaning;
 tests will migrate to the explicit API instead of creating a compatibility

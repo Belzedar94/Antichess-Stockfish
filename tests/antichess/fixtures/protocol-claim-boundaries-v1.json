@@ -1,0 +1,45 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "scope": "CLAIM_PROTOCOL_POLICY",
+  "cases": [
+    {
+      "id": "xboard_claims_when_virtual_draw_is_best",
+      "initial_fen": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+      "moves": [
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1",
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1"
+      ],
+      "depth": 3,
+      "expected": {
+        "action": "claim",
+        "line": "1/2-1/2 {Draw by repetition}"
+      }
+    },
+    {
+      "id": "xboard_plays_forced_win_instead_of_claiming",
+      "initial_fen": "7r/8/8/8/8/8/8/R7 w - - 0 1",
+      "moves": [
+        "a1a2",
+        "h8h7",
+        "a2a1",
+        "h7h8",
+        "a1a2",
+        "h8h7",
+        "a2a1",
+        "h7h8"
+      ],
+      "depth": 3,
+      "expected": {
+        "action": "move",
+        "line": "move a1h1"
+      }
+    }
+  ]
+}
