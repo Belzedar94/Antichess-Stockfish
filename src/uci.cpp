@@ -157,7 +157,7 @@ void UCIEngine::loop() {
         else if (token == "bench")
             bench(is);
         else if (token == BenchmarkCommand)
-            benchmark(is);
+            print_info_string("speedtest is unavailable before the Antichess P7 search gate");
         else if (token == "d")
             sync_cout << engine.visualize() << sync_endl;
         else if (token == "antichess-info")
@@ -170,12 +170,11 @@ void UCIEngine::loop() {
             sync_cout << "info string No Antichess network is loaded" << sync_endl;
         else if (token == "--help" || token == "help" || token == "--license" || token == "license")
             sync_cout
-              << "\nStockfish is a powerful chess engine for playing and analyzing."
+              << "\nAntichess-Stockfish implements the LICHESS_ANTICHESS_V1 rules profile."
                  "\nIt is released as free software licensed under the GNU GPLv3 License."
-                 "\nStockfish is normally used with a graphical user interface (GUI) and implements"
+                 "\nIt is normally used with a graphical user interface (GUI) and implements"
                  "\nthe Universal Chess Interface (UCI) protocol to communicate with a GUI, an API, etc."
-                 "\nFor any further information, visit https://github.com/official-stockfish/Stockfish#readme"
-                 "\nor read the corresponding README.md and Copying.txt files distributed along with this program.\n"
+                 "\nRead README.md, the rules contract, and Copying.txt distributed with this program.\n"
               << sync_endl;
         else if (!token.empty() && token[0] != '#')
             sync_cout << "Unknown command: '" << cmd << "'. Type help for more information."
@@ -246,17 +245,67 @@ void UCIEngine::bench(std::istream& args) {
     u64         num, nodes = 0, cnt = 1;
     u64         nodesSearched = 0;
 
+    const std::vector<std::string> arguments{std::istream_iterator<std::string>{args},
+                                             std::istream_iterator<std::string>{}};
+    if (arguments.size() > 5)
+        terminate_on_critical_error(
+          "Antichess bench usage: bench [1] [1] [depth] [default] [depth]");
+
+    const auto parsePositive = [](const std::string& value, int& output) {
+        std::istringstream parser(value);
+        parser >> output;
+        return parser && parser.eof() && output > 0;
+    };
+
+    int hash = 1, threads = 1, depth = 2;
+    if ((arguments.size() > 0 && !parsePositive(arguments[0], hash))
+        || (arguments.size() > 1 && !parsePositive(arguments[1], threads))
+        || (arguments.size() > 2 && !parsePositive(arguments[2], depth)) || hash != 1
+        || threads != 1 || depth > 8 || (arguments.size() > 3 && arguments[3] != "default")
+        || (arguments.size() > 4 && arguments[4] != "depth"))
+        terminate_on_critical_error(
+          "Antichess bench accepts only: bench 1 1 <depth 1..8> default depth");
+
+    static const std::vector<std::string> positions = {
+      StartFEN,
+      "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1",
+      "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "K3K3/8/8/8/8/8/8/7k w - - 0 1",
+      "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+      "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3",
+      "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
+      "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1",
+      "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1",
+      "8/p7/8/P7/8/8/8/8 w - - 0 1",
+    };
+
+    std::vector<std::string> list{"ucinewgame"};
+    for (const std::string& position : positions)
+    {
+        list.push_back("position fen " + position);
+        list.push_back("go depth " + std::to_string(depth));
+    }
+
+    const bool previousLegacy = engine.get_options()["Antichess_Evaluator"] == "legacy-v1";
+    {
+        std::istringstream neutral("name Antichess_Evaluator value engineering-neutral");
+        setoption(neutral);
+    }
+
+    sync_cout << "info string Antichess bench profile=LICHESS_ANTICHESS_V1"
+              << " evaluator=engineering-neutral depth=" << depth
+              << " positions=" << positions.size() << sync_endl;
+
     engine.set_on_update_full([&](const auto& i) {
         nodesSearched = i.nodes;
         on_update_full(i, false);
     });
 
-    std::vector<std::string> list = Benchmark::setup_bench(engine.fen(), args);
-
     num = count_if(list.begin(), list.end(),
                    [](const std::string& s) { return s.find("go ") == 0 || s.find("eval") == 0; });
-
-    TimePoint elapsed = now();
 
     for (const auto& cmd : list)
     {
@@ -290,23 +339,20 @@ void UCIEngine::bench(std::istream& args) {
         else if (token == "position")
             position(is);
         else if (token == "ucinewgame")
-        {
             engine.search_clear();  // search_clear may take a while
-            elapsed = now();
-        }
     }
 
-    elapsed = now() - elapsed + 1;  // Ensure positivity to avoid a 'divide by zero'
-
-    dbg_print();
-
-    std::cerr << "\n==========================="    //
-              << "\nTotal time (ms) : " << elapsed  //
-              << "\nNodes searched  : " << nodes    //
-              << "\nNodes/second    : " << 1000 * nodes / elapsed << std::endl;
+    std::cerr << "\n==========================="
+              << "\nTiming excluded : correctness digest only"
+              << "\nNodes searched  : " << nodes << std::endl;
 
     // reset callback, to not capture a dangling reference to nodesSearched
     engine.set_on_update_full([](const auto& i) { on_update_full(i, false); });
+
+    std::istringstream restore("name Antichess_Evaluator value "
+                               + std::string(previousLegacy ? "legacy-v1"
+                                                            : "engineering-neutral"));
+    setoption(restore);
 }
 
 void UCIEngine::benchmark(std::istream& args) {

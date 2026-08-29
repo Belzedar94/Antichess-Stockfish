@@ -130,3 +130,18 @@
   mapping. Production OpenBench remains unknown until its actual client and
   referee path pass the same evidence.
 - **Gate:** P4, P7, P14, and P16.
+
+## INC-BENCH-001 — The inherited Stockfish bench was not an Antichess digest
+
+- **Symptom:** the official 51-position bench requested the absent
+  `UCI_Chess960` option and then terminated on orthodox move `g2g4`, which was
+  illegal because a mandatory Antichess capture existed.
+- **False inference:** a deterministic upstream Stockfish node count was a
+  valid digest for the derived Antichess candidate.
+- **Cause:** the inherited positions, move sequences, options, and workload
+  encode orthodox chess assumptions.
+- **Prevention:** replace the inherited command with the frozen
+  `ANTICHESS_BENCH_V1` rules corpus, verify exact search records twice, ignore
+  timing fields, reject incompatible arguments, and keep `speedtest` disabled
+  until a P7 workload is preregistered.
+- **Gate:** P3, P6, P7, and P14.

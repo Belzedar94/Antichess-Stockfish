@@ -52,6 +52,16 @@ The UCI surface omits Ponder, MultiPV, Skill Level, Chess960, Syzygy, and WDL
 options because none has an Antichess fixture-backed implementation. The exact
 public variant mapping is the single combo value `antichess`.
 
+The inherited orthodox `bench` and `speedtest` contracts are not valid for
+this profile. `bench` is replaced by the frozen `ANTICHESS_BENCH_V1` corpus:
+13 rules-focused positions, one thread, one-megabyte Hash, depth one through
+eight, and the engineering-neutral evaluator. The depth-two reference is 737
+nodes with canonical record digest
+`d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904`.
+The verifier ignores elapsed time and NPS, repeats the exact search records,
+checks evaluator restoration, and rejects incompatible parameters. `speedtest`
+fails closed until the P7 search gate defines an Antichess workload.
+
 ## Consequences
 
 - A correctness build, pair smoke, or terminal mate score is not Elo evidence.

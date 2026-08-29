@@ -14,7 +14,7 @@ append-only; a gate transition requires a new receipt or addendum.
 | P0 | Root, owner source-base decision, repository, worktrees, remotes, namespaces, resource boundaries | PASS | Official pin, clean branch transition, rejected-line archive, D0 receipt |
 | P1 | Primary research and authority dossier | PASS | Pinned Lichess/scalachess/lila sources, independent chessops pin, negative profiles |
 | P2 | Executable dialect, source architecture, reference, referee, evaluator, distribution | PASS | Frozen primary contract, patched `AC_REFEREE_V1`, exact legacy compatibility, and a fail-closed no-redistribution boundary for the unresolved 2024 network license |
-| P3 | Candidate clean reproducible build and UCI surface | IN_PROGRESS | Dedicated candidate and honest UCI surface pass debug fixtures; dual clean reproducibility is not yet certified |
+| P3 | Candidate clean reproducible build and UCI surface | IN_PROGRESS | Dedicated candidate, honest UCI surface, and the repeated Antichess-only bench digest pass locally; dual clean reproducibility is not yet certified |
 | P4 | Differential legal/result/notation correctness | BLOCKED_BY_P3 | Candidate, pinned primary, declared-gap independent reference, and `AC_REFEREE_V1` agree; the two-game clocked PGN replay passes, while clean-build identity remains open |
 | P5 | Evaluator and legacy-network boundary | BLOCKED_BY_P4 | Scalar full-refresh legacy parity, all material buckets, and transactional fail-closed loading pass locally; redistribution/default and later V2 incremental/SIMD gates remain forbidden |
 | P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | BLOCKED_BY_P5 | No unresolved correctness or asset dependency |

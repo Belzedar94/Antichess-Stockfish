@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -351,6 +352,32 @@ def validate_notation(document: dict[str, Any]) -> int:
     return len(cases)
 
 
+def validate_bench(document: dict[str, Any]) -> int:
+    require(document["schema"] == "ANTICHESS_BENCH_V1", "wrong bench schema")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong bench profile")
+    require(document["command"] == "bench 1 1 2 default depth", "wrong bench command")
+    records = document.get("records")
+    require(isinstance(records, list) and records, "empty bench records")
+    require(len(records) == document["position_count"] == 13, "bench position count drift")
+    require([record["index"] for record in records] == list(range(1, 14)), "bench index drift")
+    require(
+        sum(record["nodes"] for record in records) == document["total_nodes"] == 737,
+        "bench node total drift",
+    )
+    require(
+        all(record["score_type"] in {"cp", "mate"} for record in records),
+        "invalid bench score type",
+    )
+    require(
+        all(record["pv"] and record["bestmove"] for record in records),
+        "empty bench move record",
+    )
+    payload = json.dumps(records, sort_keys=True, separators=(",", ":")) + "\n"
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    require(digest == document["canonical_sha256"], "bench canonical digest drift")
+    return len(records)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -394,6 +421,11 @@ def main() -> int:
         default="tests/antichess/fixtures/notation-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--bench-fixtures",
+        default="tests/antichess/fixtures/bench-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
@@ -415,6 +447,8 @@ def main() -> int:
     legacy_evaluator_count = validate_legacy_evaluator(legacy_evaluator_document)
     notation_document = json.loads(args.notation_fixtures.read_text(encoding="utf-8"))
     notation_count = validate_notation(notation_document)
+    bench_document = json.loads(args.bench_fixtures.read_text(encoding="utf-8"))
+    bench_count = validate_bench(bench_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
@@ -423,7 +457,8 @@ def main() -> int:
         f"{repetition_counts[1]} repetition history cases, {material_count} material cases, "
         f"{search_counts[0]} search cases, "
         f"{search_counts[1]} TT isolation cases, {claim_protocol_count} claim protocol cases, "
-        f"{legacy_evaluator_count} legacy evaluator cases, {notation_count} notation cases"
+        f"{legacy_evaluator_count} legacy evaluator cases, {notation_count} notation cases, "
+        f"{bench_count} bench records"
     )
     return 0
 
