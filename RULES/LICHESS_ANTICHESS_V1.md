@@ -1,7 +1,7 @@
 # LICHESS_ANTICHESS_V1
 
-Status: **selected by the project owner; P2-P5 executable conformance passed
-for candidate `95e4efec466c696d477f217a2226a0fc1ef8f4ee`; P6 baseline pending**.
+Status: **selected by the project owner; P2-P6 executable conformance passed
+for engineering baseline `8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780`**.
 
 This document freezes the public rules identity of Antichess-Stockfish. It is
 derived from the pinned Lichess/scalachess implementation in
@@ -115,7 +115,9 @@ local deterministic runner policy as an immediate, result-blind claim with
 the `Draw by repetition` reason. This does not certify any OpenBench runner,
 whose exact mapping remains fail-closed.
 
-No strength work may begin before P6 passes.
+Strength work still requires a single preregistered P7 hypothesis, exact
+runner identities, and an exclusive resource lease. P6 alone is not strength
+authorization.
 
 ## Repetition identity
 

@@ -1,0 +1,152 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "addendum": 1,
+  "recorded_at_utc": "2026-08-29T19:49:09Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "evidence_class": "P6_ENGINEERING_BASELINE_NOT_STRENGTH",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-08-29T193031Z.json",
+    "sha256": "418db6a9f7a8869ec648ad4c0e6c8ab9cd949c0c021b281b19994bc4c3b5476d"
+  },
+  "gates": {
+    "P0": "PASS",
+    "P1": "PASS",
+    "P2": "PASS",
+    "P3": "PASS",
+    "P4": "PASS",
+    "P5": "PASS",
+    "P6": "PASS",
+    "P7": "IN_PROGRESS"
+  },
+  "superseding_candidate_identity": {
+    "reason": "The first official Linux build exposed a valid stack-usage defect in the transactional legacy loader.",
+    "candidate_commit": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "candidate_tree": "1baef0ec685b69aeca50e0dd73cd9a2a2fbce759",
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_is_ancestor": true,
+    "rejected_fairy_line_is_ancestor": false,
+    "correction_commit": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "correction": "Allocate the temporary fail-closed LegacyNetwork load candidate on the heap while preserving transactional replacement."
+  },
+  "preserved_failure": {
+    "push_run_id": 33271393747,
+    "pull_request_run_id": 33271415325,
+    "tested_head": "1aac834200c271c44ce3eeacee4f011cd3bd82ad",
+    "job_id": 99150375399,
+    "diagnostic": "legacy_network.cpp:78:27: error: stack usage is 143024 bytes [-Werror=stack-usage=]",
+    "classification": "VALID_LINUX_COMPILER_GUARD_FAILURE",
+    "false_classifications": [
+      "wrapper timeout",
+      "GitHub outage",
+      "sanitizer failure",
+      "rules failure"
+    ]
+  },
+  "post_fix_windows": {
+    "source_date_epoch": 1788032434,
+    "build_command": "make clean && make -j1 build ARCH=x86-64 COMP=mingw COMPCXX=/mingw64/bin/g++ debug=no",
+    "runs": 2,
+    "binary_bytes": 4231480,
+    "binary_sha256_run_1": "eb775dc4061900ed13d72888f6f38a7641749fcfcd15a3aae70f39d971864b98",
+    "binary_sha256_run_2": "eb775dc4061900ed13d72888f6f38a7641749fcfcd15a3aae70f39d971864b98",
+    "byte_identical": true,
+    "build_log_sha256_run_1": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59",
+    "build_log_sha256_run_2": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59",
+    "candidate_fixtures": "PASS: 41 state cases, 3 search cases, 950 checks",
+    "candidate_fixtures_log_sha256": "770e90f812358d592ac786ce97f92e9c042ffea4a4544d9ab6b7d5cad8a97f82",
+    "bench": "PASS: 2 identical runs, 13 positions, 737 nodes",
+    "bench_record_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904",
+    "bench_log_sha256": "1d94a615ecbf08c33bf6888b8c1c9237bae37f6a54f200562beccf297d36d90c",
+    "legacy_loader": "PASS: 1 positive, 7 rejected mutations, 1 transactional clear, 77 checks",
+    "legacy_loader_log_sha256": "3fe0a36de519da0cea27083eeb924cad69f5954b1e2117180232f3eb79f0f749",
+    "legacy_parity": "PASS: 58 exact scalar full-refresh values across all 8 buckets",
+    "legacy_parity_log_sha256": "dc62d3265c636c3fcc539599f1bbcb9acc5a7fca8bd6ad6db45786a1ac6c80da"
+  },
+  "post_fix_pair_smoke": {
+    "evidence_class": "P4_PAIR_SMOKE_NOT_STRENGTH",
+    "directory": ".local/evidence/AC_REFEREE_V1-pair-20260829T194355Z",
+    "candidate_sha256": "eb775dc4061900ed13d72888f6f38a7641749fcfcd15a3aae70f39d971864b98",
+    "games": 2,
+    "plies": 100,
+    "mandatory_capture_positions": 48,
+    "terminal_san_moves": 2,
+    "raw_sha256": "040c6ec09f247bc95d9880610ea2212122b97ead8a545bc35cdfc65c8a82630c",
+    "pgn_sha256": "1b28d54e23302b9b98a8b1d9d2cb40009d283aced17669eba674be131b3ba9d2",
+    "epd_sha256": "0824d7c8992ab770fe059166084aec372b74e43b0f45e1398c68fcdef7c9c9cb",
+    "launch_sha256": "8beabc14151dca98dbfa147501af1d0f49e1488440502ad65665c9afc0364887",
+    "result_sha256": "67d6d0779fd5f483fde7f3cb1a59bfa8720f525901ee186aef20dc6afe9a1177",
+    "pgn_audit_sha256": "be4bcd1a7de0e7c22c5e5ed68407290abfe33611ba7fe122928cebf853edd277",
+    "illegal_move_crash_disconnect_stall_timeloss": 0,
+    "elo_claim": false
+  },
+  "official_ci": {
+    "repository": "Belzedar94/Antichess-Stockfish",
+    "pull_request": "https://github.com/Belzedar94/Antichess-Stockfish/pull/2",
+    "pull_request_draft": false,
+    "workflow": "Antichess correctness",
+    "exact_head_push_run": {
+      "id": 33271491231,
+      "url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33271491231",
+      "head_sha": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+      "conclusion": "SUCCESS",
+      "reproducible_job_id": 99150637893,
+      "sanitizer_job_id": 99150637817
+    },
+    "pull_request_merge_run": {
+      "id": 33271492480,
+      "url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33271492480",
+      "head_sha": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+      "conclusion": "SUCCESS",
+      "reproducible_job_id": 99150641739,
+      "sanitizer_job_id": 99150641637
+    },
+    "runner_image": "ubuntu-24.04 version 20260823.283.1",
+    "toolchain": "Ubuntu g++ 13.3.0-6ubuntu2~24.04.1, GNU Make 4.3",
+    "asan_ubsan": "PASS",
+    "asan_ubsan_contracts": "41 state cases, 3 search cases, 950 checks; 2 identical Antichess bench runs",
+    "reproducible_binary_runs": 2,
+    "linux_binary_bytes": 671768,
+    "linux_binary_sha256": "f2841fc7355fde938e16dcc7e056cfeb49cfc0e72d185341791a34c32ce833e0",
+    "reproducible_job_log_sha256": "69140422829f76f1a03d137b5a1f6d4a1dc4b15ee4853f66e21fb35938189727",
+    "sanitizer_job_log_sha256": "30e619ed97584be47f896dd264e9ee06b67a67a123297cac8b01e5e8d9f3d455"
+  },
+  "downloaded_artifact": {
+    "id": 9720242667,
+    "name": "antichess-engineering-8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "archive_bytes": 584421,
+    "expires_at": "2026-09-05T19:41:47Z",
+    "downloaded": true,
+    "run_1_sha256": "f2841fc7355fde938e16dcc7e056cfeb49cfc0e72d185341791a34c32ce833e0",
+    "run_2_sha256": "f2841fc7355fde938e16dcc7e056cfeb49cfc0e72d185341791a34c32ce833e0",
+    "build_identity_sha256": "0d5ca731c661806fb831d048aa8220a827ed1d43f53bca250f3ce77656654e3c",
+    "sha256sums_sha256": "ed169236287f018b4b3e2d8e09b00e2ab750007822f5ed2feb3c466469207633",
+    "release_asset": false
+  },
+  "baseline": {
+    "manifest_path": "manifests/baselines/ANTICHESS_ENGINEERING_BASELINE_V1.json",
+    "manifest_sha256": "09c73927eec536950265d6bad8876431304e027dc391e8cbf65f839ea172de62",
+    "tag": "baseline/lichess-antichess-v1-8830a50f",
+    "tag_object": "fc278199a690410d76d8c42f6bb542ee8ff2b2ad",
+    "tag_target": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "remote_verified": true,
+    "stable_release_tag": false
+  },
+  "asset_boundary": {
+    "legacy_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "legacy_network_license": "UNRESOLVED_FOR_THIS_2024_ARTIFACT",
+    "legacy_network_bundled_or_embedded": false,
+    "legacy_network_default_or_alias": false,
+    "book": null,
+    "official_openbench_mapping": "UNKNOWN_FAIL_CLOSED"
+  },
+  "non_claims": [
+    "P6 is not Elo, strength, DATAGEN, NNUE V2, OpenBench, panel, release, or monitoring evidence.",
+    "The engineering baseline is not a strength champion.",
+    "The external legacy network remains forbidden from redistribution and from the Antichess_v1.nnue alias.",
+    "No production resource lease or OpenBench dialect mapping is implied."
+  ],
+  "next_safe_action": "Complete review, merge, and post-merge CI for pull request 2, then preregister one P7 search hypothesis without running timing or strength work until an exclusive host lease and exact runner mapping exist."
+}

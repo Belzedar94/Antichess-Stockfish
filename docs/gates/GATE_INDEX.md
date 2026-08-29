@@ -4,7 +4,7 @@ Allowed terminal states are `GO_NEXT_PHASE`, `BLOCKED_DISCOVERY`,
 `NO_VALID_BASELINE`, `REJECTED_ENGINEERING`, `REJECTED_MODEL`,
 `REJECTED_STRENGTH`, `REJECTED_RELEASE`, and `RELEASED_MONITORED`.
 
-Current project state: **`NO_VALID_BASELINE`**.
+Current project state: **`GO_NEXT_PHASE`**.
 
 This file is a human-readable index. Committed receipts are authoritative and
 append-only; a gate transition requires a new receipt or addendum.
@@ -17,8 +17,8 @@ append-only; a gate transition requires a new receipt or addendum.
 | P3 | Candidate clean reproducible build and UCI surface | PASS | Candidate `95e4efec4`: two clean builds are byte-identical, debug `-Werror` passes, and the Antichess-only bench repeats exactly |
 | P4 | Differential legal/result/notation correctness | PASS | Candidate, pinned primary, declared-gap independent reference, and `AC_REFEREE_V1` agree; exact-binary clocked pair and 100-ply PGN replay pass |
 | P5 | Evaluator and legacy-network boundary | PASS | Scalar full-refresh parity covers 58 exact values and all material buckets; loader fails closed transactionally; unresolved license forbids redistribution/default/alias |
-| P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | IN_PROGRESS | Local digest and build evidence pass; pinned Linux sanitizers, official CI, manifest, and engineering tag remain open |
-| P7 | Search-hypothesis readiness | BLOCKED_BY_P6 | One hypothesis per branch and preregistered local experiment |
+| P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | Exact-head and PR CI pass reproducible builds plus ASan/UBSan; downloaded artifact, complete manifest, addendum receipt, and immutable engineering tag are verified |
+| P7 | Search-hypothesis readiness | IN_PROGRESS | Complete baseline PR review/merge/post-merge CI, then freeze one hypothesis and exact local experiment identities before implementation |
 | P8 | Antichess DATAGEN schema and labels | BLOCKED_BY_P7 | Own magic/schema, physical records, golden perspective labels |
 | P9 | Producer/consumer handshake and G0 | BLOCKED_BY_P8 | Exact counts, framing, legality, results, recovery, quarantine |
 | P10 | Official public-build DATAGEN canary | BLOCKED_BY_P9 | Production path proves the exact versioned dialect contract |
@@ -31,13 +31,15 @@ append-only; a gate transition requires a new receipt or addendum.
 
 ## Current stop conditions
 
-- No search, evaluation tuning, NNUE, data generation, book, Elo, or campaign
-  work before P6.
+- P7 permits only one preregistered search hypothesis at a time. No timing,
+  strength, book, Elo, or campaign run may start without an exact comparator,
+  referee/runner, workload, stopping rule, and exclusive host lease.
+- No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.
 - No redistribution or release alias for the legacy network while its license
   and exact compatibility remain unresolved.
-- Local ASan/UBSan runtimes are unavailable; P6 requires a pinned Linux CI job
-  rather than a local sanitizer claim.
+- Local ASan/UBSan runtimes remain unavailable. The exact-head Linux CI pass is
+  the P6 sanitizer evidence and must not be generalized to untested targets.
 - No Fairy-Stockfish implementation commit or file may enter candidate
   ancestry.
