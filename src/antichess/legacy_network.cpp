@@ -14,6 +14,7 @@
 #include <cstring>
 #include <fstream>
 #include <limits>
+#include <memory>
 #include <type_traits>
 
 #include "../bitboard.h"
@@ -88,13 +89,13 @@ LegacyNetwork::LoadResult LegacyNetwork::load(const std::filesystem::path& path)
     const usize fileSize = usize(end);
     stream.seekg(0);
 
-    LegacyNetwork candidate;
-    std::string   error;
-    if (!candidate.read(stream, fileSize, error))
+    auto        candidate = std::make_unique<LegacyNetwork>();
+    std::string error;
+    if (!candidate->read(stream, fileSize, error))
         return {false, std::move(error)};
 
-    candidate.sourcePath = path;
-    *this                = std::move(candidate);
+    candidate->sourcePath = path;
+    *this                 = std::move(*candidate);
     return {true, "Loaded Antichess legacy-v1 network: " + path.u8string()};
 }
 

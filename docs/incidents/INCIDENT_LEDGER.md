@@ -159,3 +159,17 @@
   first failure classification. A corrected run must still reconstruct the
   patch from the base and verify every derived blob and behavior.
 - **Gate:** P4, P6, and P15.
+
+## INC-CI-001 — A transactional network load exceeded the Linux stack guard
+
+- **Symptom:** the first official Linux release build failed under `-Werror`
+  because `LegacyNetwork::load()` used 143,024 bytes of stack, above the
+  inherited 128,000-byte compiler guard.
+- **False inference:** a successful Windows build and loader test proved the
+  temporary load path was portable and safe.
+- **Cause:** the fail-closed transaction constructed all eight fixed layer
+  stacks in a local `LegacyNetwork` object before committing the load.
+- **Prevention:** keep the transaction but allocate its temporary candidate on
+  the heap; retain the Linux stack guard and repeat loader mutation, exact
+  evaluator parity, and clean-build evidence after the change.
+- **Gate:** P3, P5, P6, and P15.
