@@ -173,3 +173,33 @@
   the heap; retain the Linux stack guard and repeat loader mutation, exact
   evaluator parity, and clean-build evidence after the change.
 - **Gate:** P3, P5, P6, and P15.
+
+## INC-SEARCH-001 — A depth horizon discarded an available repetition claim
+
+- **Symptom:** from a seven-ply reversible history, the only searched move
+  created the third occurrence at depth zero. The exact baseline reported
+  `cp +241` for the parent even though the child could claim a draw; the
+  pinned legacy evaluator's child value was `-937`.
+- **False inference:** exercising repetition claims above the horizon with the
+  neutral evaluator proved that every claimable node had a zero-valued virtual
+  option.
+- **Cause:** the depth-zero return preceded construction of the claim option,
+  so a negative legacy leaf value could replace an immediately available draw.
+- **Prevention:** apply terminal and automatic-draw precedence first, evaluate
+  the leaf, then floor a claimable leaf at zero. Freeze a legacy-network
+  history fixture that reaches its third occurrence exactly at the horizon.
+- **Gate:** P4, P6, P7, P13, and P14.
+
+## INC-REVIEW-002 — Browser model-selector drift prevented the P7 review
+
+- **Symptom:** the dry run resolved the requested browser review and eight
+  attachments, but the live run failed before prompt submission because the
+  selector no longer exposed the requested `Pro` option.
+- **False inference:** a successful dry run or an acquired browser slot proved
+  that the requested review model was available.
+- **Cause:** the live product selector exposed a different model set than the
+  requested exact model mapping.
+- **Prevention:** preserve the failed session metadata and output, record that
+  no verdict exists, never substitute another model silently, and continue
+  only under an explicit owner waiver.
+- **Gate:** P7, P14, and P15.
