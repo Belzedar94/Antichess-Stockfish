@@ -50,6 +50,18 @@ namespace Stockfish {
 
 namespace NN = Eval::NNUE;
 
+namespace {
+
+constexpr Value antichess_claim_value(Value value, bool claimable) {
+    return claimable ? std::max(VALUE_DRAW, value) : value;
+}
+
+static_assert(antichess_claim_value(-1, true) == VALUE_DRAW);
+static_assert(antichess_claim_value(1, true) == 1);
+static_assert(antichess_claim_value(-1, false) == -1);
+
+}
+
 int MaxThreads = 1;
 
 // The default configuration will attempt to group L3 domains up to 32 threads.
@@ -165,7 +177,11 @@ void Engine::go(Search::LimitsType& limits) {
 
             const bool claimable = pos.antichess_threefold();
             if (remaining == 0)
-                return useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
+            {
+                const Value leaf =
+                  useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
+                return antichess_claim_value(leaf, claimable);
+            }
 
             Value best = claimable ? VALUE_DRAW : -VALUE_INFINITE;
             for (Move move : orderedMoves(pos))

@@ -143,5 +143,28 @@
       "bucket": 0,
       "expected_raw": -818
     }
+  ],
+  "claim_horizon_cases": [
+    {
+      "id": "third_occurrence_at_depth_zero_floors_negative_leaf",
+      "initial_fen": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+      "history_before_search": [
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1",
+        "g8f6",
+        "b1c3",
+        "f6g8"
+      ],
+      "depth": 1,
+      "searchmoves": ["c3b1"],
+      "expected_child_raw": -937,
+      "expected": {
+        "score_type": "cp",
+        "score": 0,
+        "bestmove": "c3b1"
+      }
+    }
   ]
 }

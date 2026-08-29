@@ -271,7 +271,7 @@ def validate_claim_protocol_boundaries(document: dict[str, Any]) -> int:
     return len(cases)
 
 
-def validate_legacy_evaluator(document: dict[str, Any]) -> int:
+def validate_legacy_evaluator(document: dict[str, Any]) -> tuple[int, int]:
     require(document["fixture_version"] == 1, "unsupported legacy evaluator fixture version")
     require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong legacy evaluator profile")
     network = document.get("network", {})
@@ -306,7 +306,24 @@ def validate_legacy_evaluator(document: dict[str, Any]) -> int:
         turns.add(case["fen"].split()[1])
     require(buckets == set(range(8)), f"legacy evaluator buckets incomplete: {sorted(buckets)}")
     require(turns == {"w", "b"}, "legacy evaluator lacks both side-to-move perspectives")
-    return len(cases)
+    claim_cases = document.get("claim_horizon_cases")
+    require(isinstance(claim_cases, list) and claim_cases, "empty legacy claim-horizon cases")
+    claim_ids = [case["id"] for case in claim_cases]
+    require(len(claim_ids) == len(set(claim_ids)), "duplicate legacy claim-horizon fixture ID")
+    require(
+        claim_ids == ["third_occurrence_at_depth_zero_floors_negative_leaf"],
+        "legacy claim-horizon fixture coverage drift",
+    )
+    for case in claim_cases:
+        require(len(case["initial_fen"].split()) == 6, f"{case['id']}: malformed initial FEN")
+        require(len(case["history_before_search"]) == 7, f"{case['id']}: wrong history length")
+        require(case["depth"] == 1, f"{case['id']}: claim must land exactly at depth zero")
+        require(case["searchmoves"] == ["c3b1"], f"{case['id']}: search move drift")
+        require(case["expected_child_raw"] < 0, f"{case['id']}: child value is not negative")
+        require(case["expected"]["score_type"] == "cp", f"{case['id']}: wrong score type")
+        require(case["expected"]["score"] == 0, f"{case['id']}: claim floor is not zero")
+        require(case["expected"]["bestmove"] == "c3b1", f"{case['id']}: bestmove drift")
+    return len(cases), len(claim_cases)
 
 
 def validate_notation(document: dict[str, Any]) -> int:
@@ -444,7 +461,7 @@ def main() -> int:
     legacy_evaluator_document = json.loads(
         args.legacy_evaluator_fixtures.read_text(encoding="utf-8")
     )
-    legacy_evaluator_count = validate_legacy_evaluator(legacy_evaluator_document)
+    legacy_evaluator_counts = validate_legacy_evaluator(legacy_evaluator_document)
     notation_document = json.loads(args.notation_fixtures.read_text(encoding="utf-8"))
     notation_count = validate_notation(notation_document)
     bench_document = json.loads(args.bench_fixtures.read_text(encoding="utf-8"))
@@ -457,7 +474,9 @@ def main() -> int:
         f"{repetition_counts[1]} repetition history cases, {material_count} material cases, "
         f"{search_counts[0]} search cases, "
         f"{search_counts[1]} TT isolation cases, {claim_protocol_count} claim protocol cases, "
-        f"{legacy_evaluator_count} legacy evaluator cases, {notation_count} notation cases, "
+        f"{legacy_evaluator_counts[0]} legacy evaluator cases, "
+        f"{legacy_evaluator_counts[1]} legacy claim-horizon cases, "
+        f"{notation_count} notation cases, "
         f"{bench_count} bench records"
     )
     return 0

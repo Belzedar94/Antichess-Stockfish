@@ -39,6 +39,12 @@ not the UCI engine, performs the result-blind claim. Automatic draws return a
 zero score with a deterministic legal fallback move when the protocol asks for
 one; board-terminal positions return `bestmove (none)`.
 
+The virtual claim also exists exactly at the depth horizon. Terminal and
+automatic-draw precedence are evaluated first; a depth-zero static value is
+then floored at zero when the current history is claimable. This ordering is
+covered with the exact external legacy network because a neutral zero
+evaluator cannot expose a missing floor.
+
 ## Protocol and resource boundary
 
 `go depth N` is certified for depths one through eight. A `go` command without
