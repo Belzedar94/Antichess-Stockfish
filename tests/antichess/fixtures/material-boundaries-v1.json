@@ -1,0 +1,234 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "scope": "MATERIAL_BOUNDARIES",
+  "authority": {
+    "repository": "https://github.com/lichess-org/scalachess",
+    "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+    "source": "test-kit/src/test/scala/AntichessVariantTest.scala"
+  },
+  "history_cases": [
+    {
+      "id": "single_opposite_bishops_capture_draw",
+      "family": "insufficient_material",
+      "initial_fen": "8/2b5/8/8/8/6Q1/4B3/8 b - - 0 1",
+      "moves": ["c7g3"],
+      "expected": {
+        "canonical_fen": "8/8/8/8/8/6b1/4B3/8 w - - 0 2",
+        "legal_moves": [
+          "e2a6",
+          "e2b5",
+          "e2c4",
+          "e2d1",
+          "e2d3",
+          "e2f1",
+          "e2f3",
+          "e2g4",
+          "e2h5"
+        ],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "promotion_to_opposite_bishop_draw",
+      "family": "insufficient_material",
+      "initial_fen": "8/6P1/8/8/1b6/8/8/5B2 w - - 0 1",
+      "moves": ["g7g8b"],
+      "expected": {
+        "canonical_fen": "6B1/8/8/8/1b6/8/8/5B2 b - - 0 1",
+        "legal_moves": [
+          "b4a3",
+          "b4a5",
+          "b4c3",
+          "b4c5",
+          "b4d2",
+          "b4d6",
+          "b4e1",
+          "b4e7",
+          "b4f8"
+        ],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "same_complex_bishops_not_draw",
+      "family": "insufficient_material",
+      "initial_fen": "7b/8/1p6/8/8/8/5B2/8 w - - 0 1",
+      "moves": ["f2b6"],
+      "expected": {
+        "canonical_fen": "7b/8/1B6/8/8/8/8/8 b - - 0 1",
+        "legal_moves": [
+          "h8a1",
+          "h8b2",
+          "h8c3",
+          "h8d4",
+          "h8e5",
+          "h8f6",
+          "h8g7"
+        ],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "blocked_pawns_opposite_bishops_draw",
+      "family": "insufficient_material",
+      "initial_fen": "8/6p1/4B1P1/4p3/4P3/8/2p5/8 b - - 1 28",
+      "moves": ["c2c1b"],
+      "expected": {
+        "canonical_fen": "8/6p1/4B1P1/4p3/4P3/8/8/2b5 w - - 0 29",
+        "legal_moves": [
+          "e6a2",
+          "e6b3",
+          "e6c4",
+          "e6c8",
+          "e6d5",
+          "e6d7",
+          "e6f5",
+          "e6f7",
+          "e6g4",
+          "e6g8",
+          "e6h3"
+        ],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "pawn_capture_breaks_blocked_draw",
+      "family": "insufficient_material",
+      "initial_fen": "8/6p1/1B4P1/4p3/4P3/8/3p4/8 b - - 0 1",
+      "moves": ["d2d1b"],
+      "expected": {
+        "canonical_fen": "8/6p1/1B4P1/4p3/4P3/8/8/3b4 w - - 0 2",
+        "legal_moves": [
+          "b6a5",
+          "b6a7",
+          "b6c5",
+          "b6c7",
+          "b6d4",
+          "b6d8",
+          "b6e3",
+          "b6f2",
+          "b6g1"
+        ],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "bishop_can_attack_pawn_not_draw",
+      "family": "insufficient_material",
+      "initial_fen": "5b2/1P4p1/4B1P1/4p3/4P3/8/8/8 w - - 0 1",
+      "moves": ["b7b8b"],
+      "expected": {
+        "canonical_fen": "1B3b2/6p1/4B1P1/4p3/4P3/8/8/8 b - - 0 1",
+        "legal_moves": [
+          "f8a3",
+          "f8b4",
+          "f8c5",
+          "f8d6",
+          "f8e7"
+        ],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "pawn_blocked_by_bishop_not_draw",
+      "family": "insufficient_material",
+      "initial_fen": "8/8/4BbP1/4p3/4P3/8/8/8 b - - 0 1",
+      "moves": ["f6g7"],
+      "expected": {
+        "canonical_fen": "8/6b1/4B1P1/4p3/4P3/8/8/8 w - - 1 2",
+        "legal_moves": [
+          "e6a2",
+          "e6b3",
+          "e6c4",
+          "e6c8",
+          "e6d5",
+          "e6d7",
+          "e6f5",
+          "e6f7",
+          "e6g4",
+          "e6g8",
+          "e6h3"
+        ],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 1,
+        "effective_ep": null
+      }
+    }
+  ]
+}
