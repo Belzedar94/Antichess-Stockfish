@@ -157,6 +157,8 @@ Mate scores, SEE, null move, pruning, material, king safety, orthodox WDL,
 adjudication, and evaluation-sign assumptions are untrusted until each has its
 own fixture-backed audit. They are not disabled or retained in bulk. P2–P6 may
 only change correctness plumbing; all strength hypotheses remain gated.
+ADR-AC-004 is the narrow audit for signed distance to an Antichess variant
+winner; it does not authorize any checkmate, pruning, or WDL assumption.
 
 ## Future data and model contract
 

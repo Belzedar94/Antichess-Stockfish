@@ -84,8 +84,7 @@ UCIEngine::UCIEngine(CommandLine cli_) :
 void UCIEngine::init_search_update_listeners() {
     engine.set_on_iter([](const auto& i) { on_iter(i); });
     engine.set_on_update_no_moves([](const auto& i) { on_update_no_moves(i); });
-    engine.set_on_update_full(
-      [this](const auto& i) { on_update_full(i, engine.get_options()["UCI_ShowWDL"]); });
+    engine.set_on_update_full([](const auto& i) { on_update_full(i, false); });
     engine.set_on_start([]() {});
     engine.set_on_bestmove([](const auto& bm, const auto& p) { on_bestmove(bm, p); });
     engine.set_on_verify_network([](const auto& s) { print_info_string(s); });
@@ -142,7 +141,10 @@ void UCIEngine::loop() {
         else if (token == "ucinewgame")
             engine.search_clear();
         else if (token == "isready")
+        {
+            engine.verify_network();
             sync_cout << "readyok" << sync_endl;
+        }
 
         // Add custom non-UCI commands, mainly for debugging purposes.
         else if (token == "flip")
@@ -158,20 +160,14 @@ void UCIEngine::loop() {
             benchmark(is);
         else if (token == "d")
             sync_cout << engine.visualize() << sync_endl;
+        else if (token == "antichess-info")
+            sync_cout << engine.antichess_info() << sync_endl;
         else if (token == "eval")
             engine.trace_eval();
         else if (token == "compiler")
             sync_cout << compiler_info() << sync_endl;
         else if (token == "export_net")
-        {
-            std::optional<std::filesystem::path> file;
-            std::string                          filename;
-
-            if (is >> filename)
-                file = path_from_utf8(filename);
-
-            engine.save_network(file);
-        }
+            sync_cout << "info string No Antichess network is loaded" << sync_endl;
         else if (token == "--help" || token == "help" || token == "--license" || token == "license")
             sync_cout
               << "\nStockfish is a powerful chess engine for playing and analyzing."
@@ -249,11 +245,10 @@ void UCIEngine::bench(std::istream& args) {
     std::string token;
     u64         num, nodes = 0, cnt = 1;
     u64         nodesSearched = 0;
-    const auto& options       = engine.get_options();
 
     engine.set_on_update_full([&](const auto& i) {
         nodesSearched = i.nodes;
-        on_update_full(i, options["UCI_ShowWDL"]);
+        on_update_full(i, false);
     });
 
     std::vector<std::string> list = Benchmark::setup_bench(engine.fen(), args);
@@ -311,7 +306,7 @@ void UCIEngine::bench(std::istream& args) {
               << "\nNodes/second    : " << 1000 * nodes / elapsed << std::endl;
 
     // reset callback, to not capture a dangling reference to nodesSearched
-    engine.set_on_update_full([&](const auto& i) { on_update_full(i, options["UCI_ShowWDL"]); });
+    engine.set_on_update_full([](const auto& i) { on_update_full(i, false); });
 }
 
 void UCIEngine::benchmark(std::istream& args) {
@@ -338,9 +333,6 @@ void UCIEngine::benchmark(std::istream& args) {
     setoption(ss);
     ss = std::istringstream("name Hash value " + std::to_string(setup.ttSize));
     setoption(ss);
-    ss = std::istringstream("name UCI_Chess960 value false");
-    setoption(ss);
-
     // Warmup
     for (const auto& cmd : setup.commands)
     {
@@ -486,7 +478,7 @@ void UCIEngine::setoption(std::istringstream& is) {
 }
 
 u64 UCIEngine::perft(const Search::LimitsType& limits) {
-    auto result = engine.perft(engine.fen(), limits.perft, engine.get_options()["UCI_Chess960"]);
+    auto result = engine.perft(engine.fen(), limits.perft, false);
     if (auto err = std::get_if<PositionSetError>(&result))
         terminate_on_critical_error(err->what());
 

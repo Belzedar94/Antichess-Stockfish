@@ -19,6 +19,7 @@
 #include "engine.h"
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <filesystem>
 #include <deque>
@@ -32,6 +33,7 @@
 
 #include "evaluate.h"
 #include "misc.h"
+#include "movegen.h"
 #include "nnue/network.h"
 #include "nnue/nnue_common.h"
 #include "numa.h"
@@ -48,7 +50,7 @@ namespace Stockfish {
 
 namespace NN = Eval::NNUE;
 
-int MaxThreads = std::max(1024, 4 * int(get_hardware_concurrency()));
+int MaxThreads = 1;
 
 // The default configuration will attempt to group L3 domains up to 32 threads.
 // This size was found to be a good balance between the Elo gain of increased
@@ -64,7 +66,7 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
     networkFile{std::nullopt, ""},
     network(numaContext, get_default_network()) {
 
-    pos.set(StartFEN, false, &states->back());
+    pos.set(StartFEN, RuleProfile::LICHESS_ANTICHESS_V1, false, &states->back());
 
     options.add(  //
       "Debug Log File", Option("", [](const Option& o) {
@@ -81,13 +83,13 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
       }));
 
     options.add(  //
-      "Threads", Option(1, 1, MaxThreads, [this](const Option&) {
+      "Threads", Option(1, 1, 1, [this](const Option&) {
           resize_threads();
           return thread_allocation_information_as_string();
       }));
 
     options.add(  //
-      "Hash", Option(16, 1, MaxHashMB, [this](const Option& o) {
+      "Hash", Option(1, 1, 1, [this](const Option& o) {
           set_tt_size(o);
           return std::nullopt;
       }));
@@ -98,45 +100,15 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
           return std::nullopt;
       }));
 
-    options.add(  //
-      "Ponder", Option(false));
+    options.add("UCI_Variant", Option("antichess var antichess", "antichess"));
 
-    options.add(  //
-      "MultiPV", Option(1, 1, MAX_MOVES));
+    options.add(
+      "Antichess_Evaluator",
+      Option("engineering-neutral var engineering-neutral var legacy-v1", "engineering-neutral"));
 
-    options.add("Skill Level", Option(20, 0, 20));
-
-    options.add("Move Overhead", Option(10, 0, 5000));
-
-    options.add("nodestime", Option(0, 0, 10000));
-
-    options.add("UCI_Chess960", Option(false));
-
-    options.add("UCI_LimitStrength", Option(false));
-
-    options.add("UCI_Elo",
-                Option(Stockfish::Search::Skill::LowestElo, Stockfish::Search::Skill::LowestElo,
-                       Stockfish::Search::Skill::HighestElo));
-
-    options.add("UCI_ShowWDL", Option(false));
-
-    options.add(  //
-      "SyzygyPath", Option("", [](const Option& o) {
-          Tablebases::init(o);
-          return std::nullopt;
-      }));
-
-    options.add("SyzygyProbeDepth", Option(1, 1, 100));
-
-    options.add("Syzygy50MoveRule", Option(true));
-
-    options.add("SyzygyProbeLimit", Option(7, 0, 7));
-
-    options.add(  //
-      "EvalFile", Option(EvalFileDefaultName, [this](const Option& o) {
-          load_network(path_from_utf8(std::string(o)));
-          return std::nullopt;
-      }));
+    options.add("EvalFile", Option("", [this](const Option& o) {
+                    return load_legacy_network(path_from_utf8(std::string(o)));
+                }));
 
     threads.clear();
     threads.ensure_network_replicated();
@@ -145,13 +117,145 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
 
 std::variant<u64, PositionSetError>
 Engine::perft(const std::string& fen, Depth depth, bool isChess960) {
-    verify_network();
-
     return Benchmark::perft(fen, depth, isChess960);
 }
 
 void Engine::go(Search::LimitsType& limits) {
     assert(limits.perft == 0);
+
+    if (pos.is_antichess())
+    {
+        if (updateContext.onStart)
+            updateContext.onStart();
+
+        const bool useLegacyNetwork = options["Antichess_Evaluator"] == "legacy-v1";
+        if (useLegacyNetwork && !legacyNetwork.loaded())
+        {
+            if (onVerifyNetwork)
+                onVerifyNetwork("Antichess legacy-v1 evaluator is not ready; search refused");
+            if (updateContext.onBestmove)
+                updateContext.onBestmove(UCIEngine::move(Move::none()), "");
+            return;
+        }
+
+        const int depth = std::clamp(limits.depth ? limits.depth : 4, 1, 8);
+        std::array<StateInfo, MAX_PLY + 1> searchStates;
+        u64                                nodes = 0;
+
+        const auto orderedMoves = [](const Position& position) {
+            MoveList<LEGAL>   legal(position);
+            std::vector<Move> moves(legal.begin(), legal.end());
+            std::sort(moves.begin(), moves.end(), [](Move left, Move right) {
+                return UCIEngine::move(left, false) < UCIEngine::move(right, false);
+            });
+            return moves;
+        };
+
+        std::function<Value(int, int)> search = [&](int remaining, int ply) -> Value {
+            ++nodes;
+
+            if (pos.antichess_variant_end())
+            {
+                const int reportDistance = ply + (ply & 1);
+                return mate_in(reportDistance);
+            }
+
+            if (pos.antichess_automatic_draw())
+                return VALUE_DRAW;
+
+            const bool claimable = pos.antichess_threefold();
+            if (remaining == 0)
+                return useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
+
+            Value best = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+            for (Move move : orderedMoves(pos))
+            {
+                pos.do_move(move, searchStates[ply]);
+                Value score = -search(remaining - 1, ply + 1);
+                pos.undo_move(move);
+                best = std::max(best, score);
+            }
+            return best;
+        };
+
+        std::vector<Move> rootMoves = orderedMoves(pos);
+        if (!limits.searchmoves.empty())
+            rootMoves.erase(std::remove_if(rootMoves.begin(), rootMoves.end(),
+                                           [&](Move move) {
+                                               const std::string uci = UCIEngine::move(move, false);
+                                               return std::find(limits.searchmoves.begin(),
+                                                                limits.searchmoves.end(), uci)
+                                                   == limits.searchmoves.end();
+                                           }),
+                            rootMoves.end());
+
+        if (rootMoves.empty())
+        {
+            if (updateContext.onUpdateNoMoves)
+                updateContext.onUpdateNoMoves({0, Score(mate_in(0), pos)});
+            if (updateContext.onBestmove)
+                updateContext.onBestmove(UCIEngine::move(Move::none()), "");
+            return;
+        }
+
+        if (pos.antichess_automatic_draw())
+        {
+            const std::string fallback = UCIEngine::move(rootMoves.front(), false);
+            if (updateContext.onUpdateFull)
+            {
+                Search::InfoFull info{};
+                info.depth    = 0;
+                info.selDepth = 0;
+                info.multiPV  = 1;
+                info.score    = Score(VALUE_DRAW, pos);
+                info.timeMs   = std::max<usize>(1, now() - limits.startTime);
+                info.nodes    = 0;
+                info.nps      = 0;
+                info.pv       = fallback;
+                info.hashfull = 0;
+                updateContext.onUpdateFull(info);
+            }
+            if (updateContext.onBestmove)
+                updateContext.onBestmove(fallback, "");
+            return;
+        }
+
+        const bool claimable = pos.antichess_threefold();
+        Value      bestScore = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+        Move       bestMove  = rootMoves.front();
+
+        for (Move move : rootMoves)
+        {
+            pos.do_move(move, searchStates[0]);
+            Value score = -search(depth - 1, 1);
+            pos.undo_move(move);
+            if (score > bestScore || (score == bestScore && is_win(score)))
+            {
+                bestScore = score;
+                bestMove  = move;
+            }
+        }
+
+        std::string pv = UCIEngine::move(bestMove, false);
+        if (updateContext.onUpdateFull)
+        {
+            Search::InfoFull info{};
+            info.depth    = depth;
+            info.selDepth = depth;
+            info.multiPV  = 1;
+            info.score    = Score(bestScore, pos);
+            info.timeMs   = std::max<usize>(1, now() - limits.startTime);
+            info.nodes    = nodes;
+            info.nps      = 1000 * nodes / info.timeMs;
+            info.pv       = pv;
+            info.hashfull = 0;
+            updateContext.onUpdateFull(info);
+        }
+        if (updateContext.onBestmove)
+            updateContext.onBestmove(pv, "");
+        return;
+    }
+
     verify_network();
 
     threads.start_thinking(options, pos, states, limits);
@@ -165,7 +269,7 @@ void Engine::search_clear() {
     threads.clear();
 
     // TODO: does not work with multiple instances
-    Tablebases::init(options["SyzygyPath"]);  // Free mapped files
+    // The exact Antichess profile has no certified tablebase backend.
 }
 
 void Engine::set_on_update_no_moves(std::function<void(const Engine::InfoShort&)>&& f) {
@@ -196,7 +300,7 @@ std::optional<PositionSetError> Engine::set_position(const std::string&         
                                                      const std::vector<std::string>& moves) {
     // Drop the old state and create a new one
     states   = StateListPtr(new std::deque<StateInfo>(1));
-    auto err = pos.set(fen, options["UCI_Chess960"], &states->back());
+    auto err = pos.set(fen, RuleProfile::LICHESS_ANTICHESS_V1, false, &states->back());
     if (err.has_value())
         return err;
 
@@ -212,6 +316,45 @@ std::optional<PositionSetError> Engine::set_position(const std::string&         
     }
 
     return std::nullopt;
+}
+
+std::string Engine::antichess_info() const {
+
+    std::vector<std::string> moves;
+    for (Move move : MoveList<LEGAL>(pos))
+        moves.push_back(UCIEngine::move(move, false));
+    std::sort(moves.begin(), moves.end());
+
+    const bool variantEnd = pos.antichess_variant_end();
+    const bool automatic  = pos.antichess_automatic_draw();
+
+    std::ostringstream ss;
+    ss << "antichess-info profile=LICHESS_ANTICHESS_V1"
+       << "|fen=" << pos.fen() << "|legal=";
+    for (usize i = 0; i < moves.size(); ++i)
+        ss << (i ? "," : "") << moves[i];
+
+    ss << "|end=" << (variantEnd || automatic) << "|variant_end=" << variantEnd
+       << "|automatic_draw=" << automatic << "|threefold=" << pos.antichess_threefold()
+       << "|fivefold=" << pos.antichess_fivefold() << "|status="
+       << (variantEnd  ? "variant_end"
+           : automatic ? "draw"
+                       : "none")
+       << "|winner=" << (variantEnd ? pos.side_to_move() == WHITE ? "white" : "black" : "none")
+       << "|check=0"
+       << "|player_insufficient=" << pos.antichess_player_has_insufficient_material()
+       << "|opponent_insufficient=" << pos.antichess_opponent_has_insufficient_material()
+       << "|halfmove_clock=" << pos.rule50_count()
+       << "|uci_variant=" << options["UCI_Variant"].currentValue
+       << "|evaluator=" << options["Antichess_Evaluator"].currentValue
+       << "|threads=" << int(options["Threads"]) << "|hash_mb=" << int(options["Hash"])
+       << "|network_loaded=" << legacyNetwork.loaded()
+       << "|network_format=" << (legacyNetwork.loaded() ? "legacy-v1" : "none") << "|network_file="
+       << (legacyNetwork.loaded() ? legacyNetwork.source_path().filename().u8string() : "none")
+       << "|network_description_bytes="
+       << (legacyNetwork.loaded() ? legacyNetwork.description().size() : 0);
+
+    return ss.str();
 }
 
 // modifiers
@@ -264,47 +407,34 @@ void Engine::set_ponderhit(bool b) { threads.main_manager()->ponder = b; }
 // network related
 
 void Engine::verify_network() const {
-    const auto file = path_from_utf8(std::string(options["EvalFile"]));
-    network->verify(onVerifyNetwork, networkFile, file);
+    if (!onVerifyNetwork)
+        return;
 
-    auto statuses = network.get_status_and_errors();
-    for (usize i = 0; i < statuses.size(); ++i)
+    if (options["Antichess_Evaluator"] == "legacy-v1")
+        onVerifyNetwork(
+          legacyNetwork.loaded()
+            ? "Antichess evaluator: legacy-v1 network loaded"
+            : "Antichess evaluator: legacy-v1 selected but no compatible network loaded");
+    else
+        onVerifyNetwork("Antichess evaluator: engineering-neutral");
+}
+
+std::optional<std::string> Engine::load_legacy_network(const std::filesystem::path& file) {
+
+    if (file.empty())
     {
-        const auto [status, error] = statuses[i];
-        std::string message        = "Network replica " + std::to_string(i + 1) + ": ";
-        if (status == SystemWideSharedConstantAllocationStatus::NoAllocation)
-        {
-            message += "No allocation.";
-        }
-        else if (status == SystemWideSharedConstantAllocationStatus::LocalMemory)
-        {
-            message += "Local memory.";
-        }
-        else if (status == SystemWideSharedConstantAllocationStatus::SharedMemory)
-        {
-            message += "Shared memory.";
-        }
-        else
-        {
-            message += "Unknown status.";
-        }
-
-        if (error.has_value())
-        {
-            message += " " + *error;
-        }
-
-        onVerifyNetwork(message);
+        legacyNetwork.clear();
+        return "Antichess legacy network cleared";
     }
+
+    auto result = legacyNetwork.load(file);
+    if (!result.ok)
+        legacyNetwork.clear();
+    return result.message;
 }
 
 std::unique_ptr<Eval::NNUE::Network> Engine::get_default_network() {
-
-    auto network_ = std::make_unique<NN::Network>();
-
-    network_->load(binaryDirectory, std::filesystem::path{}, networkFile);
-
-    return network_;
+    return std::make_unique<NN::Network>();
 }
 
 void Engine::load_network(const std::filesystem::path& file) {
@@ -322,13 +452,13 @@ void Engine::save_network(const std::optional<std::filesystem::path>& file) {
 // utility functions
 
 void Engine::trace_eval() const {
-    StateListPtr trace_states(new std::deque<StateInfo>(1));
-    Position     p;
-    p.set(pos.fen(), options["UCI_Chess960"], &trace_states->back());
-
-    verify_network();
-
-    sync_cout << "\n" << Eval::trace(p, *network) << sync_endl;
+    if (options["Antichess_Evaluator"] == "legacy-v1" && legacyNetwork.loaded())
+        sync_cout << "info string Antichess legacy-v1 raw value "
+                  << int(legacyNetwork.evaluate(pos)) << sync_endl;
+    else if (options["Antichess_Evaluator"] == "legacy-v1")
+        sync_cout << "info string Antichess legacy-v1 evaluator is not ready" << sync_endl;
+    else
+        sync_cout << "info string Antichess evaluator: engineering-neutral" << sync_endl;
 }
 
 const OptionsMap& Engine::get_options() const { return options; }

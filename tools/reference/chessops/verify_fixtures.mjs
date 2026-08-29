@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 
 const EXPECTED_CHESSOPS_COMMIT = '736c40ced7130d453d85e7979c360b797474c9a7';
 const PROMOTION_ROLES = ['queen', 'rook', 'bishop', 'knight', 'king'];
+const CHESSOPS_LEGALITY_ONLY_IDS = new Set(['blocked_bishops_pawns_without_ep_draw']);
 
 function fail(message) {
   throw new Error(message);
@@ -92,11 +93,14 @@ for (const fixture of fixtureDocument.position_fixtures) {
     assertEqual(outcome ?? null, null, `${fixture.id} unexpected variant outcome`);
   }
 
-  if (fixture.family !== 'fifty_move') {
+  if (fixture.family !== 'fifty_move' && !CHESSOPS_LEGALITY_ONLY_IDS.has(fixture.id)) {
     assertEqual(position.isEnd(context), expected.end, `${fixture.id} end state`);
   }
   if (fixture.family === 'insufficient_material') {
-    assertEqual(position.isInsufficientMaterial(), expected.automatic_draw, `${fixture.id} automatic insufficient material`);
+    const expectedByPinnedChessops = CHESSOPS_LEGALITY_ONLY_IDS.has(fixture.id)
+      ? false
+      : expected.automatic_draw;
+    assertEqual(position.isInsufficientMaterial(), expectedByPinnedChessops, `${fixture.id} pinned chessops insufficient material scope`);
   }
   if (fixture.family === 'one_sided_cannot_win') {
     const other = position.turn === 'white' ? 'black' : 'white';
@@ -146,5 +150,6 @@ for (const fixture of fixtureDocument.parser_fixtures) {
 
 console.log(
   `chessops ${checkoutCommit}: verified ${positionChecks} positions, ${historyChecks} transitions, `
-    + `${rejectionChecks} rejected moves, and ${parserChecks} parser boundary case(s)`,
+    + `${rejectionChecks} rejected moves, and ${parserChecks} parser boundary case(s); `
+    + `${CHESSOPS_LEGALITY_ONLY_IDS.size} declared legality-only material gap(s)`,
 );

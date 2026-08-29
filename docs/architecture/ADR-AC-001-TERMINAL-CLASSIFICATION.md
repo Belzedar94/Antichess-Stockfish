@@ -63,8 +63,10 @@ and license are proven. Loader failure must never fall back silently.
 - Automatic outcomes never suppress perft or legal-move enumeration.
 - Mandatory captures are generated in two stages; quiet moves are generated
   only when no capture exists.
-- Null move, mate-distance assumptions, SEE, Syzygy, orthodox WDL, king safety,
-  and pruning are quarantined until separately audited.
+- Null move, SEE, Syzygy, orthodox WDL, king safety, and pruning are
+  quarantined until separately audited. ADR-AC-004 accepts only the restricted
+  terminal-distance encoding defined there; no orthodox mate assumption
+  transfers with it.
 - The independent match referee must consume the same ordered classification
   before P4 can pass.
 - Official Stockfish ancestry and build health do not establish a valid

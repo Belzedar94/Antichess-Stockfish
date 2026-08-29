@@ -421,19 +421,27 @@ constexpr Direction pawn_push(Color c) { return c == WHITE ? NORTH : SOUTH; }
 constexpr Key make_key(u64 seed) { return seed * 6364136223846793005ULL + 1442695040888963407ULL; }
 
 
+enum class RuleProfile : u8 {
+    CHESS,
+    LICHESS_ANTICHESS_V1
+};
+
 enum MoveType : u16 {
     NORMAL,
-    PROMOTION  = 1 << 14,
-    EN_PASSANT = 2 << 14,
-    CASTLING   = 3 << 14
+    // The upper nibble is an explicit move-kind code. Codes 4 through 8
+    // encode N/B/R/Q/K promotions respectively. This retains a 16-bit move
+    // while giving the exact Antichess profile a non-castling king promotion.
+    PROMOTION  = 4 << 12,
+    EN_PASSANT = 9 << 12,
+    CASTLING   = 10 << 12
 };
 
 // A move needs 16 bits to be stored
 //
 // bit  0- 5: destination square (from 0 to 63)
 // bit  6-11: origin square (from 0 to 63)
-// bit 12-13: promotion piece type - 2 (from KNIGHT-2 to QUEEN-2)
-// bit 14-15: special move flag: promotion (1), en passant (2), castling (3)
+// bit 12-15: move-kind code. 4..8 are N/B/R/Q/K promotion, 9 is en
+//             passant, and 10 is castling.
 // NOTE: en passant bit is set only when a pawn can be captured
 //
 // Special cases are Move::none() and Move::null(). We can sneak these in because
@@ -451,7 +459,10 @@ class Move {
 
     template<MoveType T>
     static constexpr Move make(Square from, Square to, PieceType pt = KNIGHT) {
-        return Move(T + ((pt - KNIGHT) << 12) + (from << 6) + to);
+        if constexpr (T == PROMOTION)
+            return Move(PROMOTION + ((pt - KNIGHT) << 12) + (from << 6) + to);
+        else
+            return Move(T + (from << 6) + to);
     }
 
     constexpr Square from_sq() const {
@@ -464,9 +475,15 @@ class Move {
         return Square(data & 0x3F);
     }
 
-    constexpr MoveType type_of() const { return MoveType(data & (3 << 14)); }
+    constexpr MoveType type_of() const {
+        const u16 kind = data & 0xF000;
+        return kind >= PROMOTION && kind <= (8 << 12) ? PROMOTION : MoveType(kind);
+    }
 
-    constexpr PieceType promotion_type() const { return PieceType(((data >> 12) & 3) + KNIGHT); }
+    constexpr PieceType promotion_type() const {
+        const u16 kind = (data >> 12) & 0xF;
+        return kind >= 4 && kind <= 8 ? PieceType(kind - 2) : KNIGHT;
+    }
 
     constexpr bool is_ok() const { return none().data != data && null().data != data; }
 

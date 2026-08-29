@@ -20,6 +20,10 @@ object ScalachessProbe:
     val values = List(
       "canonical_fen" -> canonicalFen,
       "legal_moves" -> position.legalMoves.map(_.toUci.uci).sorted.mkString(","),
+      "legal_san" -> position.legalMoves
+        .map(move => s"${move.toUci.uci}=${move.toSanStr.value}")
+        .sorted
+        .mkString(","),
       "end" -> position.end,
       "auto_draw" -> position.autoDraw,
       "threefold" -> position.history.threefoldRepetition,

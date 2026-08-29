@@ -1,0 +1,104 @@
+{
+  "schema": "antichess-notation-fixtures-v1",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "authority": {
+    "implementation": "scalachess",
+    "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+    "rule": "SAN uses # only when the resulting Antichess position has a winner; check has no legal meaning"
+  },
+  "cases": [
+    {
+      "id": "terminal_mandatory_pawn_capture_san",
+      "fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+      "canonical_fen": "8/8/8/3p4/4P3/8/8/8 w - - 0 1",
+      "must_capture": true,
+      "notation": [
+        "e4d5=exd5#"
+      ]
+    },
+    {
+      "id": "terminal_nonroyal_king_capture_san",
+      "fen": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "canonical_fen": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "must_capture": true,
+      "notation": [
+        "e4e5=Kxe5#"
+      ]
+    },
+    {
+      "id": "terminal_en_passant_san",
+      "fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "canonical_fen": "8/8/8/3pP3/8/8/8/8 w - d6 0 1",
+      "must_capture": true,
+      "notation": [
+        "e5d6=exd6#"
+      ]
+    },
+    {
+      "id": "quiet_promotion_all_antichess_roles_san",
+      "fen": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "canonical_fen": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "must_capture": false,
+      "notation": [
+        "a7a8b=a8=B",
+        "a7a8k=a8=K",
+        "a7a8n=a8=N",
+        "a7a8q=a8=Q",
+        "a7a8r=a8=R"
+      ]
+    },
+    {
+      "id": "capture_promotion_all_antichess_roles_san",
+      "fen": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "canonical_fen": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "must_capture": true,
+      "notation": [
+        "a7b8b=axb8=B",
+        "a7b8k=axb8=K",
+        "a7b8n=axb8=N",
+        "a7b8q=axb8=Q",
+        "a7b8r=axb8=R"
+      ]
+    },
+    {
+      "id": "attacked_nonroyal_king_has_no_check_suffix",
+      "fen": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "canonical_fen": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "must_capture": false,
+      "notation": [
+        "e1d1=Kd1",
+        "e1d2=Kd2",
+        "e1e2=Ke2",
+        "e1f1=Kf1",
+        "e1f2=Kf2"
+      ]
+    },
+    {
+      "id": "orthodox_checkmate_shape_has_no_check_suffix",
+      "fen": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+      "canonical_fen": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3",
+      "must_capture": false,
+      "notation": [
+        "a2a3=a3",
+        "a2a4=a4",
+        "b1a3=Na3",
+        "b1c3=Nc3",
+        "b2b3=b3",
+        "b2b4=b4",
+        "c2c3=c3",
+        "c2c4=c4",
+        "d2d3=d3",
+        "d2d4=d4",
+        "e1f2=Kf2",
+        "e2e3=e3",
+        "e2e4=e4",
+        "f1g2=Bg2",
+        "f1h3=Bh3",
+        "f3f4=f4",
+        "g1h3=Nh3",
+        "g4g5=g5",
+        "h2h3=h3"
+      ]
+    }
+  ]
+}

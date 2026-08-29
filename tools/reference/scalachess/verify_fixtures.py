@@ -17,6 +17,7 @@ EXPECTED_SCALACHESS_COMMIT = "cbffc9d7e2c6f8ba33381c5403e1b4f992199626"
 OUTPUT_FIELDS = {
     "canonical_fen",
     "legal_moves",
+    "legal_san",
     "end",
     "auto_draw",
     "threefold",
@@ -143,6 +144,11 @@ def main() -> int:
         type=Path,
         default=project_root / "tests" / "antichess" / "fixtures" / "material-boundaries-v1.json",
     )
+    parser.add_argument(
+        "--notation-fixtures",
+        type=Path,
+        default=project_root / "tests" / "antichess" / "fixtures" / "notation-v1.json",
+    )
     args = parser.parse_args()
 
     scalachess_root = args.scalachess_root.resolve()
@@ -152,6 +158,7 @@ def main() -> int:
     probe_source = args.probe_source.resolve()
     repetition_fixture_path = args.repetition_fixtures.resolve()
     material_fixture_path = args.material_fixtures.resolve()
+    notation_fixture_path = args.notation_fixtures.resolve()
     for path in (
         scalachess_root,
         java,
@@ -160,6 +167,7 @@ def main() -> int:
         probe_source,
         repetition_fixture_path,
         material_fixture_path,
+        notation_fixture_path,
     ):
         require(path.exists(), f"required path does not exist: {path}")
 
@@ -171,6 +179,7 @@ def main() -> int:
     document = json.loads(fixture_path.read_text(encoding="utf-8"))
     repetition_document = json.loads(repetition_fixture_path.read_text(encoding="utf-8"))
     material_document = json.loads(material_fixture_path.read_text(encoding="utf-8"))
+    notation_document = json.loads(notation_fixture_path.read_text(encoding="utf-8"))
     require(
         material_document["authority"]["commit"] == EXPECTED_SCALACHESS_COMMIT,
         "material fixture authority does not match pinned scalachess",
@@ -180,7 +189,15 @@ def main() -> int:
     repetition_positions = repetition_document["position_cases"]
     repetition_histories = repetition_document["history_cases"]
     material_histories = material_document["history_cases"]
-    encoded_positions = [encode(fixture["fen"]) for fixture in [*positions, *repetition_positions]]
+    notation_positions = notation_document["cases"]
+    require(
+        notation_document["authority"]["commit"] == EXPECTED_SCALACHESS_COMMIT,
+        "notation fixture authority does not match pinned scalachess",
+    )
+    encoded_positions = [
+        encode(fixture["fen"])
+        for fixture in [*positions, *repetition_positions, *notation_positions]
+    ]
     encoded_histories = [
         encode("\n".join([fixture["initial_fen"], *fixture["moves"]])) for fixture in histories
     ] + [
@@ -227,7 +244,8 @@ def main() -> int:
     batches = parse_batches(completed.stdout)
     require(set(batches) == {"positions", "histories"}, f"unexpected probe batches: {sorted(batches)}")
     require(
-        len(batches["positions"]) == len(positions) + len(repetition_positions),
+        len(batches["positions"])
+        == len(positions) + len(repetition_positions) + len(notation_positions),
         "combined position fixture count mismatch",
     )
     require(
@@ -248,12 +266,27 @@ def main() -> int:
 
     for fixture, observed in zip(
         repetition_positions,
-        batches["positions"][len(positions) :],
+        batches["positions"][len(positions) : len(positions) + len(repetition_positions)],
         strict=True,
     ):
         require(observed["threefold"] == "false", f"{fixture['id']}: FEN invented threefold")
         require(observed["fivefold"] == "false", f"{fixture['id']}: FEN invented fivefold")
         require(observed["auto_draw"] == str(fixture["expected"]["automatic"]).lower(), f"{fixture['id']}: automatic mismatch")
+
+    notation_start = len(positions) + len(repetition_positions)
+    for fixture, observed in zip(
+        notation_positions,
+        batches["positions"][notation_start:],
+        strict=True,
+    ):
+        require(
+            observed["canonical_fen"] == fixture["canonical_fen"],
+            f"{fixture['id']}: notation canonical FEN mismatch",
+        )
+        require(
+            observed["legal_san"] == ",".join(fixture["notation"]),
+            f"{fixture['id']}: primary SAN mismatch",
+        )
 
     for fixture, observed in zip(
         repetition_histories,
@@ -280,6 +313,7 @@ def main() -> int:
         f"and {len(document['move_rejection_fixtures'])} rejected moves, plus "
         f"{len(material_histories)} material histories, "
         f"{len(repetition_positions)} repetition position and {len(repetition_histories)} repetition history boundary; "
+        f"{len(notation_positions)} notation positions; "
         f"probe sha256 {probe_sha256}"
     )
     return 0

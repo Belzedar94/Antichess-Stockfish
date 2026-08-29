@@ -1,0 +1,443 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 66b6775ee32fba6618dcb0300e3837607a7eb484..e45a44698795022c38949ebe3d53ff73f81d8532 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -186,6 +186,12 @@ target_link_libraries(cli Qt::Core)
+ target_link_libraries(cli lib)
+ add_dependencies(cli lib)
+ 
++add_executable(antichess-profile-probe
++	projects/lib/tests/antichessprofile/antichess_profile_probe.cpp
++)
++target_link_libraries(antichess-profile-probe Qt::Core lib)
++add_dependencies(antichess-profile-probe lib)
++
+ add_executable(gui
+ 	projects/gui/src/boardview/graphicspiece.cpp
+ 	projects/gui/src/boardview/boardview.cpp
+diff --git a/projects/cli/src/main.cpp b/projects/cli/src/main.cpp
+index da27cef3be3f476e169d3d01873b332fe9226f7f..51cc766401e426c96dca6823300af6f878ced01e 100644
+--- a/projects/cli/src/main.cpp
++++ b/projects/cli/src/main.cpp
+@@ -485,7 +485,7 @@ EngineMatch* parseMatch(const QStringList& args, QObject* parent)
+ 			match->setDebugMode(true);
+ 			if (value == "all")
+ 				eachOptions.append("debug");
+-			else if (!value.isNull())
++			else if (!value.isNull() && value.typeId() != QMetaType::Bool)
+ 				ok = false;
+ 		}
+ 		// Use an opening suite
+diff --git a/projects/lib/src/board/antiboard.cpp b/projects/lib/src/board/antiboard.cpp
+index 729c9d24fbe3a8c72e1c2b0e6805c17dbf990b87..25082a3c71f362492027b462489edc3e8cde4f44 100644
+--- a/projects/lib/src/board/antiboard.cpp
++++ b/projects/lib/src/board/antiboard.cpp
+@@ -47,6 +47,16 @@ bool AntiBoard::hasCastling() const
+ 	return false;
+ }
+ 
++bool AntiBoard::parseCastlingRights(QChar c)
++{
++	/*
++	 * LICHESS_ANTICHESS_V1 accepts syntactically valid FEN castling text at
++	 * the input boundary but strips all rights from the canonical position.
++	 */
++	c = c.toLower();
++	return c == 'k' || c == 'q' || (c >= 'a' && c <= 'h');
++}
++
+ bool AntiBoard::kingsCountAssertion( int whiteKings,
+ 				     int blackKings) const
+ {
+@@ -76,6 +86,16 @@ bool AntiBoard::inCheck(Side, int) const
+ 	return false;
+ }
+ 
++QString AntiBoard::sanMoveString(const Move& move)
++{
++	QString str = WesternBoard::sanMoveString(move);
++	makeMove(move);
++	if (!canMove())
++		str += '#';
++	undoMove();
++	return str;
++}
++
+ bool AntiBoard::vIsLegalMove(const Move& move)
+ {
+ 	if (!StandardBoard::vIsLegalMove(move))
+@@ -121,6 +141,13 @@ Result AntiBoard::result()
+ 	if (!canMove())
+ 		return vResultOfStalemate();
+ 
++	// Antichess-specific forced-impossibility draw
++	if (isInsufficientMaterial())
++	{
++		str = tr("Draw by Antichess insufficient material");
++		return Result(Result::Draw, Side::NoSide, str);
++	}
++
+ 	// 50 move rule
+ 	if (reversibleMoveCount() >= 100)
+ 	{
+@@ -128,14 +155,146 @@ Result AntiBoard::result()
+ 		return Result(Result::Draw, Side::NoSide, str);
+ 	}
+ 
+-	// 3-fold repetition
+-	if (repeatCount() >= 2)
++	// Fivefold repetition is automatic. Threefold is only claimable and is
++	// handled by the versioned match policy, not by the board result.
++	if (repeatCount() >= 4)
+ 	{
+-		str = tr("Draw by 3-fold repetition");
++		str = tr("Draw by 5-fold repetition");
+ 		return Result(Result::Draw, Side::NoSide, str);
+ 	}
+ 
+ 	return Result();
+ }
+ 
++bool AntiBoard::winPossible(Side side) const
++{
++	if (side.isNull() || isInsufficientMaterial())
++		return false;
++
++	return side == sideToMove()
++		? !playerHasInsufficientMaterial()
++		: !opponentHasInsufficientMaterial();
++}
++
++bool AntiBoard::automaticDraw() const
++{
++	return isInsufficientMaterial()
++		|| reversibleMoveCount() >= 100
++		|| repeatCount() >= 4;
++}
++
++bool AntiBoard::mustCapture()
++{
++	const QVector<Move> moves = legalMoves();
++	for (const Move& move : moves)
++		if (captureType(move) != Piece::NoPiece)
++			return true;
++	return false;
++}
++
++bool AntiBoard::opponentHasInsufficientMaterial() const
++{
++	bool allOnSameColour = false;
++	return justOneKnightEach(&allOnSameColour) && allOnSameColour;
++}
++
++bool AntiBoard::playerHasInsufficientMaterial() const
++{
++	bool allOnSameColour = false;
++	return justOneKnightEach(&allOnSameColour) && !allOnSameColour;
++}
++
++bool AntiBoard::justOneKnightEach(bool* allOnSameColour) const
++{
++	int knightCount[2] = { 0, 0 };
++	Square::Color occupiedColour = Square::NoColor;
++	bool sameColour = true;
++
++	for (int i = 0; i < arraySize(); ++i)
++	{
++		const Piece piece = pieceAt(i);
++		if (!piece.isValid())
++			continue;
++		if (piece.type() != Knight)
++			return false;
++
++		const int sideIndex = piece.side() == Side::White ? 0 : 1;
++		++knightCount[sideIndex];
++
++		const Square::Color colour = chessSquare(i).color();
++		if (occupiedColour == Square::NoColor)
++			occupiedColour = colour;
++		else if (colour != occupiedColour)
++			sameColour = false;
++	}
++
++	if (knightCount[0] != 1 || knightCount[1] != 1)
++		return false;
++	if (allOnSameColour != nullptr)
++		*allOnSameColour = sameColour;
++	return true;
++}
++
++bool AntiBoard::isInsufficientMaterial() const
++{
++	bool bishopFound[2] = { false, false };
++	Square::Color bishopColour[2] = { Square::NoColor, Square::NoColor };
++
++	for (int i = 0; i < arraySize(); ++i)
++	{
++		const Piece piece = pieceAt(i);
++		if (!piece.isValid())
++			continue;
++		if (piece.type() != Bishop && piece.type() != Pawn)
++			return false;
++		if (piece.type() == Bishop)
++		{
++			const int sideIndex = piece.side() == Side::White ? 0 : 1;
++			const Square::Color colour = chessSquare(i).color();
++			if (bishopFound[sideIndex] && bishopColour[sideIndex] != colour)
++				return false;
++			bishopFound[sideIndex] = true;
++			bishopColour[sideIndex] = colour;
++		}
++	}
++
++	if (!bishopFound[0] || !bishopFound[1]
++	||  bishopColour[0] == bishopColour[1])
++		return false;
++
++	const int epSquare = enpassantSquare();
++	for (int i = 0; i < arraySize(); ++i)
++	{
++		const Piece piece = pieceAt(i);
++		if (!piece.isValid() || piece.type() != Pawn)
++			continue;
++
++		const Square square = chessSquare(i);
++		const int sideIndex = piece.side() == Side::White ? 0 : 1;
++		const Square::Color oppositeBishopColour = bishopColour[1 - sideIndex];
++		if (square.color() == oppositeBishopColour)
++			return false;
++
++		const int rankStep = piece.side() == Side::White ? 1 : -1;
++		const Square forward(square.file(), square.rank() + rankStep);
++		if (!isValidSquare(forward)
++		||  pieceAt(squareIndex(forward)).type() != Pawn)
++			return false;
++
++		for (int fileStep : { -1, 1 })
++		{
++			const Square target(square.file() + fileStep,
++					    square.rank() + rankStep);
++			if (!isValidSquare(target))
++				continue;
++			const int targetIndex = squareIndex(target);
++			if (pieceAt(targetIndex).side() == piece.side().opposite()
++			||  (piece.side() == sideToMove() && targetIndex == epSquare))
++				return false;
++		}
++	}
++
++	return true;
++}
++
+ } // namespace Chess
+diff --git a/projects/lib/src/board/antiboard.h b/projects/lib/src/board/antiboard.h
+index 1b9299944112268c6b90b039548985176ed45818..fbd75bbbcd27bcbd043b69a249e30e56ea71f9e3 100644
+--- a/projects/lib/src/board/antiboard.h
++++ b/projects/lib/src/board/antiboard.h
+@@ -60,14 +60,22 @@ class LIB_EXPORT AntiBoard : public StandardBoard
+ 		virtual QString variant() const;
+ 		virtual QString defaultFenString() const;
+ 		virtual Result result();
++		virtual bool winPossible(Side side) const;
++
++		bool automaticDraw() const;
++		bool mustCapture();
++		bool opponentHasInsufficientMaterial() const;
++		bool playerHasInsufficientMaterial() const;
+ 
+ 	protected:
+ 		// Inherited from StandardBoard
+ 		virtual bool hasCastling() const;
++		virtual bool parseCastlingRights(QChar c);
+ 		virtual bool kingsCountAssertion(int whiteKings,
+ 						 int blackKings) const;
+ 		virtual bool vSetFenString(const QStringList& fen);
+ 		virtual bool inCheck(Side side, int square = 0) const;
++		virtual QString sanMoveString(const Move& move);
+ 		virtual bool vIsLegalMove(const Move& move);
+ 		virtual void addPromotions(int sourceSquare,
+ 					   int targetSquare,
+@@ -77,6 +85,9 @@ class LIB_EXPORT AntiBoard : public StandardBoard
+ 		virtual Result vResultOfStalemate() const;
+ 
+ 	private:
++		bool isInsufficientMaterial() const;
++		bool justOneKnightEach(bool* allOnSameColour = nullptr) const;
++
+ 		quint64 m_testKey;
+ 		bool m_canCapture;
+ }; // namespace Chess
+diff --git a/projects/lib/src/chessgame.cpp b/projects/lib/src/chessgame.cpp
+index 4978476b5d26a73eb5dd798530f86f1ede164c12..f3ffa16fd746ce8be079654389bd5456d1e8d8bf 100644
+--- a/projects/lib/src/chessgame.cpp
++++ b/projects/lib/src/chessgame.cpp
+@@ -268,6 +268,18 @@ void ChessGame::onMoveMade(const Chess::Move& move)
+ 	// Get the result before sending the move to the opponent
+ 	m_board->makeMove(move);
+ 	m_result = m_board->result();
++	// AC_REFEREE_V1 uses the Lichess-compatible result-blind auto-claim
++	// policy: a third occurrence is claimable by rule and is immediately
++	// claimed by the match service. The board itself only auto-draws at the
++	// fifth occurrence.
++	if (m_result.isNone()
++	&&  m_board->variant() == "antichess"
++	&&  m_board->repeatCount() >= 2)
++	{
++		m_result = Chess::Result(Chess::Result::Draw,
++					 Chess::Side::NoSide,
++					 "Draw claimed by 3-fold repetition");
++	}
+ 	if (m_result.isNone())
+ 	{
+ 		if (m_board->reversibleMoveCount() == 0)
+diff --git a/projects/lib/src/pgngame.cpp b/projects/lib/src/pgngame.cpp
+index 190baca93ce615c8d12725eed6ad131a0cc6eca5..f43f1160a4a3336475fa79ea18ce22405d10540a 100644
+--- a/projects/lib/src/pgngame.cpp
++++ b/projects/lib/src/pgngame.cpp
+@@ -492,6 +492,8 @@ void PgnGame::setVariant(const QString& variant)
+ {
+ 	if (variant == "standard")
+ 		setTag("Variant", QString());
++	else if (variant == "antichess")
++		setTag("Variant", "Antichess");
+ 	else
+ 		setTag("Variant", variant);
+ }
+diff --git a/projects/lib/tests/antichessprofile/antichess_profile_probe.cpp b/projects/lib/tests/antichessprofile/antichess_profile_probe.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..095d1177953da93f629a135b2a512e0bc06305b5
+--- /dev/null
++++ b/projects/lib/tests/antichessprofile/antichess_profile_probe.cpp
+@@ -0,0 +1,131 @@
++#include <algorithm>
++#include <memory>
++
++#include <QCoreApplication>
++#include <QStringList>
++#include <QTextStream>
++
++#include <board/antiboard.h>
++#include <board/boardfactory.h>
++
++
++namespace {
++
++QString boolText(bool value)
++{
++	return value ? "1" : "0";
++}
++
++QString sideText(Chess::Side side)
++{
++	if (side == Chess::Side::White)
++		return "white";
++	if (side == Chess::Side::Black)
++		return "black";
++	return "none";
++}
++
++}
++
++
++int main(int argc, char* argv[])
++{
++	QCoreApplication app(argc, argv);
++	QTextStream out(stdout);
++	const QStringList arguments = app.arguments();
++	if (arguments.size() < 2)
++	{
++		out << "referee-error missing-fen\n";
++		return 2;
++	}
++
++	std::unique_ptr<Chess::Board> board(Chess::BoardFactory::create("antichess"));
++	if (board == nullptr)
++	{
++		out << "referee-error missing-antichess-board\n";
++		return 3;
++	}
++	if (!board->setFenString(arguments.at(1)))
++	{
++		out << "referee-error invalid-fen\n";
++		return 4;
++	}
++
++	for (int i = 2; i < arguments.size(); ++i)
++	{
++		const Chess::Move move = board->moveFromString(arguments.at(i));
++		if (move.isNull())
++		{
++			out << "referee-error illegal-move " << arguments.at(i) << '\n';
++			return 5;
++		}
++		board->makeMove(move);
++	}
++
++	auto* antichess = dynamic_cast<Chess::AntiBoard*>(board.get());
++	if (antichess == nullptr)
++	{
++		out << "referee-error wrong-board-type\n";
++		return 6;
++	}
++
++	QStringList legal;
++	QStringList san;
++	QStringList notation;
++	const QVector<Chess::Move> moves = board->legalMoves();
++	for (const Chess::Move& move : moves)
++	{
++		const QString uci = board->moveString(move, Chess::Board::LongAlgebraic);
++		const QString moveSan = board->moveString(move, Chess::Board::StandardAlgebraic);
++		legal << uci;
++		san << moveSan;
++		notation << uci + '=' + moveSan;
++	}
++	legal.sort(Qt::CaseSensitive);
++	san.sort(Qt::CaseSensitive);
++	notation.sort(Qt::CaseSensitive);
++
++	const bool variantEnd = moves.isEmpty();
++	const bool automaticDraw = antichess->automaticDraw();
++	const Chess::Result result = board->result();
++	QString status = "none";
++	if (variantEnd)
++		status = "variant_end";
++	else if (automaticDraw)
++		status = "draw";
++
++	const QStringList fenParts = board->fenString().split(' ');
++	const QString effectiveEp = fenParts.size() >= 4 && fenParts.at(3) != "-"
++		? fenParts.at(3)
++		: "none";
++
++	out << "referee-info profile=LICHESS_ANTICHESS_V1"
++	    << "|fen=" << board->fenString()
++	    << "|legal=" << legal.join(',')
++	    << "|san=" << san.join(',')
++	    << "|notation=" << notation.join(',')
++	    << "|end=" << boolText(variantEnd || automaticDraw)
++	    << "|variant_end=" << boolText(variantEnd)
++	    << "|automatic_draw=" << boolText(automaticDraw)
++	    << "|threefold=" << boolText(board->repeatCount() >= 2)
++	    << "|fivefold=" << boolText(board->repeatCount() >= 4)
++	    << "|status=" << status
++	    << "|winner=" << (variantEnd ? sideText(board->sideToMove()) : "none")
++	    << "|check=0"
++	    << "|must_capture=" << boolText(antichess->mustCapture())
++	    << "|player_insufficient="
++	    << boolText(antichess->playerHasInsufficientMaterial())
++	    << "|opponent_insufficient="
++	    << boolText(antichess->opponentHasInsufficientMaterial())
++	    << "|halfmove_clock=" << board->reversibleMoveCount()
++	    << "|effective_ep=" << effectiveEp
++	    << "|side_to_move=" << sideText(board->sideToMove())
++	    << "|white_win_possible=" << boolText(board->winPossible(Chess::Side::White))
++	    << "|black_win_possible=" << boolText(board->winPossible(Chess::Side::Black))
++	    << "|board_result="
++	    << (result.isNone() ? "none" : result.isDraw() ? "draw" : "win")
++	    << "|board_result_winner=" << sideText(result.winner())
++	    << "|board_result_reason=" << result.description()
++	    << '\n';
++	return 0;
++}
+

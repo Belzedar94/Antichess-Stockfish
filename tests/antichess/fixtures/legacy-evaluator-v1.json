@@ -1,0 +1,147 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "purpose": "Frozen full-refresh values for the local-only legacy-v1 compatibility backend",
+  "network": {
+    "filename": "antichess-dd3cbe53cd4e.nnue",
+    "bytes": 953248,
+    "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "redistribution_license": "UNRESOLVED"
+  },
+  "executable_reference": {
+    "repository": "https://github.com/fairy-stockfish/Fairy-Stockfish.git",
+    "commit": "c19b5f6c66894fdb0e88d0dd100e3885f744760a",
+    "tree": "5f243edc1ec2498610b3ed40923cf99718104fc8",
+    "probe_command": "eval",
+    "probe_field": "Eval::NNUE::evaluate(position, false)",
+    "role": "evaluation-format compatibility only; not a rules or referee authority"
+  },
+  "cases": [
+    {
+      "id": "bucket7_count32_white",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "piece_count": 32,
+      "bucket": 7,
+      "expected_raw": 5
+    },
+    {
+      "id": "bucket7_count32_black",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 1",
+      "piece_count": 32,
+      "bucket": 7,
+      "expected_raw": 5
+    },
+    {
+      "id": "bucket7_count29_white",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/3QKBNR w - - 0 1",
+      "piece_count": 29,
+      "bucket": 7,
+      "expected_raw": 292
+    },
+    {
+      "id": "bucket7_count29_black",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/3QKBNR b - - 0 1",
+      "piece_count": 29,
+      "bucket": 7,
+      "expected_raw": -299
+    },
+    {
+      "id": "bucket6_count25_white",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/7R w - - 0 1",
+      "piece_count": 25,
+      "bucket": 6,
+      "expected_raw": 447
+    },
+    {
+      "id": "bucket6_count25_black",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/7R b - - 0 1",
+      "piece_count": 25,
+      "bucket": 6,
+      "expected_raw": -71
+    },
+    {
+      "id": "bucket5_count21_white",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/4PPPP/7R w - - 0 1",
+      "piece_count": 21,
+      "bucket": 5,
+      "expected_raw": 660
+    },
+    {
+      "id": "bucket5_count21_black",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/4PPPP/7R b - - 0 1",
+      "piece_count": 21,
+      "bucket": 5,
+      "expected_raw": 91
+    },
+    {
+      "id": "bucket4_count17_white",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/8/7R w - - 0 1",
+      "piece_count": 17,
+      "bucket": 4,
+      "expected_raw": 398
+    },
+    {
+      "id": "bucket4_count17_black",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/8/7R b - - 0 1",
+      "piece_count": 17,
+      "bucket": 4,
+      "expected_raw": -156
+    },
+    {
+      "id": "bucket3_count13_white",
+      "fen": "rnbqkbnr/4pppp/8/8/8/8/8/7R w - - 0 1",
+      "piece_count": 13,
+      "bucket": 3,
+      "expected_raw": 934
+    },
+    {
+      "id": "bucket3_count13_black",
+      "fen": "rnbqkbnr/4pppp/8/8/8/8/8/7R b - - 0 1",
+      "piece_count": 13,
+      "bucket": 3,
+      "expected_raw": 303
+    },
+    {
+      "id": "bucket2_count9_white",
+      "fen": "rnbqkbnr/8/8/8/8/8/8/7R w - - 0 1",
+      "piece_count": 9,
+      "bucket": 2,
+      "expected_raw": 788
+    },
+    {
+      "id": "bucket2_count9_black",
+      "fen": "rnbqkbnr/8/8/8/8/8/8/7R b - - 0 1",
+      "piece_count": 9,
+      "bucket": 2,
+      "expected_raw": 188
+    },
+    {
+      "id": "bucket1_count5_white",
+      "fen": "4kbnr/8/8/8/8/8/8/7R w - - 0 1",
+      "piece_count": 5,
+      "bucket": 1,
+      "expected_raw": 131
+    },
+    {
+      "id": "bucket1_count5_black",
+      "fen": "4kbnr/8/8/8/8/8/8/7R b - - 0 1",
+      "piece_count": 5,
+      "bucket": 1,
+      "expected_raw": 645
+    },
+    {
+      "id": "bucket0_count1_white",
+      "fen": "8/8/8/8/8/8/8/7R w - - 0 1",
+      "piece_count": 1,
+      "bucket": 0,
+      "expected_raw": 794
+    },
+    {
+      "id": "bucket0_count1_black",
+      "fen": "8/8/8/8/8/8/8/7R b - - 0 1",
+      "piece_count": 1,
+      "bucket": 0,
+      "expected_raw": -818
+    }
+  ]
+}

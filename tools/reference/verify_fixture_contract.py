@@ -270,6 +270,87 @@ def validate_claim_protocol_boundaries(document: dict[str, Any]) -> int:
     return len(cases)
 
 
+def validate_legacy_evaluator(document: dict[str, Any]) -> int:
+    require(document["fixture_version"] == 1, "unsupported legacy evaluator fixture version")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong legacy evaluator profile")
+    network = document.get("network", {})
+    require(
+        network.get("sha256")
+        == "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+        "wrong legacy evaluator network identity",
+    )
+    require(network.get("bytes") == 953248, "wrong legacy evaluator network size")
+    require(
+        network.get("redistribution_license") == "UNRESOLVED",
+        "legacy evaluator license boundary changed without a contract update",
+    )
+    executable = document.get("executable_reference", {})
+    require(
+        executable.get("commit") == "c19b5f6c66894fdb0e88d0dd100e3885f744760a",
+        "wrong legacy executable reference commit",
+    )
+    cases = document.get("cases")
+    require(isinstance(cases, list) and cases, "empty legacy evaluator cases")
+    ids = [case["id"] for case in cases]
+    require(len(ids) == len(set(ids)), "duplicate legacy evaluator fixture ID")
+    buckets: set[int] = set()
+    turns: set[str] = set()
+    for case in cases:
+        require(len(case["fen"].split()) == 6, f"{case['id']}: evaluator FEN must have six fields")
+        require(case["piece_count"] > 0, f"{case['id']}: empty-board evaluator fixture")
+        expected_bucket = min((case["piece_count"] - 1) * 8 // 32, 7)
+        require(case["bucket"] == expected_bucket, f"{case['id']}: legacy bucket mismatch")
+        require(isinstance(case["expected_raw"], int), f"{case['id']}: non-integer legacy value")
+        buckets.add(case["bucket"])
+        turns.add(case["fen"].split()[1])
+    require(buckets == set(range(8)), f"legacy evaluator buckets incomplete: {sorted(buckets)}")
+    require(turns == {"w", "b"}, "legacy evaluator lacks both side-to-move perspectives")
+    return len(cases)
+
+
+def validate_notation(document: dict[str, Any]) -> int:
+    require(document["schema"] == "antichess-notation-fixtures-v1", "wrong notation schema")
+    require(document["profile"] == "LICHESS_ANTICHESS_V1", "wrong notation profile")
+    require(
+        document["authority"]["commit"] == "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+        "wrong notation authority commit",
+    )
+    cases = document.get("cases")
+    require(isinstance(cases, list) and cases, "empty notation cases")
+    ids = [case["id"] for case in cases]
+    require(len(ids) == len(set(ids)), "duplicate notation fixture ID")
+    required_ids = {
+        "terminal_mandatory_pawn_capture_san",
+        "terminal_nonroyal_king_capture_san",
+        "terminal_en_passant_san",
+        "quiet_promotion_all_antichess_roles_san",
+        "capture_promotion_all_antichess_roles_san",
+        "attacked_nonroyal_king_has_no_check_suffix",
+        "orthodox_checkmate_shape_has_no_check_suffix",
+    }
+    require(set(ids) == required_ids, "notation fixture coverage drift")
+    for case in cases:
+        fen_parts = case["canonical_fen"].split()
+        require(len(fen_parts) == 6, f"{case['id']}: canonical FEN must have six fields")
+        require(fen_parts[2] == "-", f"{case['id']}: canonical FEN retained castling rights")
+        notation = case["notation"]
+        require(notation == sorted(notation), f"{case['id']}: notation is not UCI-sorted")
+        require(len(notation) == len(set(notation)), f"{case['id']}: duplicate notation entry")
+        for entry in notation:
+            uci, separator, san = entry.partition("=")
+            require(bool(separator) and len(uci) in {4, 5}, f"{case['id']}: malformed UCI/SAN pair")
+            require(san and "+" not in san, f"{case['id']}: check suffix leaked into Antichess SAN")
+    require(
+        any("a7a8k=a8=K" in entry for case in cases for entry in case["notation"]),
+        "notation fixtures lack promotion to king",
+    )
+    require(
+        sum(entry.endswith("#") for case in cases for entry in case["notation"]) == 3,
+        "terminal SAN marker coverage drift",
+    )
+    return len(cases)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -303,6 +384,16 @@ def main() -> int:
         default="tests/antichess/fixtures/protocol-claim-boundaries-v1.json",
         type=Path,
     )
+    parser.add_argument(
+        "--legacy-evaluator-fixtures",
+        default="tests/antichess/fixtures/legacy-evaluator-v1.json",
+        type=Path,
+    )
+    parser.add_argument(
+        "--notation-fixtures",
+        default="tests/antichess/fixtures/notation-v1.json",
+        type=Path,
+    )
     args = parser.parse_args()
     document = json.loads(args.fixture_file.read_text(encoding="utf-8"))
     counts = validate(document)
@@ -318,6 +409,12 @@ def main() -> int:
         args.claim_protocol_fixtures.read_text(encoding="utf-8")
     )
     claim_protocol_count = validate_claim_protocol_boundaries(claim_protocol_document)
+    legacy_evaluator_document = json.loads(
+        args.legacy_evaluator_fixtures.read_text(encoding="utf-8")
+    )
+    legacy_evaluator_count = validate_legacy_evaluator(legacy_evaluator_document)
+    notation_document = json.loads(args.notation_fixtures.read_text(encoding="utf-8"))
+    notation_count = validate_notation(notation_document)
     print(
         "fixture contract verified: "
         f"{counts[0]} positions, {counts[1]} histories, {counts[2]} rejected moves, "
@@ -325,7 +422,8 @@ def main() -> int:
         f"{counts[4]} service results, {repetition_counts[0]} repetition position cases, "
         f"{repetition_counts[1]} repetition history cases, {material_count} material cases, "
         f"{search_counts[0]} search cases, "
-        f"{search_counts[1]} TT isolation cases, {claim_protocol_count} claim protocol cases"
+        f"{search_counts[1]} TT isolation cases, {claim_protocol_count} claim protocol cases, "
+        f"{legacy_evaluator_count} legacy evaluator cases, {notation_count} notation cases"
     )
     return 0
 

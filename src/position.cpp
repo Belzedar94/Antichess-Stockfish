@@ -168,6 +168,11 @@ void Position::init() {
 // a PositionSetError describing the problem is returned, otherwise std::nullopt.
 std::optional<PositionSetError>
 Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
+    return set(fenStr, RuleProfile::LICHESS_ANTICHESS_V1, isChess960, si);
+}
+
+std::optional<PositionSetError>
+Position::set(const string& fenStr, RuleProfile profile, bool isChess960, StateInfo* si) {
     /*
    A FEN string defines a particular position using only the ASCII character set.
 
@@ -208,7 +213,8 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
 
     std::memset(reinterpret_cast<char*>(this), 0, sizeof(Position));
     std::memset(si, 0, sizeof(StateInfo));
-    st = si;
+    st          = si;
+    ruleProfile = profile;
 
     ss >> std::noskipws;
 
@@ -273,21 +279,23 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     if (pieces(PAWN) & (Rank1BB | Rank8BB))
         return PositionSetError("Unsupported position. Pawns on the first or eighth rank.");
 
-    if (count<KING>(WHITE) != 1 || count<KING>(BLACK) != 1)
+    if (!is_antichess() && (count<KING>(WHITE) != 1 || count<KING>(BLACK) != 1))
         return PositionSetError("Unsupported position. Incorrect number of kings.");
 
-    for (Color c : {WHITE, BLACK})
-    {
-        if (count<PAWN>(c) > 8)
-            return PositionSetError(std::string("Unsupported position. ")
-                                    + (c == WHITE ? "WHITE" : "BLACK") + " has more than 8 pawns.");
+    if (!is_antichess())
+        for (Color c : {WHITE, BLACK})
+        {
+            if (count<PAWN>(c) > 8)
+                return PositionSetError(std::string("Unsupported position. ")
+                                        + (c == WHITE ? "WHITE" : "BLACK")
+                                        + " has more than 8 pawns.");
 
-        int additional = std::max(count<KNIGHT>(c) - 2, 0) + std::max(count<BISHOP>(c) - 2, 0)
-                       + std::max(count<ROOK>(c) - 2, 0) + std::max(count<QUEEN>(c) - 1, 0);
-        if (additional > 8 - count<PAWN>(c))
-            return PositionSetError(std::string("Unsupported position. Too many pieces for ")
-                                    + (c == WHITE ? "WHITE." : "BLACK."));
-    }
+            int additional = std::max(count<KNIGHT>(c) - 2, 0) + std::max(count<BISHOP>(c) - 2, 0)
+                           + std::max(count<ROOK>(c) - 2, 0) + std::max(count<QUEEN>(c) - 1, 0);
+            if (additional > 8 - count<PAWN>(c))
+                return PositionSetError(std::string("Unsupported position. Too many pieces for ")
+                                        + (c == WHITE ? "WHITE." : "BLACK."));
+        }
 
     // 2. Active color
     if (!(ss >> token))
@@ -376,42 +384,45 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
         }
 
         // Only apply castling rights if they can be valid.
-        if (ksq != SQ_NONE && rsq != SQ_NONE)
+        if (!is_antichess() && ksq != SQ_NONE && rsq != SQ_NONE)
             set_castling_right(c, rsq);
     }
 
-    // 4. En passant square.
-    // Ignore if square is invalid or not on side to move relative rank 6.
-    bool          enpassant = false, legalEP = false;
-    unsigned char col = '-', row;
-    ss >> col;
-    if (col != '-')
-    {
-        if (!(ss >> row))
-            return PositionSetError("Invalid FEN. Unexpected end of stream.");
+    // 4. En passant square. Malformed transport text is rejected.
+    // Syntactically valid but ineffective squares are canonicalized to '-'.
+    bool        enpassant = false, legalEP = false;
+    std::string epToken;
+    ss >> epToken;
+    if (epToken.empty())
+        return PositionSetError("Invalid FEN. Unexpected end of stream.");
 
-        if ((col >= 'a' && col <= 'h') && (row == (sideToMove == WHITE ? '6' : '3')))
+    if (epToken != "-")
+    {
+        if (epToken.size() != 2 || epToken[0] < 'a' || epToken[0] > 'h' || epToken[1] < '1'
+            || epToken[1] > '8')
+            return PositionSetError("Invalid FEN. Invalid en-passant square.");
+
+        const unsigned char col = epToken[0];
+        const unsigned char row = epToken[1];
+
+        if (row == (sideToMove == WHITE ? '6' : '3'))
         {
             st->epSquare = make_square(File(col - 'a'), Rank(row - '1'));
 
             Bitboard pawns = attacks_bb<PAWN>(st->epSquare, ~sideToMove) & pieces(sideToMove, PAWN);
-            Bitboard target = (pieces(~sideToMove, PAWN) & (st->epSquare + pawn_push(~sideToMove)));
+            Bitboard target = pieces(~sideToMove, PAWN) & (st->epSquare + pawn_push(~sideToMove));
             Bitboard occ    = pieces() ^ target ^ st->epSquare;
 
-            // En passant square will be considered only if
-            // a) side to move have a pawn threatening epSquare
-            // b) there is an enemy pawn in front of epSquare
-            // c) there is no piece on epSquare or behind epSquare
             enpassant = pawns && target
                      && !(pieces() & (st->epSquare | (st->epSquare + pawn_push(sideToMove))));
 
-            // If no pawn can execute the en passant capture without leaving the king in check, don't record the epSquare
-            while (pawns)
-                legalEP |= !(attackers_to(square<KING>(sideToMove), occ ^ pop_lsb(pawns))
-                             & pieces(~sideToMove) & ~target);
+            if (is_antichess())
+                legalEP = enpassant;
+            else
+                while (pawns)
+                    legalEP |= !(attackers_to(square<KING>(sideToMove), occ ^ pop_lsb(pawns))
+                                 & pieces(~sideToMove) & ~target);
         }
-        else
-            return PositionSetError("Invalid FEN. Invalid en-passant square.");
     }
 
     if (!enpassant || !legalEP)
@@ -432,10 +443,10 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
     // handle also common incorrect FEN with fullmove = 0.
     gamePly = std::max(2 * (gamePly - 1), 0) + (sideToMove == BLACK);
 
-    chess960 = isChess960;
+    chess960 = !is_antichess() && isChess960;
     set_state();
 
-    if (attackers_to_exist(square<KING>(~sideToMove), pieces(), sideToMove))
+    if (!is_antichess() && attackers_to_exist(square<KING>(~sideToMove), pieces(), sideToMove))
         return PositionSetError("Unsupported position. King can be captured.");
 
     assert(pos_is_ok());
@@ -448,8 +459,16 @@ Position::set(const string& fenStr, bool isChess960, StateInfo* si) {
 // rights given the corresponding color and the rook starting square.
 void Position::set_castling_right(Color c, Square rfrom) {
 
-    Square         kfrom = square<KING>(c);
-    CastlingRights cr    = c & (kfrom < rfrom ? KING_SIDE : QUEEN_SIDE);
+    const Bitboard kings = pieces(c, KING);
+    assert(!is_antichess() && kings && !more_than_one(kings));
+    if (is_antichess() || !kings || more_than_one(kings) || !is_ok(rfrom))
+        return;
+
+    Square kfrom = lsb(kings);
+    if (!is_ok(kfrom))
+        return;
+
+    CastlingRights cr = c & (kfrom < rfrom ? KING_SIDE : QUEEN_SIDE);
 
     st->castlingRights |= cr;
     castlingRightsMask[kfrom] |= cr;
@@ -465,6 +484,14 @@ void Position::set_castling_right(Color c, Square rfrom) {
 
 // Sets king attacks to detect if a move gives check
 void Position::set_check_info() const {
+
+    if (is_antichess())
+    {
+        st->blockersForKing[WHITE] = st->blockersForKing[BLACK] = 0;
+        st->pinners[WHITE] = st->pinners[BLACK] = 0;
+        std::fill(std::begin(st->checkSquares), std::end(st->checkSquares), 0);
+        return;
+    }
 
     update_slider_blockers(WHITE);
     update_slider_blockers(BLACK);
@@ -491,7 +518,8 @@ void Position::set_state() const {
     st->nonPawnKey[WHITE] = st->nonPawnKey[BLACK] = 0;
     st->pawnKey                                   = Zobrist::noPawns;
     st->nonPawnMaterial[WHITE] = st->nonPawnMaterial[BLACK] = VALUE_ZERO;
-    st->checkersBB = attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
+    st->checkersBB =
+      is_antichess() ? 0 : attackers_to(square<KING>(sideToMove)) & pieces(~sideToMove);
 
     set_check_info();
 
@@ -667,6 +695,9 @@ bool Position::legal(Move m) const {
     Square from = m.from_sq();
     Square to   = m.to_sq();
 
+    if (is_antichess())
+        return MoveList<LEGAL>(*this).contains(m);
+
     assert(color_of(moved_piece(m)) == us);
     assert(piece_on(square<KING>(us)) == make_piece(us, KING));
 
@@ -703,6 +734,9 @@ bool Position::legal(Move m) const {
 // pseudo-legal. It is used to validate moves from TT that can be corrupted
 // due to SMP concurrent access or hash position key aliasing.
 bool Position::pseudo_legal(const Move m) const {
+
+    if (is_antichess())
+        return MoveList<LEGAL>(*this).contains(m);
 
     Color  us   = sideToMove;
     Square from = m.from_sq();
@@ -767,6 +801,9 @@ bool Position::gives_check(Move m) const {
 
     assert(m.is_ok());
     assert(color_of(moved_piece(m)) == sideToMove);
+
+    if (is_antichess())
+        return false;
 
     Square from = m.from_sq();
     Square to   = m.to_sq();
@@ -860,7 +897,7 @@ void Position::do_move(Move                      m,
 
     assert(color_of(pc) == us);
     assert(captured == NO_PIECE || color_of(captured) == (m.type_of() != CASTLING ? them : us));
-    assert(type_of(captured) != KING);
+    assert(is_antichess() || type_of(captured) != KING);
 
     if (m.type_of() == CASTLING)
     {
@@ -948,17 +985,25 @@ void Position::do_move(Move                      m,
             // If there are no pawns attacking the ep square, ep is not possible.
             if (pawns)
             {
-                Square   ksq         = square<KING>(them);
-                Bitboard notBlockers = ~st->previous->blockersForKing[them];
-                bool     noDiscovery = (from & notBlockers) || file_of(from) == file_of(ksq);
-
-                // If the pawn gives discovered check, ep is never legal. Else, if at least one
-                // pawn was not a blocker for the enemy king or lies on the same line as the
-                // enemy king and en passant square, a legal capture exists.
-                if (noDiscovery && (pawns & (notBlockers | line_bb(epSquare, ksq))))
+                if (is_antichess())
                 {
                     st->epSquare = epSquare;
                     k ^= Zobrist::enpassant[file_of(epSquare)];
+                }
+                else
+                {
+                    Square   ksq         = square<KING>(them);
+                    Bitboard notBlockers = ~st->previous->blockersForKing[them];
+                    bool     noDiscovery = (from & notBlockers) || file_of(from) == file_of(ksq);
+
+                    // If the pawn gives discovered check, ep is never legal. Else, if at least one
+                    // pawn was not a blocker for the enemy king or lies on the same line as the
+                    // enemy king and en passant square, a legal capture exists.
+                    if (noDiscovery && (pawns & (notBlockers | line_bb(epSquare, ksq))))
+                    {
+                        st->epSquare = epSquare;
+                        k ^= Zobrist::enpassant[file_of(epSquare)];
+                    }
                 }
             }
         }
@@ -969,7 +1014,7 @@ void Position::do_move(Move                      m,
             Piece     promotion = make_piece(us, pt);
 
             assert(relative_rank(us, to) == RANK_8);
-            assert(pt >= KNIGHT && pt <= QUEEN);
+            assert(pt >= KNIGHT && pt <= (is_antichess() ? KING : QUEEN));
 
             dp.add_pc = promotion;
             dp.add_sq = to;
@@ -1043,7 +1088,8 @@ void Position::do_move(Move                      m,
     st->capturedPiece = captured;
 
     // Calculate checkers bitboard (if move gives check)
-    st->checkersBB = givesCheck ? attackers_to(square<KING>(them)) & pieces(us) : 0;
+    st->checkersBB =
+      !is_antichess() && givesCheck ? attackers_to(square<KING>(them)) & pieces(us) : 0;
 
     sideToMove = ~sideToMove;
 
@@ -1095,13 +1141,13 @@ void Position::undo_move(Move m) {
     Piece  pc   = piece_on(to);
 
     assert(empty(from) || m.type_of() == CASTLING);
-    assert(type_of(st->capturedPiece) != KING);
+    assert(is_antichess() || type_of(st->capturedPiece) != KING);
 
     if (m.type_of() == PROMOTION)
     {
         assert(relative_rank(us, to) == RANK_8);
         assert(type_of(pc) == m.promotion_type());
-        assert(type_of(pc) >= KNIGHT && type_of(pc) <= QUEEN);
+        assert(type_of(pc) >= KNIGHT && type_of(pc) <= (is_antichess() ? KING : QUEEN));
 
         pc = make_piece(us, PAWN);
         swap_piece(to, pc);
@@ -1495,6 +1541,9 @@ bool Position::see_ge(Move m, int threshold) const {
 // or by repetition. It does not detect stalemates.
 bool Position::is_draw(int ply) const {
 
+    if (is_antichess())
+        return !antichess_variant_end() && antichess_automatic_draw();
+
     if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
         return true;
 
@@ -1504,6 +1553,122 @@ bool Position::is_draw(int ply) const {
 // Return a draw score if a position repeats once earlier but strictly
 // after the root, or repeats twice before or at the root.
 bool Position::is_repetition(int ply) const { return st->repetition && st->repetition < ply; }
+
+
+int Position::antichess_repetition_count() const {
+
+    assert(is_antichess());
+
+    int        count  = 1;
+    int        end    = std::min(st->rule50, st->pliesFromNull);
+    StateInfo* cursor = st;
+
+    for (int distance = 2; distance <= end; distance += 2)
+    {
+        if (!cursor->previous || !cursor->previous->previous)
+            break;
+        cursor = cursor->previous->previous;
+        if (cursor->key == st->key)
+            ++count;
+    }
+
+    return count;
+}
+
+
+bool Position::antichess_threefold() const { return antichess_repetition_count() >= 3; }
+
+
+bool Position::antichess_fivefold() const { return antichess_repetition_count() >= 5; }
+
+
+bool Position::antichess_variant_end() const {
+
+    assert(is_antichess());
+    return !pieces(sideToMove) || MoveList<LEGAL>(*this).size() == 0;
+}
+
+
+bool Position::antichess_insufficient_material() const {
+
+    assert(is_antichess());
+
+    if (pieces(BISHOP, PAWN) != pieces())
+        return false;
+
+    Bitboard whiteBishops = pieces(WHITE, BISHOP);
+    Bitboard blackBishops = pieces(BLACK, BISHOP);
+    if (!whiteBishops || !blackBishops)
+        return false;
+
+    const auto isLight           = [](Square s) { return (int(file_of(s)) + int(rank_of(s))) & 1; };
+    const auto singleSquareColor = [&isLight](Bitboard bishops, bool& light) {
+        light = isLight(lsb(bishops));
+        while (bishops)
+            if (isLight(pop_lsb(bishops)) != light)
+                return false;
+        return true;
+    };
+
+    bool whiteLight, blackLight;
+    if (!singleSquareColor(whiteBishops, whiteLight) || !singleSquareColor(blackBishops, blackLight)
+        || whiteLight == blackLight)
+        return false;
+
+    for (Color c : {WHITE, BLACK})
+    {
+        Bitboard pawns               = pieces(c, PAWN);
+        bool     oppositeBishopLight = c == WHITE ? blackLight : whiteLight;
+        while (pawns)
+        {
+            Square pawn  = pop_lsb(pawns);
+            Square front = pawn + pawn_push(c);
+
+            if (!is_ok(front) || type_of(piece_on(front)) != PAWN
+                || isLight(pawn) == oppositeBishopLight)
+                return false;
+
+            Bitboard capturable = pieces(~c);
+            if (ep_square() != SQ_NONE && c == sideToMove)
+                capturable |= ep_square();
+
+            if (attacks_bb<PAWN>(pawn, c) & capturable)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+
+bool Position::antichess_opponent_has_insufficient_material() const {
+
+    assert(is_antichess());
+    if (pieces() != pieces(KNIGHT) || count<KNIGHT>(WHITE) != 1 || count<KNIGHT>(BLACK) != 1)
+        return false;
+
+    Square whiteKnight = lsb(pieces(WHITE, KNIGHT));
+    Square blackKnight = lsb(pieces(BLACK, KNIGHT));
+    return ((int(file_of(whiteKnight)) + int(rank_of(whiteKnight))) & 1)
+        == ((int(file_of(blackKnight)) + int(rank_of(blackKnight))) & 1);
+}
+
+
+bool Position::antichess_player_has_insufficient_material() const {
+
+    assert(is_antichess());
+    if (pieces() != pieces(KNIGHT) || count<KNIGHT>(WHITE) != 1 || count<KNIGHT>(BLACK) != 1)
+        return false;
+
+    return !antichess_opponent_has_insufficient_material();
+}
+
+
+bool Position::antichess_automatic_draw() const {
+
+    assert(is_antichess());
+    return antichess_insufficient_material() || st->rule50 >= 100 || antichess_fivefold();
+}
 
 // Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
@@ -1610,6 +1775,43 @@ bool Position::material_key_is_ok() const { return compute_material_key() == st-
 // and raise an assert if something wrong is detected.
 // This is meant to be helpful when debugging.
 bool Position::pos_is_ok() const {
+
+    if (is_antichess())
+    {
+        if (sideToMove != WHITE && sideToMove != BLACK)
+            assert(0 && "pos_is_ok: Antichess side to move");
+
+        if (can_castle(ANY_CASTLING) || (pieces(PAWN) & (Rank1BB | Rank8BB)))
+            assert(0 && "pos_is_ok: Antichess profile state");
+
+        if (ep_square() != SQ_NONE)
+        {
+            const Bitboard captured =
+              (ep_square() + pawn_push(~sideToMove)) & pieces(~sideToMove, PAWN);
+            const Bitboard pawns =
+              attacks_bb<PAWN>(ep_square(), ~sideToMove) & pieces(sideToMove, PAWN);
+            if (relative_rank(sideToMove, ep_square()) != RANK_6 || !captured || !pawns
+                || !empty(ep_square()))
+                assert(0 && "pos_is_ok: Antichess en passant square");
+        }
+
+        if ((pieces(WHITE) & pieces(BLACK)) || (pieces(WHITE) | pieces(BLACK)) != pieces()
+            || popcount(pieces()) > 32)
+            assert(0 && "pos_is_ok: Antichess bitboards");
+
+        for (PieceType p1 = PAWN; p1 <= KING; ++p1)
+            for (PieceType p2 = PAWN; p2 <= KING; ++p2)
+                if (p1 != p2 && (pieces(p1) & pieces(p2)))
+                    assert(0 && "pos_is_ok: Antichess overlapping pieces");
+
+        for (Piece pc : Pieces)
+            if (pieceCount[pc] != popcount(pieces(color_of(pc), type_of(pc)))
+                || pieceCount[pc] != std::count(board.begin(), board.end(), pc))
+                assert(0 && "pos_is_ok: Antichess piece counts");
+
+        assert(material_key_is_ok() && "pos_is_ok: Antichess materialKey");
+        return true;
+    }
 
     if ((sideToMove != WHITE && sideToMove != BLACK) || piece_on(square<KING>(WHITE)) != W_KING
         || piece_on(square<KING>(BLACK)) != B_KING

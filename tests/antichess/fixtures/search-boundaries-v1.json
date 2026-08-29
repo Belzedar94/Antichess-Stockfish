@@ -4,7 +4,7 @@
   "scope": "SEARCH_TERMINAL_AND_CLAIM_POLICY",
   "cases": [
     {
-      "id": "qsearch_preserves_no_legal_terminal",
+      "id": "depth_one_detects_no_legal_terminal",
       "initial_fen": "8/p7/8/P7/8/8/8/8 w - - 0 1",
       "moves": [],
       "depth": 1,

@@ -423,6 +423,50 @@
       }
     },
     {
+      "id": "blocked_bishops_pawns_without_ep_draw",
+      "family": "insufficient_material",
+      "fen": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - - 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - - 0 1",
+        "legal_moves": ["c1a3", "c1b2", "c1d2", "c1e3", "c1f4", "c1g5", "c1h6"],
+        "end": true,
+        "automatic_draw": true,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": "draw",
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": null
+      }
+    },
+    {
+      "id": "effective_ep_breaks_blocked_bishops_pawns_draw",
+      "family": "insufficient_material",
+      "fen": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1",
+      "input_policy": "accept",
+      "expected": {
+        "canonical_fen": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1",
+        "legal_moves": ["e5d6"],
+        "end": false,
+        "automatic_draw": false,
+        "threefold": false,
+        "fivefold": false,
+        "variant_end": false,
+        "status": null,
+        "winner": null,
+        "check": false,
+        "player_insufficient": false,
+        "opponent_insufficient": false,
+        "halfmove_clock": 0,
+        "effective_ep": "d6"
+      }
+    },
+    {
       "id": "knights_opposite_colors_white_to_move",
       "family": "one_sided_cannot_win",
       "fen": "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
