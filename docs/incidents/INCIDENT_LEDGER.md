@@ -145,3 +145,17 @@
   timing fields, reject incompatible arguments, and keep `speedtest` disabled
   until a P7 workload is preregistered.
 - **Gate:** P3, P6, P7, and P14.
+
+## INC-REFEREE-002 — A base checkout was passed where a patched worktree was required
+
+- **Symptom:** the referee verifier reported `patched source drift:
+  CMakeLists.txt` even though the frozen patch and derived tree were unchanged.
+- **False inference:** the built referee or its source worktree had drifted.
+- **Cause:** the caller supplied the pristine Cute Chess base checkout to an
+  argument that intentionally verifies the patched worktree at the same base
+  commit.
+- **Prevention:** distinguish `base_root` from `patched_root` in runbooks and
+  wrappers, verify the caller path before blob comparisons, and preserve the
+  first failure classification. A corrected run must still reconstruct the
+  patch from the base and verify every derived blob and behavior.
+- **Gate:** P4, P6, and P15.

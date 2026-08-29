@@ -73,9 +73,7 @@ blocked pawns can still capture.
 The referee emits ordinary Antichess UCI coordinates, including the `k`
 promotion suffix for promotion to a non-royal king. SAN has no check marker.
 It appends `#` only when the resulting Antichess position has a winner, matching
-the pinned scalachess dumper. PGN must declare `Variant "Antichess"`; a real
-pair smoke and PGN replay audit are required before this ADR can support a P4
-pass.
+the pinned scalachess dumper. PGN must declare `Variant "Antichess"`.
 
 The exact UCI option mapping remains part of the match evidence. The client
 must send `setoption name UCI_Variant value antichess`; merely having an
@@ -95,6 +93,14 @@ The frozen verification covers rules and history states, accepted and rejected
 FENs, illegal moves, explicit compulsory-capture context, exact SAN, and
 service-result outcomes. Binary hashes are local build evidence, not portable
 release artifacts.
+
+E1 closes the local P4 boundary with the exact reproducible candidate binary
+`c32c31655e294b2946b5ab8acd9be81c19bdf63e0823276b9cebeeec5cd7371b`.
+The two-game color-swapped pair produced 100 clocked plies, including 48
+positions with mandatory captures and two terminal SAN moves. Raw protocol
+logs contain the exact variant option mapping and no illegal move, crash,
+disconnect, stall, or time loss. This is correctness smoke, not Elo or timing
+evidence.
 
 ## OpenBench and release boundary
 

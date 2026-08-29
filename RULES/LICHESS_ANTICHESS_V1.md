@@ -1,6 +1,7 @@
 # LICHESS_ANTICHESS_V1
 
-Status: **selected by the project owner; executable conformance still in P2/P3**.
+Status: **selected by the project owner; P2-P5 executable conformance passed
+for candidate `95e4efec466c696d477f217a2226a0fc1ef8f4ee`; P6 baseline pending**.
 
 This document freezes the public rules identity of Antichess-Stockfish. It is
 derived from the pinned Lichess/scalachess implementation in
@@ -109,11 +110,12 @@ Antichess-Stockfish entry point must do the same. See `INC-DIALECT-002`.
 A threefold claim is available only for the current position after the move
 that creates the third occurrence; this profile does not add a claim by an
 announced future move. Lichess may immediately submit that claim for a bot or
-for a player whose auto-claim preference applies. The deterministic match
-runner claim policy and result-reason encoding remain **OPEN-P3** and must be
-versioned as part of the referee contract.
+for a player whose auto-claim preference applies. `AC_REFEREE_V1` closes the
+local deterministic runner policy as an immediate, result-blind claim with
+the `Draw by repetition` reason. This does not certify any OpenBench runner,
+whose exact mapping remains fail-closed.
 
-No strength work may begin while an OPEN-P3 item remains.
+No strength work may begin before P6 passes.
 
 ## Repetition identity
 
