@@ -204,6 +204,104 @@ Move* generate_moves(const Position& pos, Move* moveList, Bitboard target) {
 }
 
 
+Move* make_antichess_promotions(Move* moveList, Square from, Square to) {
+
+    for (PieceType pt : {QUEEN, ROOK, BISHOP, KNIGHT, KING})
+        *moveList++ = Move::make<PROMOTION>(from, to, pt);
+
+    return moveList;
+}
+
+
+template<Color Us, bool Captures>
+Move* generate_antichess_pawn_moves(const Position& pos, Move* moveList) {
+
+    constexpr Color     Them     = ~Us;
+    constexpr Bitboard  TRank7BB = Us == WHITE ? Rank7BB : Rank2BB;
+    constexpr Bitboard  TRank3BB = Us == WHITE ? Rank3BB : Rank6BB;
+    constexpr Direction Up       = pawn_push(Us);
+    constexpr Direction UpRight  = Us == WHITE ? NORTH_EAST : SOUTH_WEST;
+    constexpr Direction UpLeft   = Us == WHITE ? NORTH_WEST : SOUTH_EAST;
+
+    const Bitboard emptySquares = ~pos.pieces();
+    const Bitboard enemies      = pos.pieces(Them);
+    const Bitboard pawnsOn7     = pos.pieces(Us, PAWN) & TRank7BB;
+    const Bitboard pawnsNotOn7  = pos.pieces(Us, PAWN) & ~TRank7BB;
+
+    if constexpr (Captures)
+    {
+        Bitboard rightPromotions = shift(pawnsOn7, UpRight) & enemies;
+        Bitboard leftPromotions  = shift(pawnsOn7, UpLeft) & enemies;
+        while (rightPromotions)
+        {
+            Square to = pop_lsb(rightPromotions);
+            moveList  = make_antichess_promotions(moveList, to - UpRight, to);
+        }
+        while (leftPromotions)
+        {
+            Square to = pop_lsb(leftPromotions);
+            moveList  = make_antichess_promotions(moveList, to - UpLeft, to);
+        }
+
+        moveList = splat_pawn_moves<UpRight>(moveList, shift(pawnsNotOn7, UpRight) & enemies);
+        moveList = splat_pawn_moves<UpLeft>(moveList, shift(pawnsNotOn7, UpLeft) & enemies);
+
+        if (pos.ep_square() != SQ_NONE)
+        {
+            Bitboard pawns = pawnsNotOn7 & Attacks::attacks_bb<PAWN>(pos.ep_square(), Them);
+            while (pawns)
+                *moveList++ = Move::make<EN_PASSANT>(pop_lsb(pawns), pos.ep_square());
+        }
+    }
+    else
+    {
+        Bitboard singlePushes = shift(pawnsNotOn7, Up) & emptySquares;
+        Bitboard doublePushes = shift(singlePushes & TRank3BB, Up) & emptySquares;
+        moveList              = splat_pawn_moves<Up>(moveList, singlePushes);
+        moveList              = splat_pawn_moves<Up + Up>(moveList, doublePushes);
+
+        Bitboard promotions = shift(pawnsOn7, Up) & emptySquares;
+        while (promotions)
+        {
+            Square to = pop_lsb(promotions);
+            moveList  = make_antichess_promotions(moveList, to - Up, to);
+        }
+    }
+
+    return moveList;
+}
+
+
+template<Color Us, bool Captures>
+Move* generate_antichess_moves(const Position& pos, Move* moveList) {
+
+    const Bitboard target = Captures ? pos.pieces(~Us) : ~pos.pieces();
+
+    moveList = generate_antichess_pawn_moves<Us, Captures>(pos, moveList);
+    moveList = generate_moves<Us, KNIGHT>(pos, moveList, target);
+    moveList = generate_moves<Us, BISHOP>(pos, moveList, target);
+    moveList = generate_moves<Us, ROOK>(pos, moveList, target);
+    moveList = generate_moves<Us, QUEEN>(pos, moveList, target);
+
+    Bitboard kings = pos.pieces(Us, KING);
+    while (kings)
+    {
+        Square from = pop_lsb(kings);
+        moveList    = splat_moves(moveList, from, Attacks::attacks_bb<KING>(from) & target);
+    }
+
+    return moveList;
+}
+
+
+template<Color Us>
+Move* generate_antichess_legal(const Position& pos, Move* moveList) {
+
+    Move* end = generate_antichess_moves<Us, true>(pos, moveList);
+    return end != moveList ? end : generate_antichess_moves<Us, false>(pos, moveList);
+}
+
+
 template<Color Us, GenType Type>
 Move* generate_all(const Position& pos, Move* moveList) {
 
@@ -252,6 +350,29 @@ template<GenType Type>
 Move* generate(const Position& pos, Move* moveList) {
 
     static_assert(Type != LEGAL, "Unsupported type in generate()");
+
+    if (pos.is_antichess())
+    {
+        const Color us = pos.side_to_move();
+
+        if constexpr (Type == CAPTURES)
+            return us == WHITE ? generate_antichess_moves<WHITE, true>(pos, moveList)
+                               : generate_antichess_moves<BLACK, true>(pos, moveList);
+        else if constexpr (Type == QUIETS)
+        {
+            Move  captures[MAX_MOVES];
+            Move* captureEnd = us == WHITE ? generate_antichess_moves<WHITE, true>(pos, captures)
+                                           : generate_antichess_moves<BLACK, true>(pos, captures);
+            if (captureEnd != captures)
+                return moveList;
+            return us == WHITE ? generate_antichess_moves<WHITE, false>(pos, moveList)
+                               : generate_antichess_moves<BLACK, false>(pos, moveList);
+        }
+        else
+            return us == WHITE ? generate_antichess_legal<WHITE>(pos, moveList)
+                               : generate_antichess_legal<BLACK>(pos, moveList);
+    }
+
     assert((Type == EVASIONS) == bool(pos.checkers()));
 
     Color us = pos.side_to_move();
@@ -270,6 +391,10 @@ template Move* generate<NON_EVASIONS>(const Position&, Move*);
 
 template<>
 Move* generate<LEGAL>(const Position& pos, Move* moveList) {
+
+    if (pos.is_antichess())
+        return pos.side_to_move() == WHITE ? generate_antichess_legal<WHITE>(pos, moveList)
+                                           : generate_antichess_legal<BLACK>(pos, moveList);
 
     Color    us     = pos.side_to_move();
     Bitboard pinned = pos.blockers_for_king(us) & pos.pieces(us);

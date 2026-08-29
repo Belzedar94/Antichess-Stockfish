@@ -1,0 +1,186 @@
+{
+  "format_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "retrieved_at_utc": "2026-08-12T14:27:12Z",
+  "normative_authority": [
+    {
+      "role": "public_rule_declaration",
+      "url": "https://lichess.org/variant/antichess",
+      "identity_note": "Human-readable declaration; executable revisions below control ambiguities."
+    },
+    {
+      "role": "primary_rules_implementation",
+      "repository": "https://github.com/lichess-org/scalachess.git",
+      "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "tree": "f5410eb2a6ddb6ef7092317533f704158c86a4fc",
+      "files": [
+        {
+          "path": "core/src/main/scala/variant/Antichess.scala",
+          "git_blob": "2a74dac19c55413f253e164f0ad0cd7ea0398773"
+        },
+        {
+          "path": "core/src/main/scala/variant/Variant.scala",
+          "git_blob": "eead54a4bad0cc416bed96ae7731b15fafca99f3"
+        },
+        {
+          "path": "core/src/main/scala/Position.scala",
+          "git_blob": "57d6e5bd11af70f9fe84139dd549883fdb1f46ee"
+        },
+        {
+          "path": "core/src/main/scala/format/Fen.scala",
+          "git_blob": "4ea4df4c483a35e3fb0ce59211533c039695f128"
+        },
+        {
+          "path": "core/src/main/scala/format/FenReader.scala",
+          "git_blob": "8b5016bf506645b1ef1e451aa69b9de6e8edd5e6"
+        },
+        {
+          "path": "core/src/main/scala/format/pgn/Dumper.scala",
+          "git_blob": "3693f9a97b9606c226cbc8e49ff66f2654f2c344"
+        },
+        {
+          "path": "test-kit/src/test/scala/AntichessVariantTest.scala",
+          "git_blob": "321491dbfe6dfd3b316184753cf4e3923afffb36"
+        }
+      ]
+    },
+    {
+      "role": "primary_service_claim_policy",
+      "repository": "https://github.com/lichess-org/lila.git",
+      "commit": "13895e5856db0f854f6ab76394fffce852ebd5c9",
+      "tree": "8a5f93aa0e88923781805a94d8e653fcf9a77975",
+      "files": [
+        {
+          "path": "modules/round/src/main/Drawer.scala",
+          "git_blob": "580ba208e7eac833edc5fd54c02b3bd2581a8e04"
+        },
+        {
+          "path": "modules/game/src/main/Game.scala",
+          "git_blob": "a894018a0b77d017a24e1e791f95a90177aa724e"
+        },
+        {
+          "path": "modules/game/src/main/PgnDump.scala",
+          "git_blob": "4ec766f2b592f51825eb8f420e5d41360f61911e"
+        },
+        {
+          "path": "modules/round/src/main/RoundGame.scala",
+          "git_blob": "6acd62d5b47ba99e38c8155853314177d8f6f39e"
+        },
+        {
+          "path": "modules/round/src/main/Finisher.scala",
+          "git_blob": "51940695a85f0e20c84b15723ea3a320bf4792b6"
+        },
+        {
+          "path": "modules/round/src/main/RoundAsyncActor.scala",
+          "git_blob": "2d2f8f21ba28ec1eba6842ff67f2e29e192c9a78"
+        },
+        {
+          "path": "ui/lib/src/ceval/engines/engines.ts",
+          "git_blob": "ecd698bc65e99bf709c6e56c63111f9aa83d0c4e"
+        },
+        {
+          "path": "modules/common/src/main/Form.scala",
+          "git_blob": "f230c6a3c559af3d783b21d511cbd413144edaf3"
+        },
+        {
+          "path": "modules/setup/src/main/ValidFen.scala",
+          "git_blob": "bf2ddfa4c6e1a9e61befaf9c6ca940549d5f9ced"
+        },
+        {
+          "path": "app/controllers/UserAnalysis.scala",
+          "git_blob": "7ee046e52f876c3ada70274abb09c9b61c2e30d6"
+        }
+      ]
+    }
+  ],
+  "independent_reference": {
+    "repository": "https://github.com/niklasf/chessops.git",
+    "commit": "736c40ced7130d453d85e7979c360b797474c9a7",
+    "tree": "d555da3d103eef217c7a894e7a994c4f55313a42",
+    "license": "GPL-3.0",
+    "status": "PINNED_EXECUTED_LOCAL",
+    "known_gap": "The pinned chessops revision does not implement scalachess's blocked-pawn/opposite-bishop automatic draw. It remains an independent legality and parser reference for those positions, not the terminal authority.",
+    "files": [
+      {
+        "path": "src/fen.ts",
+        "git_blob": "ed373765da44a129e55fe5d982f67d4e13224813"
+      },
+      {
+        "path": "src/variant.ts",
+        "git_blob": "0128791f282f38f8d81ef11406c8d291d744b4fa"
+      },
+      {
+        "path": "package.json",
+        "git_blob": "462044ed5b43f131939ccb6a05df85715b38d3f9"
+      }
+    ]
+  },
+  "referee_candidate": {
+    "repository": "https://github.com/cutechess/cutechess.git",
+    "commit": "5e84232be4546aaedc9d87a96c91867a1da06ada",
+    "tree": "d0912f7c5355837bec16a9c57dc5da29ce42765d",
+    "status": "PINNED_PATCHED_EXECUTED_LOCAL",
+    "accepted_profile": "AC_REFEREE_V1",
+    "vanilla_status": "REJECTED_PROFILE_DRIFT",
+    "known_gap": "The vanilla antichess board treats threefold repetition as automatic and has incompatible material, service-result, and terminal SAN behavior.",
+    "patch": {
+      "path": "tools/referee/patches/cutechess-5e84232-lichess-antichess-v1.patch",
+      "bytes": 13741,
+      "sha256": "b8d20a4aa6c4a4a287772cec08b7e952feca88be9120ce11c45a7a3ccfa2a972",
+      "derived_tree": "639664d19717604326fa5fef21356556db86e27b"
+    },
+    "local_verification": {
+      "behavior_checks": 879,
+      "notation_positions": 7,
+      "pair_smoke_games": 2,
+      "pair_smoke_plies": 100,
+      "pair_smoke_mandatory_positions": 48,
+      "evidence_class": "P4_PAIR_SMOKE_NOT_STRENGTH"
+    },
+    "official_openbench_mapping": "UNKNOWN_FAIL_CLOSED",
+    "files": [
+      {
+        "path": "projects/lib/src/board/antiboard.cpp",
+        "git_blob": "729c9d24fbe3a8c72e1c2b0e6805c17dbf990b87"
+      },
+      {
+        "path": "projects/lib/src/board/antiboard.h",
+        "git_blob": "1b9299944112268c6b90b039548985176ed45818"
+      },
+      {
+        "path": "projects/lib/src/board/suicideboard.cpp",
+        "git_blob": "6af1bf2d685338fe38583a067e51a62c4d7a24a7"
+      },
+      {
+        "path": "projects/lib/src/board/giveawayboard.cpp",
+        "git_blob": "985b3e368a7c8c33f246b82771544229c42d1493"
+      }
+    ],
+    "patched_blobs": {
+      "CMakeLists.txt": "e45a44698795022c38949ebe3d53ff73f81d8532",
+      "projects/cli/src/main.cpp": "51cc766401e426c96dca6823300af6f878ced01e",
+      "projects/lib/src/board/antiboard.cpp": "25082a3c71f362492027b462489edc3e8cde4f44",
+      "projects/lib/src/board/antiboard.h": "fbd75bbbcd27bcbd043b69a249e30e56ea71f9e3",
+      "projects/lib/src/chessgame.cpp": "f3ffa16fd746ce8be079654389bd5456d1e8d8bf",
+      "projects/lib/src/pgngame.cpp": "f43f1160a4a3336475fa79ea18ce22405d10540a",
+      "projects/lib/tests/antichessprofile/antichess_profile_probe.cpp": "095d1177953da93f629a135b2a512e0bc06305b5"
+    }
+  },
+  "negative_profile_authorities": [
+    {
+      "token": "suicide",
+      "url": "https://www.freechess.org/Help/HelpFiles/suicide_chess.html",
+      "reason_not_alias": "FICS resolves no-legal-move positions by comparing remaining piece counts."
+    },
+    {
+      "token": "losers",
+      "url": "https://www.freechess.org/Help/HelpFiles/losers.html",
+      "reason_not_alias": "FICS retains a royal king, check, checkmate, and castling."
+    },
+    {
+      "token": "giveaway",
+      "url": "https://web.archive.org/web/20260421125842id_/https://www.chessvariants.com/diffobjective.dir/giveaway.old.html",
+      "reason_not_alias": "The historical source describes multiple dialects and does not define a unique Lichess-compatible protocol profile."
+    }
+  ]
+}

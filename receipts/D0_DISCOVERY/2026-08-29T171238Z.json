@@ -1,0 +1,79 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "D0_DISCOVERY",
+  "recorded_at_utc": "2026-08-29T17:12:38Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "NO_VALID_BASELINE",
+  "gates": {
+    "P0": "PASS",
+    "P1": "PASS",
+    "P2": "IN_PROGRESS",
+    "P3": "PENDING"
+  },
+  "owner_decision": {
+    "fairy_stockfish_source_base": "NO_GO",
+    "required_source_base": "latest official Stockfish development head at transition time"
+  },
+  "repository": {
+    "root": "C:\\Users\\djime\\Documents\\Chess_variants\\Codex\\Fairy-Stockfish organization\\Antichess Project\\Antichess-Stockfish",
+    "branch": "antichess/official-8bc5caa2-p0",
+    "origin": "https://github.com/Belzedar94/Antichess-Stockfish.git",
+    "official_upstream": "https://github.com/official-stockfish/Stockfish.git"
+  },
+  "official_source": {
+    "commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "tree": "8893b88f51de19a44e44b67a72a56aef2ac2e0cc",
+    "tag": "stockfish-dev-20260829-8bc5caa2",
+    "local_base_tag_object": "6039aef47aaf4c8cb17a7f1637470481eb5b067f"
+  },
+  "pristine_control": {
+    "build_exit": 0,
+    "elapsed_ms": 54780,
+    "binary_bytes": 102858438,
+    "binary_sha256": "6321fa00ee771fedc024382149e8f1719c901177914c23dd00c54d135b27556b",
+    "uci_identity": "Stockfish dev-20260829-8bc5caa2",
+    "bench_nodes_run_1": 2497913,
+    "bench_nodes_run_2": 2497913,
+    "tracked_status_after_build": "CLEAN"
+  },
+  "rejected_lineage": {
+    "archive_tag_object": "4f916b9df80c6d012ce76e8ecfb1b0760499ef03",
+    "archive_target": "432632ecd058ee2465b52e38531e8d409ea68804",
+    "bundle_bytes": 12410392,
+    "bundle_sha256": "74d78edf9b57457caffd36eb4ad0839bf5f5d98cb9133cef5e4f4988b5f72904",
+    "candidate_ancestry_allowed": false
+  },
+  "contract_import": {
+    "mode": "HASHED_ALLOWLIST_ONLY",
+    "fixture_contract_result": "PASS",
+    "position_fixtures": 25,
+    "history_fixtures": 7,
+    "excluded": [
+      "candidate implementation",
+      "strength code",
+      "build files",
+      "binaries",
+      "networks",
+      "books",
+      "receipts"
+    ]
+  },
+  "oracle": {
+    "engine": "browser",
+    "requested_model": "gpt-5-pro",
+    "resolved_model": "gpt-5-pro",
+    "verified": true,
+    "transcript_sha256": "06ef6356d666fd429d8b15a178e341c0dbe1c4d2e3a0c5f7a7db500b774dbd17",
+    "advisory_only": true,
+    "source_sensitive_reaudit_required": true
+  },
+  "open_gaps": [
+    "candidate Antichess implementation and clean build",
+    "exact independent match referee with Lichess claim policy",
+    "legacy NNUE format, feature domain, compatibility, and license",
+    "official OpenBench dialect mapping and resource lease",
+    "P3 through P16"
+  ],
+  "next_safe_action": "Implement only correctness plumbing for LICHESS_ANTICHESS_V1 on the pinned official source and run frozen differential fixtures."
+}

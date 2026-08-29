@@ -1,0 +1,147 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-08-29T19:30:31Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "NO_VALID_BASELINE",
+  "evidence_class": "ENGINEERING_CORRECTNESS_NOT_STRENGTH",
+  "gates": {
+    "P0": "PASS",
+    "P1": "PASS",
+    "P2": "PASS",
+    "P3": "PASS",
+    "P4": "PASS",
+    "P5": "PASS",
+    "P6": "IN_PROGRESS"
+  },
+  "candidate": {
+    "commit": "95e4efec466c696d477f217a2226a0fc1ef8f4ee",
+    "tree": "0eba0024f00f5c8f0a86ec3e780b2f2c8d43da3f",
+    "parent": "7ae32b4de823ba9a60822e043260bf6922cda35f",
+    "official_source_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_source_is_ancestor": true,
+    "rejected_fairy_line_is_ancestor": false,
+    "branch": "antichess/official-8bc5caa2-p0"
+  },
+  "toolchain": {
+    "platform": "Windows_NT 10.0.19045 AMD64",
+    "shell": "C:\\msys64\\msys2_shell.cmd -defterm -no-start -mingw64",
+    "compiler": "g++.exe (Rev5, Built by MSYS2 project) 16.1.0",
+    "compiler_sha256": "c2ca27de1a97c077caad452318711d5dc95f43cc5e30fa81dd52c4bdd9db3abb",
+    "make": "GNU Make 4.4.1",
+    "make_sha256": "2d3b9fca575be8e93c10ab74348055fa127a65cf628d52e9218ac76065cc6d22",
+    "source_date_epoch": 1788031201,
+    "build_command": "make clean && make -j1 build ARCH=x86-64 COMP=mingw COMPCXX=/mingw64/bin/g++ debug=no",
+    "configuration": {
+      "architecture": "x86-64",
+      "threads": 1,
+      "debug": false,
+      "sanitize": "none",
+      "syzygy": false,
+      "embedded_network": false
+    }
+  },
+  "reproducible_build": {
+    "binary_bytes": 4231799,
+    "binary_sha256_run_1": "c32c31655e294b2946b5ab8acd9be81c19bdf63e0823276b9cebeeec5cd7371b",
+    "binary_sha256_run_2": "c32c31655e294b2946b5ab8acd9be81c19bdf63e0823276b9cebeeec5cd7371b",
+    "build_log_sha256_run_1": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59",
+    "build_log_sha256_run_2": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59",
+    "byte_identical": true,
+    "debug_werror_build": "PASS",
+    "debug_werror_log_sha256": "75c4282ff1112affcdf303e0ad06b8e74106015e7ed2a8b433445fccf12acf52"
+  },
+  "candidate_correctness": {
+    "fixture_contract": "27 positions, 7 histories, 4 rejected moves, 10 service results, 7 material histories, 7 notation cases, and 13 bench records",
+    "fixture_contract_log_sha256": "ed2a0624dfd39a7e836ae1f5cc40d32b40dddbe4b9c0da48afa7eb8c16629a98",
+    "uci_fixture_result": "41 state cases, 3 search cases, 950 checks",
+    "uci_fixture_log_sha256": "770e90f812358d592ac786ce97f92e9c042ffea4a4544d9ab6b7d5cad8a97f82",
+    "bench": {
+      "schema": "ANTICHESS_BENCH_V1",
+      "runs": 2,
+      "positions": 13,
+      "nodes_each_run": 737,
+      "canonical_record_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904",
+      "log_sha256": "1d94a615ecbf08c33bf6888b8c1c9237bae37f6a54f200562beccf297d36d90c",
+      "timing_and_nps_are_evidence": false,
+      "speedtest": "FAIL_CLOSED_UNTIL_P7"
+    }
+  },
+  "references": {
+    "primary_scalachess": {
+      "commit": "cbffc9d7e2c6f8ba33381c5403e1b4f992199626",
+      "result": "27 positions, 7 histories, 4 rejected moves, 7 material histories, 1 repetition position, 1 repetition history, and 7 notation positions",
+      "probe_sha256": "e2b3714895ebdeeadc18e29ced739a8f5a5e7e93ef53d1e86f685a090237cb57",
+      "log_sha256": "dd8eb2d3a8194ee7c9abb66c8caf744102eccfe670d6f4cfa08f79d7d60e524e"
+    },
+    "independent_chessops": {
+      "commit": "736c40ced7130d453d85e7979c360b797474c9a7",
+      "result": "27 positions, 7 transitions, 4 rejected moves, and 1 parser boundary",
+      "declared_legality_only_material_gaps": 1,
+      "log_sha256": "0504919b3860c705a2d35fbd6dc21b4fa061d011fc1f68e2aa874ebb5b9e7a43"
+    }
+  },
+  "legacy_network": {
+    "source_path_role": "owner-provided local compatibility input",
+    "bytes": 953248,
+    "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "loader": "1 positive, 7 rejected mutations, 1 transactional clear, 77 checks",
+    "loader_log_sha256": "3fe0a36de519da0cea27083eeb924cad69f5954b1e2117180232f3eb79f0f749",
+    "parity": "40 unique rules positions, 18 frozen bucket cases, 58 exact scalar full-refresh values, buckets 0 through 7",
+    "parity_log_sha256": "dc62d3265c636c3fcc539599f1bbcb9acc5a7fca8bd6ad6db45786a1ac6c80da",
+    "executable_reference_sha256": "8fe05c431e34478ac4248ea0786d6a33ba766c34b3313098b9af00e442c00a56",
+    "license": "UNRESOLVED_FOR_THIS_2024_ARTIFACT",
+    "redistribution": "FORBIDDEN",
+    "default_or_alias": "FORBIDDEN"
+  },
+  "referee": {
+    "profile": "AC_REFEREE_V1",
+    "base_commit": "5e84232be4546aaedc9d87a96c91867a1da06ada",
+    "patch_sha256": "b8d20a4aa6c4a4a287772cec08b7e952feca88be9120ce11c45a7a3ccfa2a972",
+    "derived_tree": "639664d19717604326fa5fef21356556db86e27b",
+    "probe_sha256": "fd45f1f066ce6ff3017a193d5333ccc95e676f9fc795cdd74722abac7564b109",
+    "cli_sha256": "62377837474f166edfae5dcc5801b19bdf0ee28c89ac4bc66832d535be73ae9f",
+    "qt_core_sha256": "9cf7924077f1ac8758a456e780d9f408c779e76e58680a77ef30ef9807295c43",
+    "result": "41 state/history cases, 2 accepted and 4 rejected FENs, 4 rejected moves, 7 notation positions, 10 service outcomes, 879 checks",
+    "log_sha256": "a1aac04f21ef1530b6168cf567e21106f88b18e62ff97af63ebbd8e939161020"
+  },
+  "pair_smoke": {
+    "evidence_class": "P4_PAIR_SMOKE_NOT_STRENGTH",
+    "directory": ".local/evidence/AC_REFEREE_V1-pair-20260829T192605Z",
+    "candidate_sha256": "c32c31655e294b2946b5ab8acd9be81c19bdf63e0823276b9cebeeec5cd7371b",
+    "games": 2,
+    "plies": 100,
+    "mandatory_capture_positions": 48,
+    "terminal_san_moves": 2,
+    "time_control": "2+0.05",
+    "depth": 2,
+    "concurrency": 1,
+    "raw_sha256": "2999dbb0d41e42c0ae9fe830fea6f0657865072f40ac20da7fdd0dd84e70bc71",
+    "pgn_sha256": "f26133ed2b3c7859970ecfc855812dd81a01c501eb2ed7ad0d719781a8e1b83f",
+    "epd_sha256": "0824d7c8992ab770fe059166084aec372b74e43b0f45e1398c68fcdef7c9c9cb",
+    "launch_sha256": "ea3e6afbc289d37013717eeae55652f9f1b1175fe9bd6c2a4c5433680d571273",
+    "result_sha256": "db9fcd72de2163e59a6abf963224aa8b61ee13770fbaf3dcf6381493735f9699",
+    "pgn_audit_sha256": "33c07680cf14fcfdea797ff198b3e0e70b6a365d71d4550bc7a372e72fe9ef60",
+    "illegal_move_crash_disconnect_stall_timeloss": 0,
+    "clock_searches": 100,
+    "variant_option_mappings": 4,
+    "elapsed_seconds_is_strength_evidence": false,
+    "wld_or_elo_claim": false
+  },
+  "execution_classifications": [
+    {
+      "symptom": "The referee verifier reported patched-source drift when given the pristine base checkout.",
+      "classification": "CALLER_ROOT_MISMATCH_NOT_SOURCE_DRIFT",
+      "resolution": "Rerun with the pinned patched worktree; tree, blobs, probe, and 879 behavioral checks passed."
+    }
+  ],
+  "open_gaps": [
+    "P6 Linux ASan/UBSan execution and official repository CI",
+    "P6 baseline manifest and immutable engineering tag",
+    "legacy network redistribution license for the exact 2024 bytes",
+    "official OpenBench client/server/referee mapping and explicit resource lease",
+    "all search-strength, DATAGEN, NNUE V2, panel, and release gates P7 through P16"
+  ],
+  "next_safe_action": "Add a dedicated fail-closed Linux correctness and sanitizer workflow, push a non-draft engineering PR, and require official CI before creating the P6 baseline manifest and tag."
+}

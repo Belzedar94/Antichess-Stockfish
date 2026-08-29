@@ -1,0 +1,120 @@
+name: Antichess correctness
+
+on:
+  push:
+    branches:
+      - "antichess/**"
+      - "official-stockfish/**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: antichess-correctness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reproducible-build:
+    name: Reproducible build and frozen contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CXXFLAGS: -Werror
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify source ancestry and contracts
+        run: |
+          git merge-base --is-ancestor 8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6 HEAD
+          python3 tools/reference/verify_fixture_contract.py
+
+      - name: Build twice from clean state
+        run: |
+          artifact_dir="${RUNNER_TEMP}/antichess-engineering"
+          source_epoch="$(git show -s --format=%ct HEAD)"
+          mkdir -p "${artifact_dir}"
+          export SOURCE_DATE_EPOCH="${source_epoch}"
+          make -C src clean
+          make -C src -j2 build ARCH=x86-64 COMP=gcc COMPCXX=g++ debug=no
+          cp src/stockfish "${artifact_dir}/antichess-stockfish-run-1"
+          make -C src clean
+          make -C src -j2 build ARCH=x86-64 COMP=gcc COMPCXX=g++ debug=no
+          cp src/stockfish "${artifact_dir}/antichess-stockfish-run-2"
+          cmp --silent \
+            "${artifact_dir}/antichess-stockfish-run-1" \
+            "${artifact_dir}/antichess-stockfish-run-2"
+          sha256sum \
+            "${artifact_dir}/antichess-stockfish-run-1" \
+            "${artifact_dir}/antichess-stockfish-run-2" \
+            | tee "${artifact_dir}/SHA256SUMS"
+          {
+            printf 'evidence_class=ENGINEERING_CORRECTNESS_NOT_STRENGTH\n'
+            printf 'profile=LICHESS_ANTICHESS_V1\n'
+            printf 'commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse 'HEAD^{tree}')"
+            printf 'source_date_epoch=%s\n' "${source_epoch}"
+            g++ --version
+            make --version
+            uname -a
+          } | tee "${artifact_dir}/BUILD-IDENTITY.txt"
+
+      - name: Verify the exact second binary
+        run: |
+          engine="${RUNNER_TEMP}/antichess-engineering/antichess-stockfish-run-2"
+          python3 tools/candidate/verify_uci_fixtures.py --engine "${engine}"
+          python3 tools/candidate/verify_bench.py --engine "${engine}"
+
+      - name: Upload engineering artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: antichess-engineering-${{ github.sha }}
+          path: ${{ runner.temp }}/antichess-engineering
+          if-no-files-found: error
+          retention-days: 7
+
+  sanitizers:
+    name: Linux ASan and UBSan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CXXFLAGS: -Werror
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1:abort_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Record sanitizer toolchain
+        run: |
+          g++ --version
+          make --version
+          uname -a
+
+      - name: Stabilize ASan address-space layout
+        run: sudo sysctl -w vm.mmap_rnd_bits=28
+
+      - name: Build with ASan and UBSan
+        run: |
+          make -C src clean
+          make -C src -j2 build \
+            ARCH=x86-64 \
+            COMP=gcc \
+            COMPCXX=g++ \
+            optimize=no \
+            debug=yes \
+            sanitize="address undefined"
+
+      - name: Exercise rules, search, and protocol under sanitizers
+        run: |
+          python3 tools/reference/verify_fixture_contract.py
+          python3 tools/candidate/verify_uci_fixtures.py --engine src/stockfish
+          python3 tools/candidate/verify_bench.py --engine src/stockfish

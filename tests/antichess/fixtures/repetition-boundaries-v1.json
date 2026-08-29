@@ -1,0 +1,39 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "scope": "REPETITION_CLASSIFICATION",
+  "position_cases": [
+    {
+      "id": "fen_clock_does_not_encode_repetition",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 16 9",
+      "expected": {
+        "claimable": false,
+        "automatic": false
+      }
+    }
+  ],
+  "history_cases": [
+    {
+      "id": "fourfold_is_claimable_not_automatic",
+      "initial_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "moves": [
+        "g1f3",
+        "g8f6",
+        "f3g1",
+        "f6g8",
+        "g1f3",
+        "g8f6",
+        "f3g1",
+        "f6g8",
+        "g1f3",
+        "g8f6",
+        "f3g1",
+        "f6g8"
+      ],
+      "expected": {
+        "claimable": true,
+        "automatic": false
+      }
+    }
+  ]
+}

@@ -93,6 +93,8 @@ class Position {
 
     // FEN string input/output
     std::optional<PositionSetError> set(const std::string& fenStr, bool isChess960, StateInfo* si);
+    std::optional<PositionSetError>
+    set(const std::string& fenStr, RuleProfile profile, bool isChess960, StateInfo* si);
     std::optional<PositionSetError> set(const std::string& code, Color c, StateInfo* si);
     std::string                     fen() const;
 
@@ -166,17 +168,27 @@ class Position {
     Key non_pawn_key(Color c) const;
 
     // Other properties of the position
-    Color side_to_move() const;
-    int   game_ply() const;
-    bool  is_chess960() const;
-    bool  is_draw(int ply) const;
-    bool  is_repetition(int ply) const;
-    bool  upcoming_repetition(int ply) const;
-    bool  has_repeated() const;
-    int   rule50_count() const;
-    Value non_pawn_material(Color c) const;
-    Value non_pawn_material() const;
-    bool  dtz_is_dtm() const;  // Pawnless && (3-men || 4-men-minors-only)
+    Color       side_to_move() const;
+    int         game_ply() const;
+    bool        is_chess960() const;
+    RuleProfile rule_profile() const;
+    bool        is_antichess() const;
+    bool        is_draw(int ply) const;
+    bool        is_repetition(int ply) const;
+    bool        upcoming_repetition(int ply) const;
+    bool        has_repeated() const;
+    int         antichess_repetition_count() const;
+    bool        antichess_threefold() const;
+    bool        antichess_fivefold() const;
+    bool        antichess_variant_end() const;
+    bool        antichess_insufficient_material() const;
+    bool        antichess_player_has_insufficient_material() const;
+    bool        antichess_opponent_has_insufficient_material() const;
+    bool        antichess_automatic_draw() const;
+    int         rule50_count() const;
+    Value       non_pawn_material(Color c) const;
+    Value       non_pawn_material() const;
+    bool        dtz_is_dtm() const;  // Pawnless && (3-men || 4-men-minors-only)
 
     // Position consistency check, for debugging
     bool                            pos_is_ok() const;
@@ -220,20 +232,27 @@ class Position {
     std::array<Bitboard, PIECE_TYPE_NB> byTypeBB;
     std::array<Bitboard, COLOR_NB>      byColorBB;
 
-    int        pieceCount[PIECE_NB];
-    int        castlingRightsMask[SQUARE_NB];
-    Square     castlingRookSquare[CASTLING_RIGHT_NB];
-    Bitboard   castlingPath[CASTLING_RIGHT_NB];
-    StateInfo* st;
-    int        gamePly;
-    Color      sideToMove;
-    bool       chess960;
-    Dirties    scratchDirties;
+    int         pieceCount[PIECE_NB];
+    int         castlingRightsMask[SQUARE_NB];
+    Square      castlingRookSquare[CASTLING_RIGHT_NB];
+    Bitboard    castlingPath[CASTLING_RIGHT_NB];
+    StateInfo*  st;
+    int         gamePly;
+    Color       sideToMove;
+    bool        chess960;
+    RuleProfile ruleProfile;
+    Dirties     scratchDirties;
 };
 
 std::ostream& operator<<(std::ostream& os, const Position& pos);
 
 inline Color Position::side_to_move() const { return sideToMove; }
+
+inline RuleProfile Position::rule_profile() const { return ruleProfile; }
+
+inline bool Position::is_antichess() const {
+    return ruleProfile == RuleProfile::LICHESS_ANTICHESS_V1;
+}
 
 inline Piece Position::piece_on(Square s) const {
     assert(is_ok(s));
@@ -364,6 +383,9 @@ inline bool Position::capture(Move m) const {
 // generation is needed to avoid the generation of duplicate moves.
 inline bool Position::capture_stage(Move m) const {
     assert(m.is_ok());
+
+    if (is_antichess())
+        return capture(m);
 
     const MoveType mt = m.type_of();
 

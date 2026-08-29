@@ -1,0 +1,23 @@
+{
+  "schema": "ANTICHESS_BENCH_V1",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "command": "bench 1 1 2 default depth",
+  "position_count": 13,
+  "total_nodes": 737,
+  "canonical_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904",
+  "records": [
+    {"index": 1, "score_type": "cp", "score": 0, "nodes": 420, "pv": "a2a3", "bestmove": "a2a3"},
+    {"index": 2, "score_type": "cp", "score": 0, "nodes": 4, "pv": "d4c5", "bestmove": "d4c5"},
+    {"index": 3, "score_type": "mate", "score": 1, "nodes": 62, "pv": "e1e2", "bestmove": "e1e2"},
+    {"index": 4, "score_type": "mate", "score": -1, "nodes": 1, "pv": "e4e5", "bestmove": "e4e5"},
+    {"index": 5, "score_type": "cp", "score": 0, "nodes": 32, "pv": "a8a7", "bestmove": "a8a7"},
+    {"index": 6, "score_type": "cp", "score": 0, "nodes": 6, "pv": "e4d5", "bestmove": "e4d5"},
+    {"index": 7, "score_type": "cp", "score": 0, "nodes": 20, "pv": "a7a8b", "bestmove": "a7a8b"},
+    {"index": 8, "score_type": "cp", "score": 0, "nodes": 20, "pv": "a7b8b", "bestmove": "a7b8b"},
+    {"index": 9, "score_type": "cp", "score": 0, "nodes": 79, "pv": "a2a3", "bestmove": "a2a3"},
+    {"index": 10, "score_type": "cp", "score": 0, "nodes": 54, "pv": "g6e5", "bestmove": "g6e5"},
+    {"index": 11, "score_type": "cp", "score": 0, "nodes": 5, "pv": "e5d6", "bestmove": "e5d6"},
+    {"index": 12, "score_type": "cp", "score": 0, "nodes": 33, "pv": "g8e7", "bestmove": "g8e7"},
+    {"index": 13, "score_type": "mate", "score": -1, "nodes": 1, "pv": "a5a6", "bestmove": "a5a6"}
+  ]
+}

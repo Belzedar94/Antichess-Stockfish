@@ -1,3 +1,21 @@
+# Antichess-Stockfish
+
+Antichess-Stockfish is an in-progress engine for the exact
+`LICHESS_ANTICHESS_V1` rules profile. It starts from official Stockfish
+development commit `8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6`; Fairy-Stockfish is explicitly
+not its source base.
+
+The repository currently has **no valid Antichess baseline**. Rules and
+differential fixtures are frozen, while engine correctness, an independent
+match referee, evaluator compatibility, strength, and release gates remain
+open. See [the rules profile](RULES/LICHESS_ANTICHESS_V1.md),
+[source provenance](docs/provenance/OFFICIAL_STOCKFISH_BASE.md), and
+[gate index](docs/gates/GATE_INDEX.md).
+
+The original upstream Stockfish README follows for build and license context.
+
+---
+
 <div align="center">
 
   [![Stockfish][stockfish128-logo]][website-link]

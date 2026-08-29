@@ -1,0 +1,157 @@
+{
+  "manifest_version": 1,
+  "manifest_id": "ANTICHESS_ENGINEERING_BASELINE_V1",
+  "created_at_utc": "2026-08-29T19:45:00Z",
+  "certified_at_utc": "2026-08-29T19:48:14Z",
+  "project": "Antichess-Stockfish",
+  "eligibility": "P6_CERTIFIED_GO_NEXT_PHASE",
+  "evidence_class": "ENGINEERING_CORRECTNESS_NOT_STRENGTH",
+  "rules": {
+    "profile": "LICHESS_ANTICHESS_V1",
+    "public_name": "antichess",
+    "uci_variant": "antichess",
+    "pgn_variant": "Antichess",
+    "rejected_aliases": [
+      "suicide",
+      "giveaway",
+      "losers"
+    ],
+    "contract": "RULES/LICHESS_ANTICHESS_V1.md"
+  },
+  "source": {
+    "candidate_commit": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "candidate_tree": "1baef0ec685b69aeca50e0dd73cd9a2a2fbce759",
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_tree": "8893b88f51de19a44e44b67a72a56aef2ac2e0cc",
+    "official_stockfish_tag": "stockfish-dev-20260829-8bc5caa2",
+    "official_stockfish_is_ancestor": true,
+    "fairy_stockfish_implementation_is_ancestor": false,
+    "public_branch": "antichess/official-8bc5caa2-p0",
+    "pull_request": "https://github.com/Belzedar94/Antichess-Stockfish/pull/2",
+    "pull_request_base": "official-stockfish/dev-20260829-8bc5caa2"
+  },
+  "engine": {
+    "role": "CORRECTNESS_BASELINE",
+    "strength_champion": null,
+    "default_evaluator": "engineering-neutral",
+    "search": "deterministic exhaustive negamax for correctness only",
+    "certified_depth_range": [
+      1,
+      8
+    ],
+    "threads": 1,
+    "hash_mb": 1,
+    "clock_allocation_certified": false,
+    "speedtest": "FAIL_CLOSED_UNTIL_P7",
+    "orthodox_search_assumptions_enabled": false,
+    "uci_options": [
+      "Debug Log File",
+      "NumaPolicy",
+      "Threads",
+      "Hash",
+      "Clear Hash",
+      "UCI_Variant",
+      "Antichess_Evaluator",
+      "EvalFile"
+    ]
+  },
+  "windows_reproducibility": {
+    "source_date_epoch": 1788032434,
+    "toolchain": "MSYS2 MinGW g++ 16.1.0, GNU Make 4.4.1",
+    "target": "x86-64 generic",
+    "command": "make clean && make -j1 build ARCH=x86-64 COMP=mingw COMPCXX=/mingw64/bin/g++ debug=no",
+    "runs": 2,
+    "byte_identical": true,
+    "binary_bytes": 4231480,
+    "binary_sha256": "eb775dc4061900ed13d72888f6f38a7641749fcfcd15a3aae70f39d971864b98",
+    "build_log_sha256_run_1": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59",
+    "build_log_sha256_run_2": "76eabfb1e656d6d03ef54671b0cbcd293d1b3fabde0f4382be40bb8cbe732d59"
+  },
+  "linux_ci": {
+    "repository": "Belzedar94/Antichess-Stockfish",
+    "workflow": ".github/workflows/antichess-correctness.yml",
+    "runner": "ubuntu-24.04",
+    "runner_image_version": "20260823.283.1",
+    "exact_head_run_id": 33271491231,
+    "exact_head_run_url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33271491231",
+    "exact_head_sha": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "reproducible_job_id": 99150637893,
+    "sanitizer_job_id": 99150637817,
+    "reproducible_job": "PASS",
+    "asan_ubsan_job": "PASS",
+    "pull_request_merge_run_id": 33271492480,
+    "pull_request_merge_run": "PASS",
+    "toolchain": "Ubuntu g++ 13.3.0-6ubuntu2~24.04.1, GNU Make 4.3",
+    "binary_runs": 2,
+    "byte_identical": true,
+    "binary_bytes": 671768,
+    "binary_sha256": "f2841fc7355fde938e16dcc7e056cfeb49cfc0e72d185341791a34c32ce833e0",
+    "artifact_id": 9720242667,
+    "artifact_name": "antichess-engineering-8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "artifact_archive_bytes": 584421,
+    "artifact_expires_at": "2026-09-05T19:41:47Z",
+    "artifact_downloaded_and_reverified": true,
+    "build_identity_sha256": "0d5ca731c661806fb831d048aa8220a827ed1d43f53bca250f3ce77656654e3c",
+    "sha256sums_sha256": "ed169236287f018b4b3e2d8e09b00e2ab750007822f5ed2feb3c466469207633",
+    "reproducible_job_log_sha256": "69140422829f76f1a03d137b5a1f6d4a1dc4b15ee4853f66e21fb35938189727",
+    "sanitizer_job_log_sha256": "30e619ed97584be47f896dd264e9ee06b67a67a123297cac8b01e5e8d9f3d455"
+  },
+  "correctness": {
+    "candidate": "41 state cases, 3 search cases, 950 checks",
+    "primary_scalachess": "27 positions, 7 histories, 4 rejected moves, 7 material histories, 1 repetition position, 1 repetition history, 7 notation positions",
+    "independent_chessops": "27 positions, 7 transitions, 4 rejected moves, 1 parser boundary, 1 declared legality-only material gap",
+    "referee": "41 state/history cases, 2 accepted FENs, 4 rejected FENs, 4 rejected moves, 7 notation positions, 10 service outcomes, 879 checks",
+    "bench_schema": "ANTICHESS_BENCH_V1",
+    "bench_runs": 2,
+    "bench_positions": 13,
+    "bench_nodes": 737,
+    "bench_record_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904"
+  },
+  "legacy_network": {
+    "role": "EXTERNAL_OPT_IN_COMPATIBILITY_ASSET",
+    "filename": "antichess-dd3cbe53cd4e.nnue",
+    "bytes": 953248,
+    "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "loader": "PASS: 1 positive, 7 rejected mutations, 1 transactional clear, 77 checks",
+    "parity": "PASS: 58 exact scalar full-refresh values across all 8 material buckets",
+    "license": "UNRESOLVED_FOR_THIS_2024_ARTIFACT",
+    "bundled": false,
+    "embedded": false,
+    "default": false,
+    "redistribution_allowed": false,
+    "public_alias_allowed": false
+  },
+  "local_pair": {
+    "evidence_class": "P4_PAIR_SMOKE_NOT_STRENGTH",
+    "candidate_sha256": "eb775dc4061900ed13d72888f6f38a7641749fcfcd15a3aae70f39d971864b98",
+    "referee": "AC_REFEREE_V1",
+    "games": 2,
+    "plies": 100,
+    "mandatory_capture_positions": 48,
+    "terminal_san_moves": 2,
+    "raw_sha256": "040c6ec09f247bc95d9880610ea2212122b97ead8a545bc35cdfc65c8a82630c",
+    "pgn_sha256": "1b28d54e23302b9b98a8b1d9d2cb40009d283aced17669eba674be131b3ba9d2",
+    "pgn_audit_sha256": "be4bcd1a7de0e7c22c5e5ed68407290abfe33611ba7fe122928cebf853edd277",
+    "illegal_result_loader_protocol_or_time_defects": 0,
+    "elo_claim": false
+  },
+  "distribution": {
+    "candidate_artifacts_are_release_assets": false,
+    "candidate_tag_is_stable_release": false,
+    "network_alias_Antichess_v1_nnue_created": false,
+    "release_decision_G15": "NOT_REQUESTED",
+    "public_openbench_mapping": "UNKNOWN_FAIL_CLOSED"
+  },
+  "forbidden_inferences": [
+    "Correctness smoke, canary, sanitizer, and digest results are not Elo evidence.",
+    "Legacy evaluator parity does not establish the network license or redistribution authority.",
+    "A local AC_REFEREE_V1 pass does not establish production OpenBench mapping.",
+    "This baseline is not a strength champion, DATAGEN producer, trained NNUE V2, or release candidate."
+  ],
+  "intended_immutable_tag": {
+    "name": "baseline/lichess-antichess-v1-8830a50f",
+    "target": "8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780",
+    "tag_object": "fc278199a690410d76d8c42f6bb542ee8ff2b2ad"
+  },
+  "next_gate": "P7_SEARCH_HYPOTHESIS_READINESS"
+}

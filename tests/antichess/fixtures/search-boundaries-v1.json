@@ -1,0 +1,78 @@
+{
+  "fixture_version": 1,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "scope": "SEARCH_TERMINAL_AND_CLAIM_POLICY",
+  "cases": [
+    {
+      "id": "depth_one_detects_no_legal_terminal",
+      "initial_fen": "8/p7/8/P7/8/8/8/8 w - - 0 1",
+      "moves": [],
+      "depth": 1,
+      "expected": {
+        "score_type": "mate",
+        "score": -1,
+        "bestmoves": ["a5a6"]
+      }
+    },
+    {
+      "id": "claim_floor_beats_losing_continuations",
+      "initial_fen": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+      "moves": [
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1",
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1"
+      ],
+      "depth": 3,
+      "expected": {
+        "minimum_score_cp": 0,
+        "bestmoves": ["g8e7", "g8f6", "g8h6"]
+      }
+    },
+    {
+      "id": "forced_win_beats_available_claim",
+      "initial_fen": "7r/8/8/8/8/8/8/R7 w - - 0 1",
+      "moves": [
+        "a1a2",
+        "h8h7",
+        "a2a1",
+        "h7h8",
+        "a1a2",
+        "h8h7",
+        "a2a1",
+        "h7h8"
+      ],
+      "depth": 3,
+      "expected": {
+        "score_type": "mate",
+        "score": 1,
+        "bestmoves": ["a1h1"]
+      }
+    }
+  ],
+  "tt_isolation_cases": [
+    {
+      "id": "claim_history_does_not_change_raw_board_score",
+      "initial_fen": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+      "claim_moves": [
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1",
+        "g8f6",
+        "b1c3",
+        "f6g8",
+        "c3b1"
+      ],
+      "depth": 3,
+      "expected": {
+        "claim_minimum_score_cp": 0,
+        "warmed_raw_score_equals_fresh_raw_score": true
+      }
+    }
+  ]
+}

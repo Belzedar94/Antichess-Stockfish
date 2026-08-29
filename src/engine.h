@@ -30,6 +30,7 @@
 #include <variant>
 #include <vector>
 
+#include "antichess/legacy_network.h"
 #include "misc.h"
 #include "history.h"
 #include "nnue/network.h"
@@ -95,6 +96,7 @@ class Engine {
     // network related
 
     void                                 verify_network() const;
+    std::optional<std::string>           load_legacy_network(const std::filesystem::path& file);
     std::unique_ptr<Eval::NNUE::Network> get_default_network();
     void                                 load_network(const std::filesystem::path& file);
     void save_network(const std::optional<std::filesystem::path>& file);
@@ -109,6 +111,7 @@ class Engine {
     int get_hashfull(int maxAge = 0) const;
 
     std::string                          fen() const;
+    std::string                          antichess_info() const;
     std::optional<PositionSetError>      flip();
     std::string                          visualize() const;
     std::vector<std::pair<usize, usize>> get_bound_thread_count_by_numa_node() const;
@@ -122,8 +125,9 @@ class Engine {
 
     NumaReplicationContext numaContext;
 
-    Position     pos;
-    StateListPtr states;
+    Position                 pos;
+    StateListPtr             states;
+    Antichess::LegacyNetwork legacyNetwork;
 
     OptionsMap                                        options;
     ThreadPool                                        threads;
