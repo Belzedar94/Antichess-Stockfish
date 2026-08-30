@@ -1,7 +1,11 @@
 # LICHESS_ANTICHESS_V1
 
 Status: **selected by the project owner; P2-P6 executable conformance passed
-for engineering baseline `8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780`**.
+for engineering baseline `d08cc316fc63d95f1101122ba2450d1eb1aea7f7`**.
+
+The earlier baseline `8830a50f4ee6bcb4af6e4d2a4dcbf2b118eb1780`
+is retained for provenance but rejected because it discarded a claimable draw
+at the depth horizon when the legacy evaluator returned a negative value.
 
 This document freezes the public rules identity of Antichess-Stockfish. It is
 derived from the pinned Lichess/scalachess implementation in
