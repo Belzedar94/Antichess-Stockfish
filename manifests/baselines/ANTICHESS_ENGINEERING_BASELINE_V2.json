@@ -1,0 +1,189 @@
+{
+  "manifest_version": 2,
+  "manifest_id": "ANTICHESS_ENGINEERING_BASELINE_V2",
+  "created_at_utc": "2026-08-30T12:02:46Z",
+  "project": "Antichess-Stockfish",
+  "eligibility": "P6_CERTIFIED_GO_NEXT_PHASE",
+  "evidence_class": "ENGINEERING_CORRECTNESS_NOT_STRENGTH",
+  "supersedes": {
+    "manifest": "manifests/baselines/ANTICHESS_ENGINEERING_BASELINE_V1.json",
+    "reason": "The V1 candidate discarded a claimable third-occurrence draw at the depth horizon when the legacy evaluator returned a negative value.",
+    "rejection_receipt": "receipts/E1_ENGINEERING/2026-08-29T200312Z-P4-reopen.json",
+    "old_tag": "baseline/lichess-antichess-v1-8830a50f",
+    "old_tag_moved_or_deleted": false,
+    "old_candidate_remains_admissible": false
+  },
+  "rules": {
+    "profile": "LICHESS_ANTICHESS_V1",
+    "public_name": "antichess",
+    "uci_variant": "antichess",
+    "pgn_variant": "Antichess",
+    "rejected_aliases": [
+      "suicide",
+      "giveaway",
+      "losers"
+    ],
+    "contract": "RULES/LICHESS_ANTICHESS_V1.md"
+  },
+  "source": {
+    "candidate_commit": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "candidate_tree": "b06b7829762c9d64ea8e848349486f2b339dc3b5",
+    "correction_commit": "b1bbc46caaeaf937463f3b522464bd3248461322",
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_tree": "8893b88f51de19a44e44b67a72a56aef2ac2e0cc",
+    "official_stockfish_tag": "stockfish-dev-20260829-8bc5caa2",
+    "official_stockfish_is_ancestor": true,
+    "fairy_stockfish_implementation_is_ancestor": false,
+    "public_branch": "official-stockfish/dev-20260829-8bc5caa2",
+    "initial_pull_request": "https://github.com/Belzedar94/Antichess-Stockfish/pull/2",
+    "correction_pull_request": "https://github.com/Belzedar94/Antichess-Stockfish/pull/3",
+    "correction_pull_request_state": "MERGED",
+    "correction_merged_at_utc": "2026-08-29T20:21:48Z"
+  },
+  "engine": {
+    "role": "CORRECTNESS_BASELINE",
+    "strength_champion": null,
+    "default_evaluator": "engineering-neutral",
+    "search": "deterministic exhaustive negamax for correctness only",
+    "claim_horizon": "A claimable depth-zero static value is floored at draw after variant-terminal and automatic-draw precedence.",
+    "certified_depth_range": [
+      1,
+      8
+    ],
+    "threads": 1,
+    "hash_mb": 1,
+    "clock_allocation_certified": false,
+    "speedtest": "FAIL_CLOSED_UNTIL_P7",
+    "orthodox_search_assumptions_enabled": false,
+    "uci_options": [
+      "Debug Log File",
+      "NumaPolicy",
+      "Threads",
+      "Hash",
+      "Clear Hash",
+      "UCI_Variant",
+      "Antichess_Evaluator",
+      "EvalFile"
+    ]
+  },
+  "windows_reproducibility": {
+    "source_date_epoch": 1788034908,
+    "toolchain": "MSYS2 MinGW g++ 16.1.0, GNU Make 4.4.1",
+    "target": "x86-64 generic",
+    "command": "make clean; make -j1 build ARCH=x86-64 COMP=mingw COMPCXX=/mingw64/bin/g++ debug=no",
+    "runs": 2,
+    "byte_identical": true,
+    "binary_bytes": 4231992,
+    "binary_sha256": "dbfcdc98acdb676226f6b2a0c5251291cfafb391e9099f1e3a33eccb0d73d3ca",
+    "build_log_sha256_run_1": "8c0b46972f3a1d133f30c74d68418b3e9aec0de12b01f893dae8c08872ebb8ab",
+    "build_log_sha256_run_2": "8c0b46972f3a1d133f30c74d68418b3e9aec0de12b01f893dae8c08872ebb8ab",
+    "evidence_directory": ".local/evidence/E1-merge-d08cc316-20260829T202409Z"
+  },
+  "linux_ci": {
+    "repository": "Belzedar94/Antichess-Stockfish",
+    "workflow": ".github/workflows/antichess-correctness.yml",
+    "runner": "ubuntu-24.04",
+    "runner_image_version": "20260823.283.1",
+    "post_merge_run_id": 33273289767,
+    "post_merge_run_url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33273289767",
+    "post_merge_sha": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "reproducible_job_id": 99155531747,
+    "sanitizer_job_id": 99155531836,
+    "reproducible_job": "PASS",
+    "asan_ubsan_job": "PASS",
+    "toolchain": "Ubuntu g++ 13.3.0-6ubuntu2~24.04.1, GNU Make 4.3",
+    "binary_runs": 2,
+    "byte_identical": true,
+    "binary_bytes": 671768,
+    "binary_sha256": "03b47dbf5562af00c3f6f1a3c720f817def4e505f6ac35acb104f2489cd6d3ff",
+    "artifact_id": 9720745203,
+    "artifact_name": "antichess-engineering-d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "artifact_archive_bytes": 584167,
+    "artifact_expires_at": "2026-09-05T20:22:52Z",
+    "artifact_downloaded_and_reverified": true,
+    "build_identity_sha256": "0ce518050f60fbc0c93cf324e4a15ac2e25f21274d2989fb985e7346699c79f5",
+    "sha256sums_sha256": "dde8cd2a06c1bdc1ba7e89391909891271e60d0a641ffeb7c9746c890be90e58",
+    "reproducible_job_log_sha256": "aaf9d46cfb5b0296adc9f884cd84221a45fdecf10bcb5f9747132be79d5a1fa1",
+    "sanitizer_job_log_sha256": "69379c22ad7c57fcdc6fc46e0ac1d97a998c7f40ee5383da9b6684fc046322b1"
+  },
+  "correctness": {
+    "candidate": "41 state cases, 3 search cases, 950 checks",
+    "claim_horizon_fixture": "PASS: third occurrence at depth zero, child legacy raw -937, parent UCI cp 0",
+    "primary_scalachess": "27 positions, 7 histories, 4 rejected moves, 7 material histories, 1 repetition position, 1 repetition history, 7 notation positions",
+    "independent_chessops": "27 positions, 7 transitions, 4 rejected moves, 1 parser boundary, 1 declared legality-only material gap",
+    "referee": "41 state/history cases, 2 accepted FENs, 4 rejected FENs, 4 rejected moves, 7 notation positions, 10 service outcomes, 879 checks",
+    "bench_schema": "ANTICHESS_BENCH_V1",
+    "bench_runs": 2,
+    "bench_positions": 13,
+    "bench_nodes": 737,
+    "bench_record_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904"
+  },
+  "legacy_network": {
+    "role": "EXTERNAL_OPT_IN_COMPATIBILITY_ASSET",
+    "filename": "antichess-dd3cbe53cd4e.nnue",
+    "bytes": 953248,
+    "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "loader": "PASS: 1 positive, 1 claim-horizon, 7 rejected mutations, 1 transactional clear, 82 checks",
+    "parity": "PASS: 58 exact scalar full-refresh values across all 8 material buckets",
+    "license": "UNRESOLVED_FOR_THIS_2024_ARTIFACT",
+    "bundled": false,
+    "embedded": false,
+    "default": false,
+    "redistribution_allowed": false,
+    "public_alias_allowed": false
+  },
+  "referee": {
+    "id": "AC_REFEREE_V1",
+    "cutechess_base_commit": "5e84232be4546aaedc9d87a96c91867a1da06ada",
+    "patch_sha256": "b8d20a4aa6c4a4a287772cec08b7e952feca88be9120ce11c45a7a3ccfa2a972",
+    "derived_tree": "639664d19717604326fa5fef21356556db86e27b",
+    "probe_sha256": "fd45f1f066ce6ff3017a193d5333ccc95e676f9fc795cdd74722abac7564b109",
+    "cli_sha256": "62377837474f166edfae5dcc5801b19bdf0ee28c89ac4bc66832d535be73ae9f"
+  },
+  "local_pair": {
+    "evidence_class": "P4_PAIR_SMOKE_NOT_STRENGTH",
+    "candidate_sha256": "dbfcdc98acdb676226f6b2a0c5251291cfafb391e9099f1e3a33eccb0d73d3ca",
+    "referee": "AC_REFEREE_V1",
+    "games": 2,
+    "plies": 100,
+    "mandatory_capture_positions": 48,
+    "terminal_san_moves": 2,
+    "raw_sha256": "1d896e41e737490f0c3886e2d787c3531486e088df4e91700758cc0a9e3a5bf1",
+    "pgn_sha256": "b3a666b8d63a0785685424d7d791726e27e7e739eac6dfacefc658d758a57ef0",
+    "epd_sha256": "0824d7c8992ab770fe059166084aec372b74e43b0f45e1398c68fcdef7c9c9cb",
+    "launch_sha256": "d1461f7a581ca1ae80756d78935c7bce56e5f14cb0c0bd16f8d0defd3ca48d1c",
+    "result_sha256": "d0ace6f052543bff743f2da07eda326a71e4f0277adf510fc830780fa4f692c0",
+    "pgn_audit_sha256": "e5e1142d355ee8e230d4a08f4f8e203601ee93c4c6d336dc203671ca80df011e",
+    "illegal_result_loader_protocol_or_time_defects": 0,
+    "elo_claim": false,
+    "evidence_directory": ".local/evidence/AC_REFEREE_V1-pair-d08cc316-20260830T120100Z"
+  },
+  "external_architecture_review": {
+    "requested_model": "gpt-5-pro",
+    "engine": "browser",
+    "status": "UNAVAILABLE_BEFORE_PROMPT_SUBMISSION",
+    "verdict": null,
+    "fallback_used": false,
+    "owner_waiver_to_continue_without_review": true
+  },
+  "distribution": {
+    "candidate_artifacts_are_release_assets": false,
+    "candidate_tag_is_stable_release": false,
+    "network_alias_Antichess_v1_nnue_created": false,
+    "release_decision_G15": "NOT_REQUESTED",
+    "public_openbench_mapping": "UNKNOWN_FAIL_CLOSED"
+  },
+  "forbidden_inferences": [
+    "Correctness smoke, canary, sanitizer, and digest results are not Elo evidence.",
+    "Legacy evaluator parity does not establish the network license or redistribution authority.",
+    "A local AC_REFEREE_V1 pass does not establish production OpenBench mapping.",
+    "This baseline is not a strength champion, DATAGEN producer, trained NNUE V2, or release candidate."
+  ],
+  "immutable_tag": {
+    "name": "baseline/lichess-antichess-v1-d08cc316",
+    "target": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "tag_object": "ecc4f9e5be5a06f8a3169720e3003b9d2ebed0d1",
+    "remote_verified": true
+  },
+  "next_gate": "P7_SEARCH_HYPOTHESIS_READINESS"
+}
