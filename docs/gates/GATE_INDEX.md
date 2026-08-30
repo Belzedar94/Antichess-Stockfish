@@ -18,7 +18,7 @@ append-only; a gate transition requires a new receipt or addendum.
 | P4 | Differential legal/result/notation correctness | PASS | The claim-at-horizon defect is fixed and frozen; exact candidate, legacy network, `AC_REFEREE_V1`, raw log, and 100-ply PGN audit pass |
 | P5 | Evaluator and legacy-network boundary | PASS | Scalar full-refresh parity covers 58 exact values and all material buckets; loader passes 82 checks including claim-at-horizon and remains fail-closed |
 | P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | PR #3 and its post-merge CI certify the corrected engine; PR #4 and exact-head post-merge run `33310697041` close the recertification governance record; manifest V2 and immutable tag `baseline/lichess-antichess-v1-d08cc316` remain verified |
-| P7 | Search-hypothesis readiness | IN_PROGRESS | `p7-alpha-beta-v1-r2` freezes one plain alpha-beta hypothesis, exact comparator, 13-case fixed-work corpus, direct UCI harness, thresholds, and stop rule before candidate code; comparator execution waits for an exclusive host window |
+| P7 | Search-hypothesis readiness | IN_PROGRESS | `p7-alpha-beta-v1-r2` freezes one plain alpha-beta hypothesis, exact comparator, 13-case fixed-work corpus, direct UCI harness, thresholds, and stop rule; the one-shot exhaustive comparator record is frozen as `5d3b14bd...b1c16b`, and candidate code has not yet been written |
 | P8 | Antichess DATAGEN schema and labels | BLOCKED_BY_P7 | Own magic/schema, physical records, golden perspective labels |
 | P9 | Producer/consumer handshake and G0 | BLOCKED_BY_P8 | Exact counts, framing, legality, results, recovery, quarantine |
 | P10 | Official public-build DATAGEN canary | BLOCKED_BY_P9 | Production path proves the exact versioned dialect contract |
@@ -34,9 +34,10 @@ append-only; a gate transition requires a new receipt or addendum.
 - P7 permits only one preregistered search hypothesis at a time. No timing,
   strength, book, Elo, or campaign run may start without an exact comparator,
   referee/runner, workload, stopping rule, and exclusive host lease.
-- `p7-alpha-beta-v1-r2` has not executed its comparator phase. Candidate code
-  is forbidden until the exact comparator record is frozen in a receipt
-  addendum after the foreign exclusive CPU lease releases.
+- `p7-alpha-beta-v1-r2` executed its comparator phase exactly once under an
+  exclusive host lease. Candidate implementation may now begin only in a
+  separate commit; the candidate comparison remains one-shot after a clean,
+  hash-frozen build.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.

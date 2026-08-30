@@ -1,0 +1,183 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "addendum": 1,
+  "recorded_at_utc": "2026-08-30T18:04:04Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_FIXED_WORK_COMPARATOR_BASELINE_NOT_STRENGTH",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-08-30T121429Z-P7-preregistration.json",
+    "sha256": "4bee7378d2482fd90b2a329a188a9aa69bb853512b0e7ae1f2df339622555409"
+  },
+  "preregistration_identity": {
+    "commit": "c897ba949a9e17aab3870214d87e5e8f3ccde1b4",
+    "tree": "6cba87f42a6bb57e0f17c3fe1edfdba693543aa9",
+    "candidate_parent_commit": "a6e03ab48f7606580f9b9142e898e6485edc87f3",
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "fixture_path": "tests/antichess/fixtures/p7-alpha-beta-v1-prereg.json",
+    "fixture_sha256": "90563b27496a88197e8b10eacf7bc876d1bec5207a9c455239274f9d44c88467",
+    "runner_path": "tools/search/verify_alpha_beta_v1.py",
+    "runner_sha256": "1157bc80ae1f8d55c0e7a477bbd1de94041831cecdef101476fb3c989517b4b5"
+  },
+  "comparator_identity": {
+    "commit": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "windows_binary_sha256": "dbfcdc98acdb676226f6b2a0c5251291cfafb391e9099f1e3a33eccb0d73d3ca",
+    "search": "exhaustive-v1",
+    "evaluator": "engineering-neutral",
+    "network": null,
+    "protocol": "direct UCI",
+    "threads": 1,
+    "hash_mib": 1,
+    "depth": 4
+  },
+  "execution": {
+    "phase": "comparator-baseline",
+    "attempt": 1,
+    "exit_code": 0,
+    "record_path": ".local/evidence/P7-alpha-beta-v1-comparator-20260830T180100Z/comparator-record.json",
+    "record_bytes": 10427,
+    "record_sha256": "5d3b14bd07b0163a171c01ce956224eb1a32ba1d743d1b56dfcce86d78b1c16b",
+    "record_schema": "ANTICHESS_P7_ALPHA_BETA_V1_COMPARATOR_RECORD",
+    "records": 13,
+    "unique_ids": 13,
+    "transcript_lines": 152,
+    "aggregate_nodes": 175492
+  },
+  "records": [
+    {
+      "id": "bench_01_start",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "a2a3",
+      "nodes": 161786
+    },
+    {
+      "id": "bench_02_mandatory_capture_choice",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "d4c5",
+      "nodes": 50
+    },
+    {
+      "id": "bench_03_check_ignored",
+      "score_type": "mate",
+      "score": 1,
+      "bestmove": "e1e2",
+      "nodes": 3732
+    },
+    {
+      "id": "bench_04_adjacent_kings",
+      "score_type": "mate",
+      "score": -1,
+      "bestmove": "e4e5",
+      "nodes": 1
+    },
+    {
+      "id": "bench_05_multiple_kings_parser_boundary",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "a8a7",
+      "nodes": 1754
+    },
+    {
+      "id": "bench_06_en_passant_and_capture_choice",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "e4d5",
+      "nodes": 16
+    },
+    {
+      "id": "bench_07_quiet_promotion",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "a7a8b",
+      "nodes": 741
+    },
+    {
+      "id": "bench_08_capture_promotion",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "a7b8b",
+      "nodes": 804
+    },
+    {
+      "id": "bench_09_king_check_does_not_suppress_quiet_moves",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "a2a3",
+      "nodes": 1849
+    },
+    {
+      "id": "bench_10_forced_knight_capture",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "g6f4",
+      "nodes": 1590
+    },
+    {
+      "id": "bench_11_en_passant_mandatory_filter",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "e5d6",
+      "nodes": 229
+    },
+    {
+      "id": "bench_12_claimable_repetition_history",
+      "score_type": "cp",
+      "score": 0,
+      "bestmove": "g8e7",
+      "nodes": 2939
+    },
+    {
+      "id": "bench_13_no_legal_move_terminal",
+      "score_type": "mate",
+      "score": -1,
+      "bestmove": "a5a6",
+      "nodes": 1
+    }
+  ],
+  "audit": {
+    "record_json_parse": "PASS",
+    "schema": "PASS",
+    "fixture_identity": "PASS",
+    "comparator_identity": "PASS",
+    "record_count": "PASS",
+    "unique_case_ids": "PASS",
+    "aggregate_node_sum": "PASS",
+    "worktree_clean_before_and_after": true,
+    "candidate_code_present": false
+  },
+  "resource_lease": {
+    "host": "DESKTOP-XD38UAF",
+    "owner_project": "Antichess-Stockfish",
+    "resource": "CPU_FIXED_WORK_EXCLUSIVE",
+    "supervisor_pid": 36472,
+    "started_at_utc": "2026-08-30T18:01:48.959Z",
+    "comparator_completed_at_utc": "2026-08-30T18:02:43.134Z",
+    "postflight_completed_at_utc": "2026-08-30T18:03:06.475Z",
+    "lease_start_sha256": "abaf2c0114513aaffea26ee2d9be80cdc029e2a567ddb5d09320cc8c5e786fed",
+    "lease_end_sha256": "0892fb4b16dea6327a3b0c1fad94c1d5f09fcb110bc0833f02a4e78e25fd54e5",
+    "foreign_variant_processes_before": 0,
+    "foreign_variant_processes_after": 0,
+    "foreign_processes_modified": false,
+    "restoration": "CPU released; supervisor and comparator exited."
+  },
+  "decision": {
+    "comparator_baseline_frozen": true,
+    "candidate_implementation_authorized_by_preregistration": true,
+    "candidate_implemented": false,
+    "candidate_comparison_executed": false,
+    "node_reduction_threshold_evaluated": false,
+    "default_search_changed": false
+  },
+  "non_claims": [
+    "This deterministic fixed-work comparator record is not timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring evidence.",
+    "No candidate result exists and no pass/fail decision on the alpha-beta hypothesis has been made.",
+    "The exhaustive-v1 search remains the only implemented and default search."
+  ],
+  "next_safe_action": "Implement only the preregistered alpha-beta-v1 recursive window and cutoff in a separate commit while keeping exhaustive-v1 as the default, then freeze a clean candidate binary before the one-shot comparison."
+}
