@@ -92,6 +92,7 @@ def verify_expected(fixture_id: str, actual: dict[str, str], expected: dict[str,
         "halfmove_clock": str(expected["halfmove_clock"]),
         "uci_variant": "antichess",
         "evaluator": "engineering-neutral",
+        "search": "exhaustive-v1",
         "threads": "1",
         "hash_mb": "1",
         "network_loaded": "0",
@@ -116,6 +117,7 @@ def main() -> int:
         "uci\n"
         "setoption name UCI_Variant value chess\n"
         "setoption name Antichess_Evaluator value orthodox\n"
+        "setoption name Antichess_Search value orthodox\n"
         "setoption name Threads value 1\n"
         "setoption name Hash value 1\n"
         "position startpos\n"
@@ -137,6 +139,7 @@ def main() -> int:
             "Clear Hash",
             "UCI_Variant",
             "Antichess_Evaluator",
+            "Antichess_Search",
             "EvalFile",
         ],
         f"unexpected UCI option surface: {option_names}",
@@ -146,8 +149,32 @@ def main() -> int:
     )
     require(option_info["uci_variant"] == "antichess", "invalid variant option persisted")
     require(option_info["evaluator"] == "engineering-neutral", "invalid evaluator persisted")
+    require(option_info["search"] == "exhaustive-v1", "invalid search option persisted")
     require(option_info["threads"] == "1", "thread option did not persist")
     require(option_info["hash_mb"] == "1", "hash option did not persist")
+
+    search_option_probe = run(
+        binary,
+        "uci\n"
+        "setoption name Antichess_Search value alpha-beta-v1\n"
+        "ucinewgame\n"
+        "isready\n"
+        "position startpos\n"
+        "antichess-info\n"
+        "setoption name Antichess_Search value invalid\n"
+        "antichess-info\n",
+    )
+    require(search_option_probe.returncode == 0, "search option persistence probe failed")
+    search_option_info = [
+        parse_line(line)
+        for line in search_option_probe.stdout.splitlines()
+        if line.startswith(PREFIX)
+    ]
+    require(len(search_option_info) == 2, "search option diagnostic count mismatch")
+    require(
+        all(info["search"] == "alpha-beta-v1" for info in search_option_info),
+        "alpha-beta search option did not persist",
+    )
 
     core = load("tests/antichess/fixtures/core-v1.json")
     material = load("tests/antichess/fixtures/material-boundaries-v1.json")
