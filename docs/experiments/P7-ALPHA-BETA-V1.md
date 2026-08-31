@@ -2,10 +2,10 @@
 
 ## Status
 
-This experiment is preregistered but has not been executed. The candidate
-implementation does not exist at the time of this record. A foreign project
-holds the local exclusive CPU timing lease, so no comparator search, candidate
-search, build, timing run, match, or strength run is authorized in this state.
+The single preregistered candidate comparison has been executed and passed.
+The fixed-work result and expanded local correctness battery are frozen, but
+official CI, review, merge, winner ancestry, and post-merge verification remain
+open. No timing run, match, or strength run is authorized by this experiment.
 
 This document is engineering evidence only. It is not Elo, strength,
 OpenBench, DATAGEN, model-selection, release, or monitoring evidence.
@@ -24,12 +24,18 @@ OpenBench, DATAGEN, model-selection, release, or monitoring evidence.
 - Evaluator: `engineering-neutral`; no network is loaded.
 - Fixture: `tests/antichess/fixtures/p7-alpha-beta-v1-prereg.json`.
 - Direct UCI harness: `tools/search/verify_alpha_beta_v1.py`.
+- Candidate implementation commit:
+  `cae4d60f68e1ec2356c318bb9637736a5a504730`.
+- Candidate Windows binary SHA-256:
+  `1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac`.
+- Candidate comparison record SHA-256:
+  `acf19303c56dfcda4eddfc4ae254305ac7f5c3548404d9dc0d63e7fbde503e8c`.
 - Threads: 1. Hash: 1 MiB. Fixed depth: 4.
 - Book, referee, time control, adjudication, games, colors, and opening seeds:
   none, because this is a deterministic fixed-work engineering experiment.
 
 The comparator record, candidate commit, candidate binary hash, build identity,
-and execution receipt must be frozen in an addendum before candidate comparison.
+and one-shot execution result are frozen in immutable E1 addenda.
 
 ## One hypothesis
 
@@ -89,6 +95,21 @@ the existing exact tie behavior:
    notation, bench, reproducibility, and sanitizer gates.
 
 No timing or match rung may be started by this experiment.
+
+## Execution outcome
+
+- Comparator phase: one execution, 13 cases, 175,492 aggregate nodes.
+- Candidate phase: one execution, 13/13 exact scores and best moves.
+- Per-case rule: no candidate node count exceeded its comparator count.
+- Candidate aggregate: 12,893 nodes, a 92.65% reduction.
+- Local inherited correctness: PASS, including exact alpha-beta versus
+  exhaustive search-boundary results and the legacy-network claim-horizon case
+  under both search modes.
+- Default search: unchanged at `exhaustive-v1`.
+- Strength claim: none.
+
+The official reproducible-build and Linux ASan/UBSan jobs, non-draft review,
+merge, winner ancestry, and post-merge receipt are still required to close P7.
 
 ## Fixed decision rule
 
