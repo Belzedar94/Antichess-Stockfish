@@ -1,0 +1,136 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "addendum": 5,
+  "recorded_at_utc": "2026-08-31T16:39:21Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "PASS",
+  "evidence_class": "P7_POSTMERGE_ENGINEERING_CLOSURE_NOT_STRENGTH",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-08-31T162702Z-P7-local-correctness.json",
+    "sha256": "230c823e333f4897d56b43d029e04f6a1a523995d7c94a0987fcd08641b01f33"
+  },
+  "fixed_work": {
+    "experiment_id": "p7-alpha-beta-v1-r2",
+    "implementation_commit": "cae4d60f68e1ec2356c318bb9637736a5a504730",
+    "candidate_binary_sha256": "1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac",
+    "comparison_record_sha256": "acf19303c56dfcda4eddfc4ae254305ac7f5c3548404d9dc0d63e7fbde503e8c",
+    "attempts_consumed": 1,
+    "max_attempts": 1,
+    "cases": 13,
+    "all_scores_and_bestmoves_exact": true,
+    "all_candidate_nodes_lte_comparator": true,
+    "comparator_nodes": 175492,
+    "candidate_nodes": 12893,
+    "aggregate_node_reduction_percent": 92.65322635789666,
+    "required_node_reduction_percent": 25.0,
+    "result_aware_extension": false,
+    "outcome": "PASS"
+  },
+  "local_correctness": {
+    "coverage_commit": "dd0b2cffab802bd82065027419cf8fbe78dead80",
+    "candidate_uci_fixtures": "PASS: 41 state cases, 3 search cases, 1000 checks",
+    "alpha_beta_search_boundaries": "PASS: exact versus exhaustive-v1",
+    "bench": "PASS: 2 identical runs, 13 positions, 737 nodes",
+    "legacy_loader": "PASS: 87 checks, including claim horizon under both search modes",
+    "legacy_parity": "PASS: 58 exact values across all 8 buckets",
+    "receipt_sha256": "230c823e333f4897d56b43d029e04f6a1a523995d7c94a0987fcd08641b01f33"
+  },
+  "pull_request": {
+    "number": 5,
+    "url": "https://github.com/Belzedar94/Antichess-Stockfish/pull/5",
+    "title": "Add isolated Antichess alpha-beta search",
+    "draft": false,
+    "base": "official-stockfish/dev-20260829-8bc5caa2",
+    "head": "antichess/p7-alpha-beta-v1-r2",
+    "head_commit": "1a9336e09db4993140e6298ae85b95e0dd3e4217",
+    "review_id": "PRR_kwDOT2Z4Ss8AAAABLiB5bQ",
+    "review_state": "COMMENTED_NO_BLOCKING_FINDINGS",
+    "merged_at_utc": "2026-08-31T16:35:41Z",
+    "merge_commit": "fcdd4f0ecf2b397b24dad426d940526b3160241f",
+    "merge_tree": "394528a55cb8f5b70ff76aae2aabfa8adf65a301"
+  },
+  "winner_ancestry": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_is_ancestor": true,
+    "implementation_is_ancestor": true,
+    "comparison_receipt_commit_is_ancestor": true,
+    "fairy_reference_commit": "c19b5f6c66894fdb0e88d0dd100e3885f744760a",
+    "fairy_reference_commit_is_ancestor": false,
+    "rejected_fairy_implementation_imported": false
+  },
+  "official_ci": {
+    "exact_head_push_run": {
+      "id": 33414444177,
+      "head_sha": "1a9336e09db4993140e6298ae85b95e0dd3e4217",
+      "conclusion": "SUCCESS",
+      "reproducible_job_id": 99561633685,
+      "reproducible_job_conclusion": "SUCCESS",
+      "asan_ubsan_job_id": 99561633938,
+      "asan_ubsan_job_conclusion": "SUCCESS"
+    },
+    "pull_request_run": {
+      "id": 33414781218,
+      "head_sha": "1a9336e09db4993140e6298ae85b95e0dd3e4217",
+      "conclusion": "SUCCESS",
+      "reproducible_job_id": 99562705293,
+      "reproducible_job_conclusion": "SUCCESS",
+      "asan_ubsan_job_id": 99562705515,
+      "asan_ubsan_job_conclusion": "SUCCESS"
+    },
+    "post_merge_run": {
+      "id": 33414973265,
+      "url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33414973265",
+      "head_sha": "fcdd4f0ecf2b397b24dad426d940526b3160241f",
+      "conclusion": "SUCCESS",
+      "reproducible_job_id": 99563331341,
+      "reproducible_job_conclusion": "SUCCESS",
+      "asan_ubsan_job_id": 99563331490,
+      "asan_ubsan_job_conclusion": "SUCCESS"
+    }
+  },
+  "post_merge_artifact": {
+    "artifact_id": 9766654569,
+    "name": "antichess-engineering-fcdd4f0ecf2b397b24dad426d940526b3160241f",
+    "service_digest": "sha256:40c2c997405807dba47bf2a1640644294e2ef1204f48f17361d7f36efbd40488",
+    "downloaded_and_reverified": true,
+    "evidence_directory": ".local/evidence/P7-ci-postmerge-fcdd4f0e-20260831T163707Z",
+    "binary_runs": 2,
+    "binary_bytes": 671592,
+    "binary_sha256_run_1": "2d78ccb787a905b79aa8175c0af297c33c550ee459d00d882813ad0c6eb2431d",
+    "binary_sha256_run_2": "2d78ccb787a905b79aa8175c0af297c33c550ee459d00d882813ad0c6eb2431d",
+    "binary_byte_identical": true,
+    "build_identity_sha256": "64fe8aa35f611a8d17eea4b979a49e40e1d56feec5d470be94feacdbe5c39ae8",
+    "sha256sums_sha256": "12104187a5e16616abac0f7981afc441173d4e97a303be117707168072cb6428"
+  },
+  "promotion_boundary": {
+    "default_search": "exhaustive-v1",
+    "optional_search": "alpha-beta-v1",
+    "default_changed": false,
+    "strength_proven": false,
+    "openbench_admitted": false,
+    "release_authorized": false
+  },
+  "asset_boundary": {
+    "legacy_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "legacy_network_bundled_or_embedded": false,
+    "legacy_network_default_or_alias": false,
+    "legacy_network_redistribution_authorized": false
+  },
+  "decision": {
+    "P7": "PASS",
+    "engineering_hypothesis": "ACCEPTED",
+    "strength_claim": false,
+    "state": "GO_NEXT_PHASE"
+  },
+  "non_claims": [
+    "P7 engineering closure is not timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring evidence.",
+    "The 92.65% fixed-work node reduction does not prove superiority over Fairy-Stockfish.",
+    "The optional alpha-beta search is not promoted to the default by this receipt.",
+    "The external legacy network remains local-only and forbidden from redistribution or release aliasing."
+  ],
+  "next_safe_action": "Preregister an Antichess-specific three-time-control same-network strength panel against a frozen Fairy-Stockfish comparator. Both engines must load the exact dd3c bytes, and the Antichess book, AC_REFEREE_V1 runner mapping, options, seeds, colors, invalidation, stopping rule, host lease, and no-strength-before-result boundary must be frozen before any game."
+}
