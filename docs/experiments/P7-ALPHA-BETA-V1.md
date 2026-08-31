@@ -3,9 +3,10 @@
 ## Status
 
 The single preregistered candidate comparison has been executed and passed.
-The fixed-work result and expanded local correctness battery are frozen, but
-official CI, review, merge, winner ancestry, and post-merge verification remain
-open. No timing run, match, or strength run is authorized by this experiment.
+The fixed-work result, expanded local correctness battery, PR #5 review and
+merge, winner ancestry, reproducible artifacts, and post-merge ASan/UBSan run
+are frozen. P7 engineering is closed. No timing run, match, or strength claim
+is authorized by this experiment.
 
 This document is engineering evidence only. It is not Elo, strength,
 OpenBench, DATAGEN, model-selection, release, or monitoring evidence.
@@ -108,8 +109,10 @@ No timing or match rung may be started by this experiment.
 - Default search: unchanged at `exhaustive-v1`.
 - Strength claim: none.
 
-The official reproducible-build and Linux ASan/UBSan jobs, non-draft review,
-merge, winner ancestry, and post-merge receipt are still required to close P7.
+Official reproducible-build and Linux ASan/UBSan jobs, non-draft review, merge,
+winner ancestry, and post-merge run `33414973265` passed. The next experiment
+must separately preregister the same-network three-time-control strength panel;
+it may not reinterpret this fixed-work result as Elo.
 
 ## Fixed decision rule
 
