@@ -203,3 +203,21 @@
   no verdict exists, never substitute another model silently, and continue
   only under an explicit owner waiver.
 - **Gate:** P7, P14, and P15.
+
+## INC-STRENGTH-001 — A fixed-depth correctness search could not execute the 3-TC protocol
+
+- **Symptom:** the candidate accepted the Atomic VSTC clock command
+  `2000+20` but returned its hard-coded depth-4 result in 102 ms; it also
+  advertised `Hash` with a maximum of 1 while the selected protocol requires
+  512 MiB.
+- **False inference:** an official-Stockfish source lineage plus a successful
+  alpha-beta fixed-work gate meant the candidate already had production
+  Stockfish time management and transposition-table search.
+- **Cause:** P7 intentionally isolated plain alpha-beta inside the correctness
+  path. `Engine::go()` maps clock searches to depth 4, caps depth at 8, and the
+  experiment explicitly excluded transposition-table cutoffs.
+- **Prevention:** add clock-responsive iterative deepening and 512 MiB
+  transposition-table capability as separate preregistered hypotheses, verify
+  effective UCI settings and work scaling, and reject any strength launch that
+  silently clamps settings or ignores its clocks.
+- **Gate:** P7, P14, and P15.
