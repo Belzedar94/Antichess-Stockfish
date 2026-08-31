@@ -1,0 +1,142 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-08-31T21:14:45Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_CLOCKED_ITERATIVE_DEEPENING_PREREGISTRATION_NOT_STRENGTH",
+  "experiment_id": "p7-clocked-iterative-v1-r1",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "f7b0f22659ffbe6c1fb1704269bd811d8b5cc22c",
+    "candidate_parent_tree": "0ecadfacde15013a4ab49d36a99f1594ae4613df",
+    "p7_engine_merge": "fcdd4f0ecf2b397b24dad426d940526b3160241f",
+    "parent_windows_binary_sha256": "1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac",
+    "parent_fixed_work_record_sha256": "acf19303c56dfcda4eddfc4ae254305ac7f5c3548404d9dc0d63e7fbde503e8c",
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "candidate_windows_binary_sha256": null,
+    "official_stockfish_is_ancestor": true,
+    "fairy_stockfish_comparator_is_ancestor": false
+  },
+  "frozen_artifacts": {
+    "document": {
+      "path": "docs/experiments/P7-CLOCKED-ITERATIVE-V1.md",
+      "sha256": "77870fb32487289339b2837abf111b185ed0b8fd830795fca6aac0c3b834263f",
+      "bytes": 7081
+    },
+    "fixture": {
+      "path": "tests/antichess/fixtures/p7-clocked-iterative-v1-prereg.json",
+      "sha256": "b73c5bed59b8a314861cfbbef6a9b7c5c73c63ae62f4ad303b1a8c98796d97fa",
+      "bytes": 7935,
+      "fixed_depth_cases": 13,
+      "clock_scaling_searches": 9,
+      "movetime_searches": 1
+    },
+    "runner": {
+      "path": "tools/search/verify_clocked_iterative_v1.py",
+      "sha256": "bde9e5df5847f6e0b88fe6d9ff2509905378d463217ab9da74ac4e89a58199f5",
+      "bytes": 17433,
+      "syntax_parse": "PASS"
+    }
+  },
+  "one_hypothesis": {
+    "name": "clock_responsive_completed_iteration_iterative_deepening",
+    "independent_variable": "clock-controlled outer iterative loop and hard-deadline checks only",
+    "fixed_invariants": [
+      "positive explicit depth retains the parent fixed-depth path",
+      "alpha-beta-v1 recursive semantics",
+      "independent full-window root searches",
+      "sorted UCI root and internal move order",
+      "variant terminal then automatic draw then depth-zero evaluation and claim floor",
+      "claimable draw as an internal virtual score-zero option",
+      "existing root tie rule",
+      "mandatory-capture legal move generator",
+      "Threads 1 and Hash 1 MiB"
+    ],
+    "excluded_features": [
+      "orthodox search path",
+      "transposition table",
+      "Hash above 1 MiB",
+      "SEE",
+      "null move",
+      "qsearch",
+      "LMR",
+      "extensions",
+      "aspiration",
+      "history or previous-PV ordering",
+      "additional pruning",
+      "evaluator changes",
+      "rule changes",
+      "pondering or asynchronous stop redesign"
+    ]
+  },
+  "frozen_clock_contract": {
+    "overhead_ms": 20,
+    "default_horizon": 40,
+    "movestogo_horizon": "clamp to 1 through 50",
+    "movetime_budget": "max(1, movetime - 20)",
+    "game_clock_budget": "min(max(1, side_time - 20), max(1, side_time / horizon + (3 * increment) / 4))",
+    "deadline_origin": "limits.startTime",
+    "maximum_clock_depth": 64,
+    "deadline_check_nodes": 64,
+    "vstc_budget_ms": 65,
+    "stc_budget_ms": 325,
+    "ltc_budget_ms": 975,
+    "partial_iteration": "discard result after restoring every move",
+    "reported_result": "last fully completed iteration",
+    "node_accounting": "completed plus discarded partial iteration"
+  },
+  "fixed_decision_rule": {
+    "fixed_depth_exact_score_type_score_bestmove_nodes": true,
+    "minimum_completed_clock_depth": 1,
+    "maximum_budget_overrun_ms": 250,
+    "game_clock_wall_time_strictly_below_base_time": true,
+    "minimum_stc_to_vstc_aggregate_nodes_ratio": 1.5,
+    "minimum_ltc_to_stc_aggregate_nodes_ratio": 1.5,
+    "median_depth_nondecreasing": true,
+    "ltc_median_depth_strictly_above_vstc": true,
+    "clock_scaling_attempts": 1,
+    "optional_stopping": false,
+    "result_aware_extension": false,
+    "failure_action": "REJECT_LOCALLY_WITH_ENGLISH_POST_MORTEM"
+  },
+  "execution_status": {
+    "candidate_code_exists": false,
+    "fixed_depth_baseline_record": null,
+    "clock_scaling_record": null,
+    "clock_scaling_executed": false,
+    "games_executed": 0,
+    "host_gate": {
+      "two_process_snapshots": "NO_ACTIVE_CHESS_ENGINE_OR_CUTECHESS",
+      "open_foreign_resource_lease": false,
+      "foreign_processes_modified": false
+    }
+  },
+  "external_review": {
+    "status": "UNAVAILABLE_BEFORE_SUBMISSION",
+    "verdict": null,
+    "fallback_used": false,
+    "owner_authorized_continuation": true
+  },
+  "required_before_implementation": [
+    "commit and push this immutable preregistration",
+    "run only the fixed-depth phase against the exact parent Windows binary",
+    "freeze the parent fixed-depth result and hashes in an immutable E1 addendum"
+  ],
+  "required_after_implementation": [
+    "freeze candidate commit, tree, toolchain, dual clean build logs, and binary hash before clock scaling",
+    "execute the clock-scaling phase exactly once on an exclusive host",
+    "run the full inherited correctness, loader, parity, deterministic bench, reproducibility, and sanitizer gates",
+    "non-draft pull request, review, merge, winner ancestry, and postmerge CI"
+  ],
+  "non_claims": [
+    "No candidate implementation exists in this receipt.",
+    "No clock-scaling search, game, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "A pass admits only a separately preregistered Hash-512 Antichess transposition-table hypothesis."
+  ],
+  "next_safe_action": "Commit and push the preregistration, then run only the frozen fixed-depth phase against the exact parent binary and freeze that result before candidate code."
+}

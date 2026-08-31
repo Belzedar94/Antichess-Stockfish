@@ -1,0 +1,206 @@
+{
+  "schema": "ANTICHESS_P7_CLOCKED_ITERATIVE_V1_PREREG",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-08-31T21:14:45Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "p7-clocked-iterative-v1-r1",
+  "status": "PREREGISTERED_INPUTS_UNEXECUTED",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "f7b0f22659ffbe6c1fb1704269bd811d8b5cc22c",
+    "candidate_parent_tree": "0ecadfacde15013a4ab49d36a99f1594ae4613df",
+    "p7_engine_merge": "fcdd4f0ecf2b397b24dad426d940526b3160241f",
+    "parent_windows_binary_sha256": "1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac",
+    "parent_fixed_work_record_sha256": "acf19303c56dfcda4eddfc4ae254305ac7f5c3548404d9dc0d63e7fbde503e8c",
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "candidate_windows_binary_sha256": null
+  },
+  "configuration": {
+    "protocol": "direct UCI",
+    "search": "alpha-beta-v1",
+    "fixed_depth_evaluator": "engineering-neutral",
+    "clock_evaluator": "legacy-v1",
+    "external_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "external_network_distribution": "local-only; no redistribution, default, embedding, or alias",
+    "threads": 1,
+    "hash_mib": 1,
+    "fixed_depth": 4,
+    "fixed_depth_min": 1,
+    "fixed_depth_max": 8,
+    "clock_depth_max": 64,
+    "root_move_order": "sorted UCI",
+    "root_window": "independent full window for every root move",
+    "deadline_check_nodes": 64,
+    "overhead_ms": 20
+  },
+  "command_classification": {
+    "positive_explicit_depth_precedes_clock_fields": true,
+    "clocked_mode": "no explicit depth and either positive movetime or positive side-to-move time",
+    "unchanged_parent_fallback": [
+      "go nodes without depth or clock",
+      "go mate without depth or clock",
+      "go infinite without depth or clock",
+      "unconstrained go"
+    ],
+    "unchanged_parent_fallback_depth": 4,
+    "ponder_added": false,
+    "asynchronous_stop_added": false
+  },
+  "budget_rule": {
+    "arithmetic": "integer milliseconds",
+    "movetime": "max(1, movetime - overhead_ms)",
+    "default_horizon": 40,
+    "movestogo_horizon": "clamp(movestogo, 1, 50)",
+    "game_clock": "min(max(1, side_time - overhead_ms), max(1, side_time / horizon + (3 * side_increment) / 4))",
+    "hard_deadline": "limits.startTime + hard_budget_ms",
+    "soft_deadline": null
+  },
+  "interruption_rule": {
+    "checks": [
+      "before each new iteration",
+      "before each root move",
+      "every 64 recursive node visits"
+    ],
+    "move_is_undone_before_interrupt_propagation": true,
+    "partial_iteration_is_discarded": true,
+    "reported_result_source": "last fully completed iteration",
+    "node_total_includes_discarded_partial_iteration": true,
+    "no_completed_iteration_fallback": "sorted first legal root move at reported depth 0",
+    "no_completed_iteration_outcome": "FAIL"
+  },
+  "fixed_depth_cases": [
+    {
+      "id": "bench_01_start",
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "a2a3", "nodes": 8965}
+    },
+    {
+      "id": "bench_02_mandatory_capture_choice",
+      "position": "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "d4c5", "nodes": 50}
+    },
+    {
+      "id": "bench_03_check_ignored",
+      "position": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "mate", "score": 1, "bestmove": "e1e2", "nodes": 663}
+    },
+    {
+      "id": "bench_04_adjacent_kings",
+      "position": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "mate", "score": -1, "bestmove": "e4e5", "nodes": 1}
+    },
+    {
+      "id": "bench_05_multiple_kings_parser_boundary",
+      "position": "K3K3/8/8/8/8/8/8/7k w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "a8a7", "nodes": 348}
+    },
+    {
+      "id": "bench_06_en_passant_and_capture_choice",
+      "position": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "e4d5", "nodes": 16}
+    },
+    {
+      "id": "bench_07_quiet_promotion",
+      "position": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "a7a8b", "nodes": 199}
+    },
+    {
+      "id": "bench_08_capture_promotion",
+      "position": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "a7b8b", "nodes": 205}
+    },
+    {
+      "id": "bench_09_king_check_does_not_suppress_quiet_moves",
+      "position": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "a2a3", "nodes": 1463}
+    },
+    {
+      "id": "bench_10_forced_knight_capture",
+      "position": "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "g6f4", "nodes": 402}
+    },
+    {
+      "id": "bench_11_en_passant_mandatory_filter",
+      "position": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "e5d6", "nodes": 56}
+    },
+    {
+      "id": "bench_12_claimable_repetition_history",
+      "position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1",
+      "depth": 4,
+      "expected": {"score_type": "cp", "score": 0, "bestmove": "g8e7", "nodes": 524}
+    },
+    {
+      "id": "bench_13_no_legal_move_terminal",
+      "position": "8/p7/8/P7/8/8/8/8 w - - 0 1",
+      "depth": 4,
+      "expected": {"score_type": "mate", "score": -1, "bestmove": "a5a6", "nodes": 1}
+    }
+  ],
+  "clock_scaling": {
+    "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+    "repetitions": 3,
+    "balanced_block_orders": [
+      ["VSTC", "STC", "LTC"],
+      ["LTC", "VSTC", "STC"],
+      ["STC", "LTC", "VSTC"]
+    ],
+    "time_controls": {
+      "VSTC": {"time_ms": 2000, "increment_ms": 20, "expected_hard_budget_ms": 65},
+      "STC": {"time_ms": 10000, "increment_ms": 100, "expected_hard_budget_ms": 325},
+      "LTC": {"time_ms": 30000, "increment_ms": 300, "expected_hard_budget_ms": 975}
+    },
+    "movetime_probe": {"movetime_ms": 250, "expected_hard_budget_ms": 230},
+    "maximum_budget_overrun_ms": 250,
+    "minimum_adjacent_aggregate_node_ratio": 1.5,
+    "clock_scaling_attempts": 1,
+    "optional_stopping": false
+  },
+  "decision_rule": {
+    "fixed_depth_exact_score_type_score_bestmove_nodes": true,
+    "minimum_completed_clock_depth": 1,
+    "maximum_wall_and_engine_time": "hard budget plus maximum_budget_overrun_ms",
+    "game_clock_wall_time_strictly_below_base_time": true,
+    "minimum_stc_to_vstc_aggregate_nodes_ratio": 1.5,
+    "minimum_ltc_to_stc_aggregate_nodes_ratio": 1.5,
+    "median_depth_nondecreasing": true,
+    "ltc_median_depth_strictly_above_vstc": true,
+    "attempts": 1,
+    "result_aware_changes": false,
+    "failure_action": "REJECT_LOCALLY_WITH_ENGLISH_POST_MORTEM"
+  },
+  "excluded_features": [
+    "orthodox search path",
+    "transposition table",
+    "Hash above 1 MiB",
+    "SEE",
+    "null move",
+    "qsearch",
+    "LMR",
+    "extensions",
+    "aspiration",
+    "history or previous-PV ordering",
+    "additional pruning",
+    "evaluator changes",
+    "rule changes",
+    "result adjudication"
+  ],
+  "non_claims": [
+    "No candidate implementation exists at preregistration.",
+    "No clock-scaling execution, game, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "A pass admits only a separately preregistered Hash-512 Antichess transposition-table hypothesis."
+  ]
+}
