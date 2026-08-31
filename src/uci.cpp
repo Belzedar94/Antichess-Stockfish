@@ -289,14 +289,19 @@ void UCIEngine::bench(std::istream& args) {
         list.push_back("go depth " + std::to_string(depth));
     }
 
-    const bool previousLegacy = engine.get_options()["Antichess_Evaluator"] == "legacy-v1";
+    const bool previousLegacy    = engine.get_options()["Antichess_Evaluator"] == "legacy-v1";
+    const bool previousAlphaBeta = engine.get_options()["Antichess_Search"] == "alpha-beta-v1";
     {
         std::istringstream neutral("name Antichess_Evaluator value engineering-neutral");
         setoption(neutral);
     }
+    {
+        std::istringstream exhaustive("name Antichess_Search value exhaustive-v1");
+        setoption(exhaustive);
+    }
 
     sync_cout << "info string Antichess bench profile=LICHESS_ANTICHESS_V1"
-              << " evaluator=engineering-neutral depth=" << depth
+              << " evaluator=engineering-neutral search=exhaustive-v1 depth=" << depth
               << " positions=" << positions.size() << sync_endl;
 
     engine.set_on_update_full([&](const auto& i) {
@@ -353,6 +358,10 @@ void UCIEngine::bench(std::istream& args) {
                                + std::string(previousLegacy ? "legacy-v1"
                                                             : "engineering-neutral"));
     setoption(restore);
+    std::istringstream restoreSearch(
+      "name Antichess_Search value "
+      + std::string(previousAlphaBeta ? "alpha-beta-v1" : "exhaustive-v1"));
+    setoption(restoreSearch);
 }
 
 void UCIEngine::benchmark(std::istream& args) {

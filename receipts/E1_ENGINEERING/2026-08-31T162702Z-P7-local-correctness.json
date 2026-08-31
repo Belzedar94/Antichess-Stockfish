@@ -1,0 +1,95 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "addendum": 4,
+  "recorded_at_utc": "2026-08-31T16:27:02Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_LOCAL_INHERITED_CORRECTNESS_PASS_NOT_STRENGTH",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-08-31T161052Z-P7-candidate-comparison-pass.json",
+    "sha256": "75a2cc841c4fe6f61b710ce3ed97ba3fe538c2fd23abcb1a30e569a2c2d55b9d"
+  },
+  "source_identity": {
+    "branch": "antichess/p7-alpha-beta-v1-r2",
+    "implementation_commit": "cae4d60f68e1ec2356c318bb9637736a5a504730",
+    "comparison_freeze_commit": "92d16572fbd2bae0871d668f984afa50f2092ae3",
+    "correctness_coverage_commit": "dd0b2cffab802bd82065027419cf8fbe78dead80",
+    "correctness_coverage_tree": "78b233a7e35ef5a872e454c614e344e75d04dc55",
+    "candidate_binary_sha256": "1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac",
+    "default_search": "exhaustive-v1",
+    "candidate_search": "alpha-beta-v1"
+  },
+  "coverage_change": {
+    "engine_source_changed_after_fixed_work_decision": false,
+    "test_only": true,
+    "uci_search_boundaries_exercise_alpha_beta": true,
+    "legacy_claim_horizon_exercises_both_search_modes": true,
+    "result_aware_search_retuning": false
+  },
+  "external_inputs": {
+    "legacy_network_path": "C:\\Users\\djime\\Documents\\Chess_variants\\Match script\\antichess-dd3cbe53cd4e.nnue",
+    "legacy_network_bytes": 953248,
+    "legacy_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "legacy_network_redistributed": false,
+    "reference_path": ".reference-cache/fsf-net-reference/src/stockfish.exe",
+    "reference_bytes": 4509974,
+    "reference_sha256": "8fe05c431e34478ac4248ea0786d6a33ba766c34b3313098b9af00e442c00a56",
+    "reference_commit": "c19b5f6c66894fdb0e88d0dd100e3885f744760a"
+  },
+  "verification": {
+    "fixture_contract": "PASS: 27 positions, 7 histories, parser, result, repetition, material, search, claim, legacy, notation, and bench contracts",
+    "candidate_uci_fixtures": "PASS: 41 state cases, 3 search cases, 1000 checks",
+    "alpha_beta_search_boundaries": "PASS: exact score and bestmove equality versus exhaustive-v1",
+    "bench": "PASS: 2 identical runs, 13 positions, 737 nodes",
+    "bench_record_sha256": "d1be4e239ef3ab607a3806f61397e2b9d1a71f3b8429bc2c5cea904137862904",
+    "legacy_loader": "PASS: 1 positive, 1 claim-horizon across 2 search modes, 7 rejected mutations, 1 transactional clear, 87 checks",
+    "legacy_parity": "PASS: 58 exact scalar full-refresh values across all 8 buckets"
+  },
+  "verifier_identities": {
+    "fixture_contract_sha256": "73125e120fcc30ee1ad839de28568003cc3c139906b55ccac6c27eb7264d278b",
+    "uci_fixtures_sha256": "d308d6a18ededcd69ea7c16b0ed2204e91bd7806d8f876c4653446666c30f1e6",
+    "bench_sha256": "3ca231e75c8928dfdd280ca59bc3468976ccd10ac8d709b8ced95c19290559c6",
+    "legacy_loader_sha256": "0e02dac5238226a83ec993e2326636765284b7b481fe3de1b16674f4b6bcd097",
+    "legacy_parity_sha256": "360895a08c7a48f5f6433de8b1914f35af356ccd3151a0d6dc8dec4e97c89932"
+  },
+  "evidence": {
+    "directory": ".local/evidence/P7-alpha-beta-v1-correctness-20260831T161649Z",
+    "test_identity_sha256": "3e98768146506847715dfbd644865a4da3132a07ae11f8ceb254c69f69ea65e3",
+    "fixture_contract_log_sha256": "e3e196d78ca9fc682b28b84fc21dba4c06e3e730782195a60e5236110e14ccf5",
+    "candidate_fixtures_log_sha256": "d0dee3c5e4a41b8a874cfe55256a1d1c59ca8ad10f2f9e8d8de0fcc26a77e0c4",
+    "bench_log_sha256": "1bc94e2cf40a705be66523c6c43277df1e0ce005bf6a2210083bf3a96b214dff",
+    "legacy_loader_log_sha256": "8e66ac33a3fd6c4a86721d0e94e03ab40c19d031de5daf075ec2730654dbfcd6",
+    "legacy_parity_log_sha256": "672592ca3f2fdeabc46545b43c75747c8b114d89ad3a19b771334a97f5bc301f"
+  },
+  "resource_lease": {
+    "host": "DESKTOP-XD38UAF",
+    "owner_project": "Antichess-Stockfish",
+    "resource": "CPU_CORRECTNESS_EXCLUSIVE",
+    "supervisor_pid": 17984,
+    "started_at_utc": "2026-08-31T16:17:00.103Z",
+    "ended_at_utc": "2026-08-31T16:25:23.754Z",
+    "lease_start_sha256": "2691cdbf2959b9c6a0fb7cb93bbfa6d3f0aa39e7bdec76904315f07c69ef8b30",
+    "lease_end_sha256": "b41fac37e8b319ea574f1f47cd1cf5e8239418f47029cbdaa72ba1fd88aef0c8",
+    "foreign_processes_modified": false,
+    "post_test_transient": "A short-lived foreign OpenBench workload lookup appeared after all correctness commands had completed; it exited without intervention before lease release.",
+    "restoration": "CPU released; active lock ended; supervisor exited."
+  },
+  "decision": {
+    "local_correctness": "PASS",
+    "candidate_fixed_work": "PASS",
+    "official_ci_pending": true,
+    "pull_request_pending": true,
+    "default_search_changed": false,
+    "strength_claim": false
+  },
+  "non_claims": [
+    "This receipt is local engineering correctness evidence, not timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring evidence.",
+    "The external legacy network remains local-only and is not a release asset or default alias.",
+    "P7 remains open until official reproducible-build and sanitizer CI, review, merge, winner ancestry, and post-merge verification pass."
+  ],
+  "next_safe_action": "Commit this local correctness addendum and gate-index update, open a non-draft pull request, and require official reproducible-build plus Linux ASan/UBSan jobs before merge."
+}

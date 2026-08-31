@@ -72,13 +72,14 @@ def verify_run(binary: Path, fixture: dict[str, Any]) -> tuple[list[dict[str, An
         binary,
         "uci\n"
         "setoption name Antichess_Evaluator value legacy-v1\n"
+        "setoption name Antichess_Search value alpha-beta-v1\n"
         f"{fixture['command']}\n"
         "antichess-info\n",
     )
     require(completed.returncode == 0, f"bench exited {completed.returncode}")
     header = (
         f"info string Antichess bench profile={fixture['profile']} "
-        "evaluator=engineering-neutral depth=2 "
+        "evaluator=engineering-neutral search=exhaustive-v1 depth=2 "
         f"positions={fixture['position_count']}"
     )
     require(header in completed.stdout, "missing or drifted bench identity header")
@@ -87,6 +88,10 @@ def verify_run(binary: Path, fixture: dict[str, Any]) -> tuple[list[dict[str, An
     require(
         "|evaluator=legacy-v1|" in completed.stdout,
         "bench did not restore the caller evaluator",
+    )
+    require(
+        "|search=alpha-beta-v1|" in completed.stdout,
+        "bench did not restore the caller search",
     )
     node_match = re.search(r"^Nodes searched\s*:\s*(\d+)$", completed.stderr, re.MULTILINE)
     require(node_match is not None, "missing aggregate node count")

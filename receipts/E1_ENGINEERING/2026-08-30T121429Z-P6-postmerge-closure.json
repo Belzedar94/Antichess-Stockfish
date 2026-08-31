@@ -1,0 +1,77 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "addendum": 4,
+  "recorded_at_utc": "2026-08-30T12:14:29Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "evidence_class": "P6_GOVERNANCE_POSTMERGE_CLOSURE_NOT_STRENGTH",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-08-30T120429Z-P6-recertification.json",
+    "sha256": "0a9f0899b934f94c8e7b1978ddfeaf90a2d549883f84f8b9f242279fe34b255c"
+  },
+  "recertification_change": {
+    "commit": "30b086c89c8254e889883cd8894d7f17df00e8ee",
+    "tree": "df6593f36d73fb781e16abcb97d8efeea0cd203e",
+    "pull_request": "https://github.com/Belzedar94/Antichess-Stockfish/pull/4",
+    "pull_request_number": 4,
+    "pull_request_draft": false,
+    "pull_request_merged": true,
+    "merged_at_utc": "2026-08-30T12:08:36Z",
+    "merge_commit": "a6e03ab48f7606580f9b9142e898e6485edc87f3",
+    "merge_tree": "df6593f36d73fb781e16abcb97d8efeea0cd203e",
+    "base_branch": "official-stockfish/dev-20260829-8bc5caa2"
+  },
+  "official_postmerge_ci": {
+    "workflow": "Antichess correctness",
+    "event": "push",
+    "run_id": 33310697041,
+    "run_url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33310697041",
+    "head_sha": "a6e03ab48f7606580f9b9142e898e6485edc87f3",
+    "status": "COMPLETED",
+    "conclusion": "SUCCESS",
+    "created_at_utc": "2026-08-30T12:08:38Z",
+    "completed_at_utc": "2026-08-30T12:09:56Z",
+    "asan_ubsan_job": {
+      "job_id": 99255091489,
+      "conclusion": "SUCCESS",
+      "completed_at_utc": "2026-08-30T12:09:55Z"
+    },
+    "reproducible_contract_job": {
+      "job_id": 99255091619,
+      "conclusion": "SUCCESS",
+      "completed_at_utc": "2026-08-30T12:09:47Z"
+    }
+  },
+  "ancestry": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_is_ancestor": true,
+    "rejected_fairy_commit": "432632ecd058ee2465b52e38531e8d409ea68804",
+    "rejected_fairy_commit_is_ancestor": false
+  },
+  "baseline_unchanged": {
+    "engineering_candidate_commit": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "manifest": "manifests/baselines/ANTICHESS_ENGINEERING_BASELINE_V2.json",
+    "manifest_sha256": "7a6e25bd4c8993650d4fa5f5f3e3c9a2ff36181d17f1553012b577fc09f2e134",
+    "immutable_tag": "baseline/lichess-antichess-v1-d08cc316",
+    "tag_object": "ecc4f9e5be5a06f8a3169720e3003b9d2ebed0d1",
+    "tag_target": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "windows_binary_sha256": "dbfcdc98acdb676226f6b2a0c5251291cfafb391e9099f1e3a33eccb0d73d3ca",
+    "reason": "PR 4 records and indexes the already verified baseline; it does not replace the candidate binary or move the tag."
+  },
+  "closure": {
+    "P6": "PASS",
+    "P7": "IN_PROGRESS",
+    "non_draft_pr": true,
+    "required_ci_green": true,
+    "postmerge_ci_green": true,
+    "immutable_baseline_receipt_present": true
+  },
+  "non_claims": [
+    "This closes P6 governance evidence only.",
+    "It is not timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring evidence.",
+    "The external legacy network remains outside redistribution and release alias scope."
+  ],
+  "next_safe_action": "Preregister and freeze the exact P7 fixed-work comparator experiment before any candidate search implementation."
+}

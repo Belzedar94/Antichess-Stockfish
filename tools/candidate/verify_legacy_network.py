@@ -134,7 +134,7 @@ def verify_positive(engine: Path, network: Path) -> int:
 
 
 def verify_claim_horizon(
-    engine: Path, network: Path, fixture: dict[str, object]
+    engine: Path, network: Path, fixture: dict[str, object], search: str
 ) -> int:
     history = [str(move) for move in fixture["history_before_search"]]
     searchmoves = [str(move) for move in fixture["searchmoves"]]
@@ -150,6 +150,7 @@ def verify_claim_horizon(
             "uci",
             f"setoption name EvalFile value {network}",
             "setoption name Antichess_Evaluator value legacy-v1",
+            f"setoption name Antichess_Search value {search}",
             "isready",
             position,
             f"go depth {fixture['depth']} searchmoves {' '.join(searchmoves)}",
@@ -157,25 +158,37 @@ def verify_claim_horizon(
             "eval",
         ],
     )
-    require(completed.returncode == 0, f"{fixture['id']}: claim-horizon probe failed")
+    require(
+        completed.returncode == 0,
+        f"{fixture['id']} ({search}): claim-horizon probe failed",
+    )
     match = re.search(
         r"^info depth \d+ .* score (mate|cp) (-?\d+) .* pv (\S+)$",
         completed.stdout,
         flags=re.MULTILINE,
     )
-    require(match is not None, f"{fixture['id']}: missing search result")
-    require(match.group(1) == expected["score_type"], f"{fixture['id']}: score type drift")
-    require(int(match.group(2)) == expected["score"], f"{fixture['id']}: claim floor drift")
-    require(match.group(3) == expected["bestmove"], f"{fixture['id']}: PV drift")
+    require(match is not None, f"{fixture['id']} ({search}): missing search result")
+    require(
+        match.group(1) == expected["score_type"],
+        f"{fixture['id']} ({search}): score type drift",
+    )
+    require(
+        int(match.group(2)) == expected["score"],
+        f"{fixture['id']} ({search}): claim floor drift",
+    )
+    require(
+        match.group(3) == expected["bestmove"],
+        f"{fixture['id']} ({search}): PV drift",
+    )
     require(
         re.findall(r"^bestmove (\S+)$", completed.stdout, flags=re.MULTILINE)
         == [expected["bestmove"]],
-        f"{fixture['id']}: bestmove drift",
+        f"{fixture['id']} ({search}): bestmove drift",
     )
     require(
         f"info string Antichess legacy-v1 raw value {fixture['expected_child_raw']}"
         in completed.stdout,
-        f"{fixture['id']}: child legacy value drift",
+        f"{fixture['id']} ({search}): child legacy value drift",
     )
     return 5
 
@@ -256,8 +269,10 @@ def main() -> int:
 
     fixture_document = json.loads(FIXTURE.read_text(encoding="utf-8"))
     check_count = verify_positive(engine, network)
+    claim_horizon_searches = ("exhaustive-v1", "alpha-beta-v1")
     for fixture in fixture_document["claim_horizon_cases"]:
-        check_count += verify_claim_horizon(engine, network, fixture)
+        for search in claim_horizon_searches:
+            check_count += verify_claim_horizon(engine, network, fixture, search)
     mutation_cases = mutations(network_bytes)
     with tempfile.TemporaryDirectory(prefix="antichess-legacy-loader-") as temporary:
         temporary_path = Path(temporary)
@@ -273,7 +288,8 @@ def main() -> int:
 
     print(
         "legacy-v1 loader verification passed: "
-        f"1 positive, {len(fixture_document['claim_horizon_cases'])} claim-horizon, "
+        f"1 positive, {len(fixture_document['claim_horizon_cases'])} claim-horizon "
+        f"across {len(claim_horizon_searches)} search modes, "
         f"{len(mutation_cases)} rejected mutations, 1 transactional clear, "
         f"{check_count} checks"
     )

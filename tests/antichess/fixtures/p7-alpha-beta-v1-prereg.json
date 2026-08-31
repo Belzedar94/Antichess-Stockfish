@@ -1,0 +1,136 @@
+{
+  "schema": "ANTICHESS_P7_ALPHA_BETA_V1_PREREG",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-08-30T12:14:29Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "p7-alpha-beta-v1-r2",
+  "status": "PREREGISTERED_INPUTS_UNEXECUTED",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "a6e03ab48f7606580f9b9142e898e6485edc87f3",
+    "comparator_commit": "d08cc316fc63d95f1101122ba2450d1eb1aea7f7",
+    "comparator_windows_binary_sha256": "dbfcdc98acdb676226f6b2a0c5251291cfafb391e9099f1e3a33eccb0d73d3ca",
+    "candidate_commit": null,
+    "candidate_windows_binary_sha256": null
+  },
+  "configuration": {
+    "runner": "tools/search/verify_alpha_beta_v1.py",
+    "protocol": "direct UCI",
+    "evaluator": "engineering-neutral",
+    "network": null,
+    "threads": 1,
+    "hash_mib": 1,
+    "depth": 4,
+    "root_move_order": "sorted UCI",
+    "root_window": "independent full window for every root move",
+    "comparator_search": "exhaustive-v1",
+    "candidate_search": "alpha-beta-v1",
+    "book": null,
+    "referee": null,
+    "time_control": null,
+    "games": null,
+    "opening_seed": null,
+    "colors": null,
+    "adjudication": null
+  },
+  "hypothesis": "Plain fail-soft negamax alpha-beta inside each independently full-window root move preserves exact root scores and best moves while reducing aggregate nodes by at least 25 percent.",
+  "decision_rule": {
+    "exact_score_type_and_value_every_case": true,
+    "exact_bestmove_every_case": true,
+    "candidate_nodes_lte_comparator_every_case": true,
+    "minimum_aggregate_node_reduction_fraction": 0.25,
+    "attempts": 1,
+    "optional_stopping": false,
+    "result_aware_changes": false
+  },
+  "cases": [
+    {
+      "id": "bench_01_start",
+      "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_02_mandatory_capture_choice",
+      "position": "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_03_check_ignored",
+      "position": "4r3/8/8/8/8/8/8/4K3 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_04_adjacent_kings",
+      "position": "8/8/8/4k3/4K3/8/8/8 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_05_multiple_kings_parser_boundary",
+      "position": "K3K3/8/8/8/8/8/8/7k w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_06_en_passant_and_capture_choice",
+      "position": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_07_quiet_promotion",
+      "position": "7k/P7/8/8/8/8/8/8 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_08_capture_promotion",
+      "position": "1r5k/P7/8/8/8/8/8/8 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_09_king_check_does_not_suppress_quiet_moves",
+      "position": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3",
+      "depth": 4
+    },
+    {
+      "id": "bench_10_forced_knight_capture",
+      "position": "8/8/3n2N1/8/8/8/8/8 w - - 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_11_en_passant_mandatory_filter",
+      "position": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1",
+      "depth": 4
+    },
+    {
+      "id": "bench_12_claimable_repetition_history",
+      "position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1",
+      "depth": 4
+    },
+    {
+      "id": "bench_13_no_legal_move_terminal",
+      "position": "8/p7/8/P7/8/8/8/8 w - - 0 1",
+      "depth": 4
+    }
+  ],
+  "required_inherited_checks": [
+    "full fixture contract",
+    "candidate UCI state and search verifier",
+    "legacy claim-at-horizon regression",
+    "legacy loader positive and fail-closed negative cases",
+    "legacy scalar full-refresh parity",
+    "notation fixtures",
+    "deterministic exhaustive default bench",
+    "dual clean reproducible build",
+    "Linux ASan and UBSan CI"
+  ],
+  "execution": {
+    "comparator_record": null,
+    "candidate_record": null,
+    "executed": false,
+    "reason": "FOREIGN_EXCLUSIVE_CPU_LEASE_ACTIVE"
+  },
+  "non_claims": [
+    "No timing or strength inference is permitted.",
+    "No OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "A pass does not change the default search option."
+  ]
+}

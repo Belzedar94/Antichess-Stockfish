@@ -118,6 +118,9 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
       "Antichess_Evaluator",
       Option("engineering-neutral var engineering-neutral var legacy-v1", "engineering-neutral"));
 
+    options.add("Antichess_Search",
+                Option("exhaustive-v1 var exhaustive-v1 var alpha-beta-v1", "exhaustive-v1"));
+
     options.add("EvalFile", Option("", [this](const Option& o) {
                     return load_legacy_network(path_from_utf8(std::string(o)));
                 }));
@@ -141,6 +144,7 @@ void Engine::go(Search::LimitsType& limits) {
             updateContext.onStart();
 
         const bool useLegacyNetwork = options["Antichess_Evaluator"] == "legacy-v1";
+        const bool useAlphaBeta     = options["Antichess_Search"] == "alpha-beta-v1";
         if (useLegacyNetwork && !legacyNetwork.loaded())
         {
             if (onVerifyNetwork)
@@ -163,7 +167,8 @@ void Engine::go(Search::LimitsType& limits) {
             return moves;
         };
 
-        std::function<Value(int, int)> search = [&](int remaining, int ply) -> Value {
+        std::function<Value(int, int, Value, Value)> search =
+          [&](int remaining, int ply, Value alpha, Value beta) -> Value {
             ++nodes;
 
             if (pos.antichess_variant_end())
@@ -184,12 +189,28 @@ void Engine::go(Search::LimitsType& limits) {
             }
 
             Value best = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+            if (useAlphaBeta)
+            {
+                alpha = std::max(alpha, best);
+                if (alpha >= beta)
+                    return best;
+            }
+
             for (Move move : orderedMoves(pos))
             {
                 pos.do_move(move, searchStates[ply]);
-                Value score = -search(remaining - 1, ply + 1);
+                const Value score =
+                  useAlphaBeta ? -search(remaining - 1, ply + 1, -beta, -alpha)
+                               : -search(remaining - 1, ply + 1, -VALUE_INFINITE, VALUE_INFINITE);
                 pos.undo_move(move);
                 best = std::max(best, score);
+
+                if (useAlphaBeta)
+                {
+                    alpha = std::max(alpha, best);
+                    if (alpha >= beta)
+                        break;
+                }
             }
             return best;
         };
@@ -243,7 +264,7 @@ void Engine::go(Search::LimitsType& limits) {
         for (Move move : rootMoves)
         {
             pos.do_move(move, searchStates[0]);
-            Value score = -search(depth - 1, 1);
+            Value score = -search(depth - 1, 1, -VALUE_INFINITE, VALUE_INFINITE);
             pos.undo_move(move);
             if (score > bestScore || (score == bestScore && is_win(score)))
             {
@@ -363,6 +384,7 @@ std::string Engine::antichess_info() const {
        << "|halfmove_clock=" << pos.rule50_count()
        << "|uci_variant=" << options["UCI_Variant"].currentValue
        << "|evaluator=" << options["Antichess_Evaluator"].currentValue
+       << "|search=" << options["Antichess_Search"].currentValue
        << "|threads=" << int(options["Threads"]) << "|hash_mb=" << int(options["Hash"])
        << "|network_loaded=" << legacyNetwork.loaded()
        << "|network_format=" << (legacyNetwork.loaded() ? "legacy-v1" : "none") << "|network_file="

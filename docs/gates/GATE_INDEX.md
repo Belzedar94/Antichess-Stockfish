@@ -17,8 +17,8 @@ append-only; a gate transition requires a new receipt or addendum.
 | P3 | Candidate clean reproducible build and UCI surface | PASS | Merge `d08cc316`: two clean Windows builds are byte-identical, Linux post-merge CI is reproducible, and the Antichess bench repeats exactly |
 | P4 | Differential legal/result/notation correctness | PASS | The claim-at-horizon defect is fixed and frozen; exact candidate, legacy network, `AC_REFEREE_V1`, raw log, and 100-ply PGN audit pass |
 | P5 | Evaluator and legacy-network boundary | PASS | Scalar full-refresh parity covers 58 exact values and all material buckets; loader passes 82 checks including claim-at-horizon and remains fail-closed |
-| P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | PR #3 and post-merge CI pass; downloaded artifact, manifest V2, receipt addendum, and immutable tag `baseline/lichess-antichess-v1-d08cc316` are verified |
-| P7 | Search-hypothesis readiness | IN_PROGRESS | Freeze one hypothesis and exact fixed-work experiment identities before implementation; timing and strength remain separately leased |
+| P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | PR #3 and its post-merge CI certify the corrected engine; PR #4 and exact-head post-merge run `33310697041` close the recertification governance record; manifest V2 and immutable tag `baseline/lichess-antichess-v1-d08cc316` remain verified |
+| P7 | Search-hypothesis readiness | IN_PROGRESS | The one-shot `alpha-beta-v1` comparison passed all 13 exact score/bestmove cases, reduced aggregate nodes from 175,492 to 12,893 (92.65%), and passed the expanded local correctness battery; official CI, review, merge, winner ancestry, and post-merge verification remain open |
 | P8 | Antichess DATAGEN schema and labels | BLOCKED_BY_P7 | Own magic/schema, physical records, golden perspective labels |
 | P9 | Producer/consumer handshake and G0 | BLOCKED_BY_P8 | Exact counts, framing, legality, results, recovery, quarantine |
 | P10 | Official public-build DATAGEN canary | BLOCKED_BY_P9 | Production path proves the exact versioned dialect contract |
@@ -34,6 +34,10 @@ append-only; a gate transition requires a new receipt or addendum.
 - P7 permits only one preregistered search hypothesis at a time. No timing,
   strength, book, Elo, or campaign run may start without an exact comparator,
   referee/runner, workload, stopping rule, and exclusive host lease.
+- `p7-alpha-beta-v1-r2` consumed its one planned candidate comparison under an
+  exclusive host lease and passed the frozen decision rule. No result-aware
+  rerun, retuning, corpus change, or threshold change is allowed. The engine
+  implementation remains frozen while official CI and merge closure proceed.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.
