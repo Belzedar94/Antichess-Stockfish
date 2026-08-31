@@ -272,6 +272,24 @@ def main() -> int:
             require(score >= expected["minimum_score_cp"], f"{fixture['id']}: score floor")
             check_count += 3
 
+    alpha_beta_completed = run(
+        binary,
+        "uci\n"
+        "setoption name Antichess_Search value alpha-beta-v1\n"
+        "isready\n"
+        + search_text,
+    )
+    require(
+        alpha_beta_completed.returncode == 0,
+        f"alpha-beta search boundary batch exited {alpha_beta_completed.returncode}",
+    )
+    alpha_beta_searches = parse_searches(alpha_beta_completed.stdout)
+    require(
+        alpha_beta_searches == searches,
+        f"alpha-beta search boundary drift: {alpha_beta_searches!r} != {searches!r}",
+    )
+    check_count += 3 * len(alpha_beta_searches)
+
     automatic_cases = [
         fixture
         for fixture in [*core["position_fixtures"], *core["history_fixtures"]]
