@@ -1,0 +1,104 @@
+{
+  "schema": "ANTICHESS_S3_STRENGTH_RUNNER_IMPLEMENTATION_FREEZE",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T06:16:13Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "s3-fsf-same-net-3tc-v1-r1",
+  "evidence_class": "S3_RUNNER_ENGINEERING_NOT_STRENGTH",
+  "status": "IMPLEMENTED_UNMERGED_NO_GAME_AUTHORIZATION",
+  "preregistration": {
+    "commit": "2541eff3ef071f7eef13509a8355a1312ea9ce39",
+    "tree": "551c2453a5e64c7e1d88c88eef438d216241e53c",
+    "fixture_sha256": "96272e45f1c6404f86673e769bb7fe0a16de4c1d2ec5249f4be7d4e71f222862",
+    "receipt_sha256": "6e69e692460a59d6f027a323f51e7bae672b31e5bcee6d670f4cd68deacaaa80",
+    "exact_head_ci_run": "33475715962",
+    "exact_head_ci_status": "PASS"
+  },
+  "implementation": {
+    "commit": "29fafd6ad5477c78f3ff0bbc808f643b98e9259a",
+    "tree": "e278394ebe3169d60fb9673be86b412283ddf89a",
+    "parent": "2541eff3ef071f7eef13509a8355a1312ea9ce39",
+    "source_or_engine_files_changed": false,
+    "strength_games": 0,
+    "files": {
+      ".github/workflows/antichess-correctness.yml": "18b1e69b29bb9f0971ce320b2adcc899e833065a479a914c778bb31d9fdd7bbd",
+      "tests/antichess/test_s3_strength_runner_v1.py": "25e640eb41772ba748488ef0a0735dc4b9190dc494eb26c4c2d76662467421eb",
+      "tools/strength/panel_contract_v1.py": "97fc4b8d5f06ce25aecf486762cbc3735cf0dc78536f9b9a7b34e066ab1fe3c3",
+      "tools/strength/run_fsf_same_net_3tc_v1.py": "0d983abb1fba053b7701e2f098c9a5647a289e66ada022729f63833ff6cf2010"
+    },
+    "git_blob_sha256": {
+      "tests/antichess/test_s3_strength_runner_v1.py": "25e640eb41772ba748488ef0a0735dc4b9190dc494eb26c4c2d76662467421eb",
+      "tools/strength/run_fsf_same_net_3tc_v1.py": "0d983abb1fba053b7701e2f098c9a5647a289e66ada022729f63833ff6cf2010"
+    }
+  },
+  "local_verification": {
+    "python": "CPython 3.12.0",
+    "dependencies": "standard library only",
+    "py_compile": "PASS",
+    "compileall": "PASS",
+    "fixture_contract": "PASS",
+    "s3_panel_harness_tests": 21,
+    "s3_strength_runner_tests": 16,
+    "unittest_discovery_total": 37,
+    "unittest_discovery_status": "PASS",
+    "git_diff_check": "PASS",
+    "implementation_git_provenance_self_check": "PASS"
+  },
+  "real_binary_read_only_preflight": {
+    "games": 0,
+    "candidate_compiler": "g++ (GNUC) 16.1.0 on MinGW64",
+    "candidate_target": "64bit SSE2",
+    "comparator_compiler": "g++ (GNUC) 16.1.0 on MinGW64",
+    "comparator_target": "64bit SSE2",
+    "status": "MATCH"
+  },
+  "runner_contract": {
+    "windows_only": true,
+    "controllers": 1,
+    "concurrency": 1,
+    "one_cutechess_process_per_color_swapped_pair": true,
+    "time_controls_ms": {
+      "VSTC": [2000, 20],
+      "STC": [10000, 100],
+      "LTC": [30000, 300]
+    },
+    "time_margin_ms": 200,
+    "no_completed_pair_timeout_seconds": 900,
+    "minimum_games_exclusive": 100,
+    "target_displayed_los": "100.0",
+    "loss_displayed_los": "0.0",
+    "maximum_games": 64000,
+    "sprt": false,
+    "score_adjudication": false,
+    "tablebases": false,
+    "silent_recovery": false,
+    "per_move_referee_replay": true,
+    "append_only_pair_ledger": true,
+    "wld_pentanomial_elo_ci_los": true,
+    "postflight_input_rehash": true,
+    "input_drift_invalidates_strength": true,
+    "owned_process_tree_cleanup_only": true
+  },
+  "authorization_boundary": {
+    "final_authorization_exists": false,
+    "active_strength_lease_exists": false,
+    "strength_games_allowed": 0,
+    "required_before_first_game": [
+      "exact-head CI for the frozen implementation",
+      "non-draft pull request",
+      "exact-head review",
+      "merge with winner-tree verification",
+      "post-merge CI",
+      "two clean host resource snapshots",
+      "new exclusive Antichess strength lease",
+      "create-once local authorization binding all paths, hashes, merge, CI, snapshots, lease, and output root"
+    ]
+  },
+  "next_safe_action": "Push the frozen implementation, obtain exact-head CI and review, merge, verify post-merge CI, and only then seal a local lease-bound authorization.",
+  "non_claims": [
+    "No strength game, WLD, pentanomial, Elo, LOS, OpenBench, DATAGEN, model-selection, release, or monitoring conclusion exists.",
+    "No external network or opening content is redistributed.",
+    "Stable release remains gated by explicit owner G15."
+  ]
+}

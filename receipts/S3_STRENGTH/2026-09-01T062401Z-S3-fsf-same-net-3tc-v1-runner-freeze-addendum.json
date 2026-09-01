@@ -1,0 +1,72 @@
+{
+  "schema": "ANTICHESS_S3_STRENGTH_RUNNER_IMPLEMENTATION_FREEZE_ADDENDUM",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T06:24:01Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "s3-fsf-same-net-3tc-v1-r1",
+  "evidence_class": "S3_RUNNER_ENGINEERING_NOT_STRENGTH",
+  "status": "IMPLEMENTED_UNMERGED_NO_GAME_AUTHORIZATION",
+  "predecessor": {
+    "receipt": "receipts/S3_STRENGTH/2026-09-01T061613Z-S3-fsf-same-net-3tc-v1-runner-freeze.json",
+    "receipt_sha256": "913f01213e7b07a36272be20e8ca9f44d9ba2eff696a3177305bc4c0ffbe1576",
+    "implementation_commit": "29fafd6ad5477c78f3ff0bbc808f643b98e9259a",
+    "freeze_commit": "1627a9378efb3e41208161eabf1c2b378d987343",
+    "disposition": "HISTORICAL_FREEZE_SUPERSEDED_BEFORE_REVIEW_OR_GAME"
+  },
+  "supersession": {
+    "reason": "OWNED_CONTROLLER_CLEANUP_GAP_BEFORE_PAIR_RECEIPT",
+    "observed_before_strength_game": true,
+    "strength_games_before_fix": 0,
+    "fix": "If launch receipt creation or the subsequent wait path raises, terminate only the CuteChess process tree spawned by this runner before propagating the failure.",
+    "regression_test": "test_launch_receipt_failure_terminates_only_spawned_controller_tree"
+  },
+  "implementation": {
+    "commit": "f9b41392b4df0811c6636ab352a8bee0edd02bac",
+    "tree": "fd905476f17fb78754b6fb2a6a39331cb877e520",
+    "parent": "1627a9378efb3e41208161eabf1c2b378d987343",
+    "source_or_engine_files_changed": false,
+    "strength_games": 0,
+    "files_sha256": {
+      "tests/antichess/test_s3_strength_runner_v1.py": "acd0ffe2d415d84c40c9e87dce6f08ff8c5d2f08443193d7ca28ab77f8cc8c8c",
+      "tools/strength/run_fsf_same_net_3tc_v1.py": "9c2977b93825c95d136fb244542dd081ad4e874654813e80340133debad774f6"
+    },
+    "git_blob_ids": {
+      "tests/antichess/test_s3_strength_runner_v1.py": "3c6061be27253e87ce1dee51df9cefc6579d0bda",
+      "tools/strength/run_fsf_same_net_3tc_v1.py": "faec1f07aaa9e62a9d7738901dcbec1822f133a7"
+    }
+  },
+  "exact_commit_verification": {
+    "verified_at_utc": "2026-09-01T06:24:01Z",
+    "python": "CPython 3.12.0",
+    "dependencies": "standard library only",
+    "py_compile": "PASS",
+    "s3_strength_runner_tests": 17,
+    "s3_panel_harness_tests": 21,
+    "total_tests": 38,
+    "status": "PASS",
+    "git_diff_check": "PASS",
+    "worktree_before_receipt": "CLEAN"
+  },
+  "authorization_boundary": {
+    "final_authorization_exists": false,
+    "active_strength_lease_exists": false,
+    "strength_games_allowed": 0,
+    "required_before_first_game": [
+      "push this authoritative runner head",
+      "fresh exact-head CI",
+      "exact-head review",
+      "merge with winner-tree verification",
+      "post-merge CI",
+      "two clean host resource snapshots",
+      "new exclusive Antichess strength lease",
+      "create-once local authorization binding all paths, hashes, merge, CI, snapshots, lease, and output root"
+    ]
+  },
+  "next_safe_action": "Commit and push this addendum, obtain fresh exact-head CI and review, merge, verify post-merge CI, and only then seal a local lease-bound authorization.",
+  "non_claims": [
+    "No strength game, WLD, pentanomial, Elo, LOS, OpenBench, DATAGEN, model-selection, release, or monitoring conclusion exists.",
+    "No external network or opening content is redistributed.",
+    "Stable release remains gated by explicit owner G15."
+  ]
+}
