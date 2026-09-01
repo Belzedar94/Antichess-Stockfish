@@ -1,0 +1,125 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-09-01T02:20:18Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_CLOCKED_ITERATIVE_CANDIDATE_BUILD_FREEZE_NOT_TIMING_OR_STRENGTH",
+  "experiment_id": "p7-clocked-iterative-v1-r1",
+  "preregistration_identity": {
+    "commit": "d070249aa973d592d1a346a6e7f1b292dd78b97a",
+    "fixture_sha256": "b73c5bed59b8a314861cfbbef6a9b7c5c73c63ae62f4ad303b1a8c98796d97fa",
+    "runner_sha256": "bde9e5df5847f6e0b88fe6d9ff2509905378d463217ab9da74ac4e89a58199f5",
+    "preregistration_receipt_sha256": "4fb22e57571447e984ea0c37ded62d4070cd55b364c94707ea4ac447f1166ce5",
+    "parent_fixed_depth_baseline_receipt_sha256": "3735d2b62bbac4a7733e17b678103b5abcfe4a83c44b2548500674dbb909c870"
+  },
+  "candidate_source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "ba5a5ee745203d2354bd6347e679b061dc186105",
+    "implementation_commit": "aea46065e72ebcb11f28eb9e8b1bacfad258f535",
+    "implementation_tree": "124cf9b2d2272a5ef90fc50d94cca68f9a37d719",
+    "implementation_files": [
+      "src/engine.cpp"
+    ],
+    "official_stockfish_is_ancestor": true,
+    "fairy_stockfish_comparator_is_ancestor": false
+  },
+  "implementation_scope": {
+    "independent_variable": "clock-controlled outer completed-iteration iterative loop and hard-deadline checks",
+    "fixed_overhead_ms": 20,
+    "default_horizon": 40,
+    "maximum_clock_depth": 64,
+    "deadline_check_nodes": 64,
+    "vstc_budget_ms": 65,
+    "stc_budget_ms": 325,
+    "ltc_budget_ms": 975,
+    "explicit_depth_path_preserved": true,
+    "partial_iteration_discarded": true,
+    "new_transposition_table": false,
+    "hash_above_1_mib": false,
+    "see": false,
+    "null_move": false,
+    "qsearch": false,
+    "lmr": false,
+    "aspiration": false,
+    "new_move_ordering": false,
+    "additional_pruning": false
+  },
+  "reproducible_windows_build": {
+    "evidence_directory": ".local/evidence/P7-clocked-iterative-v1-candidate-build-20260901T021425Z",
+    "source_date_epoch": 1788228832,
+    "jobs": 1,
+    "arch": "x86-64",
+    "compiler": "MSYS2 MinGW g++ 16.1.0",
+    "make": "GNU Make 4.4.1",
+    "cxxflags_extra": "-Werror",
+    "run_1_binary": "antichess-stockfish-run-1.exe",
+    "run_2_binary": "antichess-stockfish-run-2.exe",
+    "binary_sha256": "ba17e95b257528fa3eec28b5f0e8e16d1c856dffc701117fe704d992086f4b0b",
+    "binary_bytes": 4234769,
+    "binaries_byte_identical": true,
+    "run_1_log": "build-run-1.log",
+    "run_2_log": "build-run-2.log",
+    "build_log_sha256": "8eb7aba9d7d5983733a44ffc91b81681ac3cc0742e005560f1569160a9258322",
+    "build_log_bytes": 11480,
+    "build_logs_byte_identical": true,
+    "toolchain_file": "toolchain.txt",
+    "toolchain_sha256": "c7608ac6c91998804f4e983aaa5e4ce02d9edd4870c0e8e1a81607a94a1a8f03",
+    "toolchain_bytes": 474,
+    "outcome": "PASS"
+  },
+  "exact_candidate_fixed_depth": {
+    "record_path": ".local/evidence/P7-clocked-iterative-v1-candidate-build-20260901T021425Z/candidate-fixed-depth-record.json",
+    "record_sha256": "8ae8b6395a8531f665e7442bb13602fbd969ae906365305c8038952ff42044a1",
+    "record_bytes": 15448,
+    "embedded_transcript_lines": 154,
+    "embedded_transcript_sha256": "2cd9b6aced295dd20c7f388963229089a90741c23c6f334c11d540fe6592477b",
+    "cases": 13,
+    "exact_score_type_score_bestmove_nodes_cases": 13,
+    "aggregate_nodes": 12893,
+    "outcome": "PASS",
+    "clock_scaling_executed": false
+  },
+  "resource_leases": {
+    "dual_build": {
+      "path": ".local/resource-leases/antichess-p7-clocked-iterative-v1-candidate-build.lock",
+      "sha256": "67141eed545a002215a1718b7a3637f23d3500e7623142afd43bb66e6e2c56e7",
+      "status": "ENDED",
+      "outcome": "PASS"
+    },
+    "fixed_depth": {
+      "path": ".local/resource-leases/antichess-p7-clocked-iterative-v1-candidate-fixed-depth.lock",
+      "sha256": "b3a6e90fd558f3ef3d64c6b2fac6cfc83eaa5de128f779dcbf27f8e5df08bdbf",
+      "status": "ENDED",
+      "outcome": "PASS"
+    },
+    "foreign_processes_modified": false
+  },
+  "official_ci": {
+    "implementation_push_run": 33461773152,
+    "run_url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33461773152",
+    "head_sha": "aea46065e72ebcb11f28eb9e8b1bacfad258f535",
+    "conclusion": "success",
+    "reproducible_build_job": 99713219061,
+    "reproducible_build_conclusion": "success",
+    "asan_ubsan_job": 99713218836,
+    "asan_ubsan_conclusion": "success"
+  },
+  "decision": {
+    "candidate_build_frozen": true,
+    "fixed_depth_identity_preserved": true,
+    "one_clock_scaling_execution_admitted": true,
+    "clock_scaling_executed": false,
+    "strength_panel_admitted": false,
+    "reason": "The exact implementation commit has a warning-free dual clean byte-identical Windows build, exact fixed-depth identity, and successful official reproducibility and sanitizer jobs."
+  },
+  "non_claims": [
+    "No clock-controlled search has been executed against this candidate.",
+    "No game, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "Hash remains capped at 1 MiB and the separate Antichess transposition-table gate remains closed."
+  ],
+  "next_safe_action": "After two clean host snapshots and a new CPU_TIMING_EXCLUSIVE lease, execute exactly once the frozen clock-scaling phase against the exact run-2 binary and external dd3c network."
+}
