@@ -1,0 +1,39 @@
+{
+  "build": {
+    "binary_bytes": 4243998,
+    "binary_sha256": "5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213",
+    "build_manifest_sha256": "89287356a40d3e10983b3ba96cc401dc205a4acef3219217de2b47147087e80d",
+    "build_run_1_log_sha256": "7cb4df91ceddbdfcab11cebad602d5c585585eddbcf4534d55ce2974611bd548",
+    "build_run_2_log_sha256": "7cb4df91ceddbdfcab11cebad602d5c585585eddbcf4534d55ce2974611bd548",
+    "byte_identical": true,
+    "clean_runs": 2,
+    "compiler": "MSYS2 MinGW g++ 16.1.0",
+    "make": "GNU Make 4.4.1",
+    "selected_binary": ".local/evidence/S3-panel-candidate-build-20260901T050752Z/antichess-stockfish-d08da0c8-run-2.exe",
+    "source_date_epoch": 1788236859,
+    "toolchain_log_sha256": "29c975ae93658ce33de4c55a7f6714e5a685e3e356b7a3c2cba9c98a2e6ebf97"
+  },
+  "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+  "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+  "certification_execution_count": 0,
+  "evidence_class": "E1_REPRODUCIBLE_BUILD_NOT_STRENGTH",
+  "implementation_freeze_sha256": "db366d3aa507857f2ce43d446ee090a69663034fd5482ca539498198a700d687",
+  "non_claims": [
+    "The candidate has not yet run a UCI, network, legality, referee, or plumbing-smoke certification probe.",
+    "This build is not strength, Elo, LOS, OpenBench, DATAGEN, release, or monitoring evidence."
+  ],
+  "plumbing_smoke_games": 0,
+  "preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:13:11Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_E1_S3_CANDIDATE_BUILD_FREEZE_V1",
+  "status": "PASS_BUILD_ONLY_CERTIFICATION_UNEXECUTED",
+  "strength_games": 0,
+  "worktree_incident": {
+    "classification": "WINDOWS_PATH_LENGTH_FAILURE_BEFORE_CHECKOUT_OR_BUILD",
+    "compiler_started": false,
+    "failed_path_evidence_sha256": "907f179bdf2303677fa7cd20feb08713acc20735246d75addde5fa0743da696d",
+    "recovery": "Detached checkout completed at the explicit short path C:\\acwt\\s3d08-20260901T050752Z under the same active lease."
+  }
+}
