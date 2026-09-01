@@ -61,8 +61,13 @@ EXPECTED_PYTHON_SHA256 = (
 EXPECTED_NETWORK_BYTES = 953_248
 EXPECTED_BOOK_BYTES = 11_862
 BUILD_SCHEMA = "ANTICHESS_S3_CANDIDATE_WINDOWS_BUILD_V1"
-IMPLEMENTATION_FREEZE_SCHEMA = "ANTICHESS_S3_PANEL_CERT_V1_IMPLEMENTATION_FREEZE"
+IMPLEMENTATION_FREEZE_SCHEMA = "ANTICHESS_S3_PANEL_CERT_V2_IMPLEMENTATION_FREEZE"
 SMOKE_AUTHORIZATION_SCHEMA = "ANTICHESS_S3_PAIR_PLUMBING_SMOKE_V1_AUTHORIZATION"
+V2_ADDENDUM_SCHEMA = "ANTICHESS_S3_FSF_PANEL_CERT_V2_ADDENDUM"
+EXPECTED_V2_ADDENDUM_SHA256 = (
+    "21f571ffc89b034398361a84afe56272a7382b6ce3b870c33afb1bfb68312c7e"
+)
+FSF_NEGATIVE_NETWORK_BASENAME = "antichess-missing-fsf-network.nnue"
 
 
 def utc_now() -> str:
@@ -231,7 +236,7 @@ def verify_fsf_network(comparator: Path, network: Path, output_dir: Path) -> dic
     bestmoves = re.findall(r"^bestmove (\S+)$", positive.stdout, flags=re.MULTILINE)
     require(len(bestmoves) == 1 and bestmoves[0] != "(none)", "Fairy-Stockfish positive probe produced no playing bestmove")
 
-    missing = output_dir / "missing-fsf-network.nnue"
+    missing = output_dir / FSF_NEGATIVE_NETWORK_BASENAME
     require(not missing.exists(), "negative Fairy-Stockfish network path unexpectedly exists")
     negative = run_text(
         comparator,
@@ -434,6 +439,7 @@ def verify_implementation_freeze(
     require(freeze.get("schema") == IMPLEMENTATION_FREEZE_SCHEMA, "implementation-freeze schema drift")
     require(freeze.get("status") == "IMPLEMENTED_UNEXECUTED", "implementation freeze is not unexecuted")
     require(freeze.get("preregistration_sha256") == EXPECTED_PREREG_SHA256, "implementation freeze preregistration drift")
+    require(freeze.get("v2_addendum_sha256") == EXPECTED_V2_ADDENDUM_SHA256, "implementation freeze v2 addendum drift")
     require(freeze.get("certification_execution_count") == 0, "implementation freeze already records a certification execution")
     require(freeze.get("plumbing_smoke_games") == 0, "implementation freeze already records a plumbing smoke")
     require(freeze.get("strength_games") == 0, "implementation freeze records strength games")
@@ -469,6 +475,7 @@ def run_certification(args: argparse.Namespace) -> int:
     started = time.monotonic()
 
     prereg_path = args.prereg.resolve()
+    v2_addendum_path = args.v2_addendum.resolve()
     candidate = args.candidate.resolve()
     comparator = args.comparator.resolve()
     network = args.network.resolve()
@@ -489,6 +496,22 @@ def run_certification(args: argparse.Namespace) -> int:
     require(prereg.get("schema") == CERT_PREREG_SCHEMA, "certification preregistration schema drift")
     require(prereg.get("status") == "PREREGISTERED_INPUTS_UNEXECUTED", "certification preregistration status drift")
     require(prereg["target_panel"]["authorized_by_this_preregistration"] is False, "certification prereg unexpectedly authorizes strength")
+    v2_addendum_sha256 = assert_exact_hash(
+        v2_addendum_path,
+        EXPECTED_V2_ADDENDUM_SHA256,
+        "S3 certification v2 addendum",
+    )
+    v2_addendum = load_json(v2_addendum_path)
+    require(v2_addendum.get("schema") == V2_ADDENDUM_SCHEMA, "certification v2 addendum schema drift")
+    require(v2_addendum.get("status") == "PREREGISTERED_UNEXECUTED", "certification v2 addendum status drift")
+    require(
+        v2_addendum["change_control"]["new_value"] == FSF_NEGATIVE_NETWORK_BASENAME,
+        "certification v2 negative basename drift",
+    )
+    require(
+        v2_addendum["change_control"]["all_other_v1_inputs_and_decision_rules_unchanged"] is True,
+        "certification v2 changed more than the preregistered negative input",
+    )
     try:
         validate_strength_authorization(prereg)
     except ContractError:
@@ -508,6 +531,7 @@ def run_certification(args: argparse.Namespace) -> int:
         "referee_cli_sha256": assert_exact_hash(cli, EXPECTED_REFEREE_CLI_SHA256, "AC_REFEREE_V1 CLI"),
         "referee_probe_sha256": assert_exact_hash(probe, EXPECTED_REFEREE_PROBE_SHA256, "AC_REFEREE_V1 probe"),
         "qt_core_sha256": assert_exact_hash(qt_bin / "Qt6Core.dll", EXPECTED_QT_CORE_SHA256, "Qt6Core runtime"),
+        "v2_addendum_sha256": v2_addendum_sha256,
     }
     build_manifest = verify_build_manifest(
         build_manifest_path,
@@ -537,6 +561,7 @@ def run_certification(args: argparse.Namespace) -> int:
         {
             "build_manifest": build_manifest,
             "implementation_freeze": implementation_freeze,
+            "v2_addendum": v2_addendum,
             "candidate_commit": EXPECTED_CANDIDATE_COMMIT,
             "candidate_tree": EXPECTED_CANDIDATE_TREE,
             "host": {
@@ -558,7 +583,7 @@ def run_certification(args: argparse.Namespace) -> int:
         output_dir / "harness-self-tests.log",
         timeout=60,
     )
-    require("Ran 20 tests" in self_test_output and "OK" in self_test_output, "harness self-test summary drift")
+    require("Ran 21 tests" in self_test_output and "OK" in self_test_output, "harness self-test summary drift")
 
     referee_output = run_checked_subprocess(
         [
@@ -741,6 +766,11 @@ def run_certification(args: argparse.Namespace) -> int:
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--prereg", type=Path, default=ROOT / "tests/antichess/fixtures/s3-fsf-panel-cert-v1-prereg.json")
+    parser.add_argument(
+        "--v2-addendum",
+        type=Path,
+        default=ROOT / "tests/antichess/fixtures/s3-fsf-panel-cert-v2-addendum.json",
+    )
     parser.add_argument("--candidate-source-root", required=True, type=Path)
     parser.add_argument("--candidate-build-manifest", required=True, type=Path)
     parser.add_argument("--expected-build-manifest-sha256", required=True)

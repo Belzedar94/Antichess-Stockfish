@@ -39,6 +39,9 @@ from tools.strength.run_fsf_pair_smoke_v1 import (  # noqa: E402
     EVIDENCE_CLASS as SMOKE_EVIDENCE_CLASS,
     validate_authorization as validate_smoke_authorization,
 )
+from tools.strength.verify_fsf_panel_inputs_v1 import (  # noqa: E402
+    FSF_NEGATIVE_NETWORK_BASENAME,
+)
 
 
 def valid_authorization() -> dict[str, object]:
@@ -91,6 +94,10 @@ class BookContractTests(unittest.TestCase):
 
 
 class ProtocolParserTests(unittest.TestCase):
+    def test_fsf_negative_asset_preserves_antichess_routing(self) -> None:
+        self.assertTrue(FSF_NEGATIVE_NETWORK_BASENAME.startswith("antichess-"))
+        self.assertNotEqual(FSF_NEGATIVE_NETWORK_BASENAME, "antichess-dd3cbe53cd4e.nnue")
+
     def test_candidate_diagnostic_parser(self) -> None:
         output = "antichess-info profile=LICHESS_ANTICHESS_V1|fen=8/8/8/8/8/8/P7/7k w - - 0 1|legal=a2a3,a2a4\n"
         fields = parse_candidate_diagnostics(output, 1)[0]
