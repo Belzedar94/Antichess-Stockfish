@@ -1,0 +1,117 @@
+{
+  "schema": "ANTICHESS_S3_STRENGTH_REJECTION_POSTMERGE_CLOSURE",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T07:23:33Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "referee": "AC_REFEREE_V1",
+  "experiment_id": "s3-fsf-same-net-3tc-v1-r1",
+  "evidence_class": "S3_STRENGTH_GOVERNANCE_CLOSURE",
+  "state_after_receipt": "REJECTED_STRENGTH",
+  "predecessor": {
+    "receipt": "receipts/S3_STRENGTH/2026-09-01T071416Z-S3-fsf-same-net-3tc-v1-rejected.json",
+    "receipt_sha256": "aa77f38fe05e5c1a7a4f77b3b2ae1dd2802fede4acf4f91c29e07c895c5962e9",
+    "receipt_commit": "d2c062feb16c4db51ea2fc7131ab94eddda79357",
+    "receipt_tree": "0c5b7bd9d4cbc9e373d39a334cc76f2443c3e976",
+    "parent_commit": "ab39d3c97bb44b74744f7e102902d3f1b1392371",
+    "source_or_engine_files_changed": false,
+    "strength_result": {
+      "terminal_state": "REJECTED_STRENGTH",
+      "terminal_gate": "VSTC_REJECTED_LOSS_GATE",
+      "pairs": 51,
+      "games": 102,
+      "candidate_wins": 1,
+      "candidate_losses": 101,
+      "draws": 0,
+      "displayed_los": "0.0",
+      "stc_executed": false,
+      "ltc_executed": false
+    }
+  },
+  "exact_head_ci": {
+    "push_run": {
+      "id": 33481486879,
+      "event": "push",
+      "head_sha": "d2c062feb16c4db51ea2fc7131ab94eddda79357",
+      "status": "completed",
+      "conclusion": "success",
+      "reproducible_build_job": 99771878671,
+      "reproducible_build_conclusion": "success",
+      "asan_ubsan_job": 99771878917,
+      "asan_ubsan_conclusion": "success"
+    },
+    "pull_request_run": {
+      "id": 33481557042,
+      "event": "pull_request",
+      "head_sha": "d2c062feb16c4db51ea2fc7131ab94eddda79357",
+      "status": "completed",
+      "conclusion": "success",
+      "reproducible_build_job": 99772091075,
+      "reproducible_build_conclusion": "success",
+      "asan_ubsan_job": 99772091290,
+      "asan_ubsan_conclusion": "success"
+    }
+  },
+  "review": {
+    "pull_request": 16,
+    "is_draft": false,
+    "review_id": 5075081581,
+    "state": "COMMENTED",
+    "commit_id": "d2c062feb16c4db51ea2fc7131ab94eddda79357",
+    "submitted_at_utc": "2026-09-01T07:20:59Z",
+    "blocking_findings": 0,
+    "inline_review_comments_before_merge": 0,
+    "issue_comments_before_merge": 0
+  },
+  "merge": {
+    "pull_request": 16,
+    "merged_at_utc": "2026-09-01T07:21:23Z",
+    "merge_commit": "c786a5cfe483ce704227cddbcacfda75cb0e60f3",
+    "first_parent": "ab39d3c97bb44b74744f7e102902d3f1b1392371",
+    "second_parent": "d2c062feb16c4db51ea2fc7131ab94eddda79357",
+    "parents_exact": true,
+    "winner_ancestry": true,
+    "winner_tree": "0c5b7bd9d4cbc9e373d39a334cc76f2443c3e976",
+    "merge_tree": "0c5b7bd9d4cbc9e373d39a334cc76f2443c3e976",
+    "trees_identical": true
+  },
+  "postmerge_ci": {
+    "id": 33481743266,
+    "event": "push",
+    "head_sha": "c786a5cfe483ce704227cddbcacfda75cb0e60f3",
+    "status": "completed",
+    "conclusion": "success",
+    "reproducible_build_job": 99772661174,
+    "reproducible_build_conclusion": "success",
+    "asan_ubsan_job": 99772660921,
+    "asan_ubsan_conclusion": "success"
+  },
+  "terminal_local_evidence": {
+    "aggregate_result_sha256": "e2e7c477bad6fb2e65d9db784049e8932850a7f43cd3f99e495abea6fdf098e4",
+    "vstc_result_sha256": "d802c1f7626257bf33a6c18404ee063f77fbf17f847503c19d0a5039864834ec",
+    "pair_ledger_sha256": "c0c60d37795442d3481084c99c0505021361aed5c68050396e56d81304de2572",
+    "postflight_sha256": "e08203b146dc326d33c23c204f683c48da70ac9851d6afad8ce53fad31ae6625",
+    "lease_end_sha256": "7ab2d72a066b81664b5162e331e37d77f6f40bb5c317c7577613ab64f317aa03",
+    "final_ended_lease_sha256": "ed22158bd17f2605619cc0b153445a6f4c53e665c744f7e35179d14f9f99181f",
+    "external_assets_redistributed": false
+  },
+  "decision": {
+    "state": "REJECTED_STRENGTH",
+    "experiment_consumed": true,
+    "rerun_allowed": false,
+    "result_aware_retuning_allowed": false,
+    "p8_datagen_admitted": false,
+    "nnue_v2_admitted": false,
+    "openbench_admitted": false,
+    "release_admitted": false,
+    "stable_release_g15_received": false
+  },
+  "closure_scope": "This addendum closes the preceding terminal result PR and post-merge CI. Its own repository integration may be verified directly from the resulting merge and CI without creating a recursive closure chain.",
+  "next_safe_action": "Preserve the consumed holdout. If work resumes, preregister one structural search hypothesis on independent engineering fixtures and define an untouched validation policy before any new strength experiment identity or game.",
+  "non_claims": [
+    "No causal search component or NNUE quality conclusion is made.",
+    "No STC, LTC, OpenBench, DATAGEN, NNUE V2, model-selection, release, or monitoring conclusion exists.",
+    "No external network or opening content is redistributed.",
+    "No stable publication is authorized without explicit owner G15."
+  ]
+}
