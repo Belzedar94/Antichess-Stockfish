@@ -1,0 +1,128 @@
+{
+  "artifacts": {
+    "book_legal_audit_sha256": "72c60388a3eca86839af9ce23048414f2f9111286e1df1818e648199d30f87e0",
+    "candidate_negative_network_log_sha256": "ece1e972190f3860648ccd774cbabdb1a5603d0275a16419389778ec1c35aca2",
+    "candidate_positive_network_log_sha256": "ed465ecf89232611576d7368fe023c3e331e87a4d3ab1ab521b34e816c8f1c97",
+    "certification_result_sha256": "5a5a9600cd2ae455c0daefce7b91c12fb73d4280c57e7d195c235551eba01ae5",
+    "focused_legal_audit_sha256": "3ee2923200a638a7cb5901b64ae97967504a8ed570945e82f61d9037b9f4a6f1",
+    "fsf_negative_network_log_sha256": "687aac327013a2f07c214a56f16e1c98fc8867b948b6df50636c507eed3a9a6c",
+    "fsf_positive_network_log_sha256": "fbbb1cce07281435dab9c035b078e79e6987cc04bca67d9f19cacb78f131adc5",
+    "harness_self_tests_sha256": "1232556661556210780ece07a4755cd4e58a751fff216b568f0d089acd9849f3",
+    "opening_schedule_artifact_sha256": "3d2af0c2af00ec6df8e3250aff1a46f349c40ffc642dbbb40b8ddd3c1b9ea55e",
+    "plumbing_audit_sha256": "13e11d55f25eca323751d40dab736c6426ae802d317c6e937db128b9d3e55df5",
+    "plumbing_authorization_sha256": "401ff68b066c1f4e895e7ee7b1bce0f311d9f2e845bc48c2ccb6724a26170397",
+    "plumbing_pgn_sha256": "41ade5f530455a33b00e63a67db54ab412ddf492ea8f521adae6bd651fdc40c9",
+    "plumbing_raw_log_sha256": "8d2cca5cf54080dcd996b496cc528278a0880d6e2046ce05978076b44706b45f",
+    "plumbing_result_sha256": "8d3c8930b7468863fe945545e6999ff1f4a39e6041ce323ac14eb8823a9d986f",
+    "preflight_sha256": "ca8373278907df2dd6bdcbd62792696c45e33ba37f94de4fe85f2094addda50d",
+    "referee_verification_sha256": "ff295c980e75c05185a276da5d56ce3a564b8986f7fa31368ace680d62ee13e0"
+  },
+  "certification": {
+    "book": {
+      "exact_three_way_legal_set_agreement": "PASS",
+      "legal_positions": 202,
+      "mandatory_capture_positions": 103,
+      "schedule_identity_sha256": "62f5efe976a690412daa03703ad31041804b1a67d715fc1c81a5606dca9cc4db"
+    },
+    "elapsed_seconds": 10.078000000212342,
+    "finished_at_utc": "2026-09-01T05:27:20.335102Z",
+    "focused": {
+      "exact_three_way_legal_set_agreement": "PASS",
+      "legal_positions": 56,
+      "mandatory_capture_positions": 14
+    },
+    "referee_checks": 879,
+    "v1_execution_count": 1,
+    "v2_execution_count": 1
+  },
+  "exact_inputs": {
+    "book_sha256": "6ec92e4e39a86f8d74504f7556fb27c02fe50fb2cac04951eb5ec01c8f1c2ec2",
+    "candidate_binary_sha256": "5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213",
+    "candidate_build_manifest_sha256": "89287356a40d3e10983b3ba96cc401dc205a4acef3219217de2b47147087e80d",
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "comparator_binary_sha256": "ee0081d77a555ef073e56a04fff604af8d6408a1e2d0afc2e61cea23c11bb902",
+    "comparator_source_commit": "6d9d0f5724677dc3aba3c577b0b482b6ec11e44a",
+    "comparator_source_tree": "aa4112ea6784cef03fb9b5f87bba632de6168faa",
+    "implementation_freeze_commit": "fd0d12491d32a09fa978991062dea27c81669a8f",
+    "implementation_freeze_sha256": "bfc1bd35f807913fa0c019930401324febefbabcaa6b30656a02c1ca091c23ea",
+    "network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee",
+    "v2_addendum_sha256": "21f571ffc89b034398361a84afe56272a7382b6ce3b870c33afb1bfb68312c7e"
+  },
+  "host_gate": {
+    "competing_engine_or_cutechess_processes": 0,
+    "foreign_active_resource_leases": 0,
+    "foreign_process_action": "NONE",
+    "observer_processes": "Spell tail and watch processes remained read-only observers with a 0.0-second CPU delta over the measured ten-second snapshot.",
+    "project_lease": ".local/resource-leases/antichess-s3-panel-cert-v1.lock",
+    "project_lease_resource": "CPU_BUILD_AND_CERTIFICATION_EXCLUSIVE",
+    "snapshots_before_execution": 2
+  },
+  "network_probes": {
+    "candidate_negative": {
+      "bestmove": "(none)",
+      "network_loaded": false,
+      "return_code": 0,
+      "status": "PASS_FAIL_CLOSED_WITHOUT_SEARCH"
+    },
+    "candidate_positive": {
+      "bestmove": "g2g3",
+      "network_loaded": true,
+      "return_code": 0,
+      "status": "PASS"
+    },
+    "comparator_negative": {
+      "bestmoves": 0,
+      "required_network_error": true,
+      "return_code": 1,
+      "status": "PASS_FAIL_CLOSED"
+    },
+    "comparator_positive": {
+      "bestmove": "a2a3",
+      "network_loaded": true,
+      "return_code": 0,
+      "status": "PASS"
+    }
+  },
+  "non_claims": [
+    "The two forced-terminal plumbing games are protocol evidence, not strength games.",
+    "This receipt is not Elo, LOS, OpenBench, DATAGEN, model selection, release, or monitoring evidence.",
+    "The external legacy network and opening book remain local-only and are not redistributed; their provenance and license gaps remain unresolved.",
+    "A separate immutable strength preregistration, reviewed runner, stopping rule, invalidation contract, exclusive host lease, and exact schedule are still required before the first panel game."
+  ],
+  "official_ci_before_execution": {
+    "head_sha": "fd0d12491d32a09fa978991062dea27c81669a8f",
+    "jobs": {
+      "linux_asan_ubsan": 99747524555,
+      "reproducible_build_and_frozen_contracts": 99747524499
+    },
+    "repository": "Belzedar94/Antichess-Stockfish",
+    "run_id": 33473386881,
+    "status": "SUCCESS"
+  },
+  "plumbing_smoke": {
+    "colors_swapped": true,
+    "forbidden_pattern_counts": {
+      "controller_timeout": 0,
+      "crash": 0,
+      "disconnect": 0,
+      "illegal_move": 0,
+      "stall": 0,
+      "time_loss": 0
+    },
+    "games": 2,
+    "mandatory_capture_positions": 2,
+    "plies": 2,
+    "strength_games": 0,
+    "terminal_san_moves": 2
+  },
+  "next_safe_action": "Commit and review this certification result, merge it only after exact-head CI and an exact-head review pass, verify winner ancestry and post-merge CI, then create a separate immutable S3 strength preregistration before any VSTC, STC, or LTC game.",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:27:20.335102Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_E1_S3_PANEL_INPUT_CERT_V2_PASS",
+  "schema_version": 1,
+  "status": "PASS_ADMITS_SEPARATE_S3_STRENGTH_PREREGISTRATION_ONLY",
+  "strength_games": 0
+}

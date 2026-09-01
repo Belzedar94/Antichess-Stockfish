@@ -1,0 +1,167 @@
+{
+  "schema": "ANTICHESS_S3_FSF_PANEL_CERT_V1_PREREG",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T04:38:18Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "s3-fsf-panel-cert-v1-r1",
+  "status": "PREREGISTERED_INPUTS_UNEXECUTED",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "candidate_source_date_epoch": 1788236859,
+    "candidate_windows_binary_sha256": null,
+    "fairy_stockfish_repository": "https://github.com/fairy-stockfish/Fairy-Stockfish.git",
+    "fairy_stockfish_commit": "6d9d0f5724677dc3aba3c577b0b482b6ec11e44a",
+    "fairy_stockfish_tree": "aa4112ea6784cef03fb9b5f87bba632de6168faa",
+    "fairy_stockfish_windows_binary_sha256": "ee0081d77a555ef073e56a04fff604af8d6408a1e2d0afc2e61cea23c11bb902",
+    "fairy_stockfish_remote_master_rechecked_utc": "2026-09-01T04:30:00Z",
+    "fairy_stockfish_remote_master_at_recheck": "6d9d0f5724677dc3aba3c577b0b482b6ec11e44a",
+    "fairy_stockfish_is_candidate_ancestor": false
+  },
+  "candidate_reproducible_build": {
+    "platform": "Windows_NT 10.0.19045 AMD64",
+    "toolchain": "MSYS2 MinGW g++ 16.1.0 and GNU Make 4.4.1",
+    "source_date_epoch": 1788236859,
+    "command": "make clean && make -j1 build ARCH=x86-64 COMP=mingw COMPCXX=/mingw64/bin/g++ debug=no",
+    "clean_runs": 2,
+    "byte_identical_required": true,
+    "build_executed": false
+  },
+  "network": {
+    "bytes": 953248,
+    "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "license": "UNRESOLVED_FOR_THIS_2024_ARTIFACT",
+    "distribution": "LOCAL_ONLY_NO_COPY_EMBED_DEFAULT_ALIAS_OR_REDISTRIBUTION",
+    "same_resolved_file_required_for_both_engines": true
+  },
+  "candidate_options": {
+    "UCI_Variant": "antichess",
+    "Antichess_Evaluator": "legacy-v1",
+    "Antichess_Search": "alpha-beta-v1",
+    "Threads": 1,
+    "Hash": 512
+  },
+  "comparator_options": {
+    "UCI_Variant": "antichess",
+    "Use NNUE": true,
+    "Threads": 1,
+    "Hash": 512
+  },
+  "referee": {
+    "name": "AC_REFEREE_V1",
+    "base_commit": "5e84232be4546aaedc9d87a96c91867a1da06ada",
+    "patch_sha256": "b8d20a4aa6c4a4a287772cec08b7e952feca88be9120ce11c45a7a3ccfa2a972",
+    "derived_tree": "639664d19717604326fa5fef21356556db86e27b",
+    "probe_sha256": "fd45f1f066ce6ff3017a193d5333ccc95e676f9fc795cdd74722abac7564b109",
+    "cli_sha256": "62377837474f166edfae5dcc5801b19bdf0ee28c89ac4bc66832d535be73ae9f",
+    "qt_core_sha256": "9cf7924077f1ac8758a456e780d9f408c779e76e58680a77ef30ef9807295c43",
+    "required_existing_checks": 879,
+    "unpatched_cutechess_allowed": false
+  },
+  "book_candidate": {
+    "role": "external local Antichess opening suite candidate",
+    "basename": "antichess.epd",
+    "bytes": 11862,
+    "sha256": "6ec92e4e39a86f8d74504f7556fb27c02fe50fb2cac04951eb5ec01c8f1c2ec2",
+    "lines": 202,
+    "nonempty_lines": 202,
+    "byte_unique_lines": 202,
+    "input_fields": 4,
+    "normalization": "append ASCII ' 0 1'",
+    "provenance": "UNRESOLVED_LOCAL_FILE",
+    "license": "UNRESOLVED",
+    "distribution": "LOCAL_ONLY_NOT_REPOSITORY_OR_RELEASE_ASSET",
+    "line_filtering_after_results_allowed": false
+  },
+  "atomic_methodology_sources": {
+    "general_testing_sha256": "c758ab364e2f98f64bc4788be1bb4faae26d8ee50802a0b329dc4160549eb783",
+    "local_tournament_sha256": "e0b555b07c943855626acf7f250b0addac206040e7a931d1af61599651ad1e68",
+    "canonical_local_protocol_sha256": "1a5466adb27bf4dfc46cfcf9d42694c081507df5e5657b70c32ff75c0a42648f",
+    "exact_los_wrapper_sha256": "17dbf16b94c1a9f8a510e2efb69dcd8fdafac60abaeae452d7ad625a696268ff",
+    "legacy_runner_sha256": "37d1790096520d9f3a1003746cdfbed59d2cc125a9b3d3192ff3399295ec9d70",
+    "legacy_stat_formula_sha256": "06af2f59cc22eb17213f67d243bafc0fb2e4bb6627026787ede9d4cf337387ea",
+    "authority_scope": "three-TC and displayed-extreme-LOS house methodology only"
+  },
+  "certification_harness": {
+    "planned_path": "tools/strength/verify_fsf_panel_inputs_v1.py",
+    "planned_self_test_path": "tests/antichess/test_s3_panel_harness_v1.py",
+    "python_version": "3.12.0",
+    "python_executable_sha256": "42ac541168e97dedb9aabd8be335539fc41c682e414b9e8d137b164fb68683b0",
+    "dependencies": "Python standard library only",
+    "engine_or_referee_source_changes_allowed": false,
+    "certification_execution_count": 0,
+    "strength_games_allowed": 0,
+    "plumbing_smoke_games_allowed_after_all_prior_checks_pass": 2
+  },
+  "book_certification": {
+    "normalize_all_lines": true,
+    "normalized_duplicates_allowed": false,
+    "terminal_positions_allowed": false,
+    "automatic_draw_positions_allowed": false,
+    "empty_legal_sets_allowed": false,
+    "complete_legal_set_authority": "AC_REFEREE_V1",
+    "candidate_complete_legal_set_source": "antichess-info",
+    "comparator_complete_legal_set_source": "go perft 1 root listing",
+    "exact_three_way_agreement_required": true,
+    "mandatory_capture_coverage_required": true,
+    "quiet_move_survival_when_capture_exists_allowed": false
+  },
+  "target_panel": {
+    "authorized_by_this_preregistration": false,
+    "time_controls_ms": {
+      "VSTC": {"base": 2000, "increment": 20},
+      "STC": {"base": 10000, "increment": 100},
+      "LTC": {"base": 30000, "increment": 300}
+    },
+    "threads_per_engine": 1,
+    "hash_mib_per_engine": 512,
+    "maximum_controllers": 3,
+    "maximum_controllers_per_tc": 1,
+    "games_per_opening_pair": 2,
+    "colors_swapped": true,
+    "minimum_games_per_tc_exclusive": 100,
+    "minimum_total_even": true,
+    "maximum_games_per_tc": 64000,
+    "candidate_pass_displayed_los_percent_each_tc": "100.0",
+    "candidate_loss_displayed_los_percent_any_tc": "0.0",
+    "opening_schedule_seed": "ANTICHESS_S3_FSF_SAME_NET_3TC_V1",
+    "opening_schedule_order": "ascending sha256(seed + LF + one-based source index + LF + normalized FEN)",
+    "same_schedule_for_all_time_controls": true,
+    "score_based_draw_adjudication": false,
+    "score_based_resign_adjudication": false,
+    "tablebases": false,
+    "silent_recovery": false
+  },
+  "invalidations": [
+    "input hash drift",
+    "source ancestry drift",
+    "network load ambiguity or fallback",
+    "book parse, status, duplicate, or legal-set mismatch",
+    "incorrect UCI option mapping",
+    "odd or non-color-swapped pair",
+    "opening mismatch within a pair",
+    "PGN Variant tag mismatch",
+    "illegal move",
+    "result disagreement with AC_REFEREE_V1",
+    "time loss",
+    "engine crash",
+    "disconnect",
+    "stall or controller timeout",
+    "missing raw log, PGN, exit code, or terminal marker"
+  ],
+  "decision_rule": {
+    "all_checks_required": true,
+    "any_failure": "CERTIFICATION_FAIL_CLOSED_NO_STRENGTH_PANEL",
+    "book_line_deletion_or_substitution_after_failure_allowed": false,
+    "result_aware_harness_or_threshold_change_allowed": false,
+    "pass_admits": "SEPARATE_FINAL_S3_STRENGTH_PREREGISTRATION_ONLY"
+  },
+  "non_claims": [
+    "No certification harness implementation exists at preregistration.",
+    "No certification probe, plumbing smoke, strength game, Elo, LOS, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "The external network and opening suite remain local-only and are not redistributed.",
+    "Stable publication still requires an explicit owner G15 decision."
+  ]
+}

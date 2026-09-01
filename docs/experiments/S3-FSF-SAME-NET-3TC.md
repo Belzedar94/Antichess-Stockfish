@@ -2,25 +2,29 @@
 
 ## Status
 
-**READINESS NOT ADMITTED. No games have been run.**
+**ENGINE CAPABILITIES AND PANEL-INPUT CERTIFICATION CLOSED; FINAL STRENGTH
+PREREGISTRATION NOT YET SEALED. No strength games have been run.**
 
 The owner requires Antichess-Stockfish to beat the strongest available
 Fairy-Stockfish comparator before Antichess NNUE V2 work begins. Both engines
 must load the exact same legacy network bytes. This is a whole-engine strength
 comparison; it cannot attribute any result to NNUE.
 
-The current candidate cannot yet execute the requested Atomic house protocol.
-It advertises `Threads` and `Hash` with a maximum of 1, and its Antichess UCI
-clock path replaces every clock-controlled search with a fixed depth-4 search.
-The frozen VSTC capability probe accepted `2000+20` but returned depth 4 in
-102 ms. Running the panel now would not be a valid three-time-control test.
+The readiness audit originally found no clock-responsive search and a
+one-MiB Hash ceiling. Those two engine blockers are now closed by the reviewed
+clocked-iterative and bounded TT512 hypotheses. The exact post-governance
+candidate source is `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`; its
+panel Windows binary is now reproducibly frozen, and the separately
+preregistered input certification passed once. Running the panel before its
+final strength preregistration, exact-head review, and merge closure would
+still be invalid.
 
 ## Frozen identities already available
 
-- Candidate implementation commit:
-  `cae4d60f68e1ec2356c318bb9637736a5a504730`.
+- Exact candidate source commit:
+  `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`.
 - Candidate Windows binary SHA-256:
-  `1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac`.
+  `5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213`.
 - Candidate options intended for the panel: `UCI_Variant=antichess`,
   `Antichess_Evaluator=legacy-v1`, and
   `Antichess_Search=alpha-beta-v1`.
@@ -38,8 +42,8 @@ The frozen VSTC capability probe accepted `2000+20` but returned depth 4 in
 
 The Fairy-Stockfish build is admitted only as a comparator candidate. It is
 not candidate ancestry, a rules authority, or strength evidence. Its focused
-dialect behavior still must be checked against `AC_REFEREE_V1` before the
-panel preregistration can be sealed.
+dialect behavior and all 202 selected opening positions now agree exactly with
+the candidate and `AC_REFEREE_V1` on legal move sets.
 
 ## Atomic house protocol to preserve
 
@@ -76,16 +80,18 @@ inherited. The final Antichess contract must instead freeze:
 
 ## Admission blockers
 
-1. Add clock-responsive iterative deepening as one separately preregistered
-   search hypothesis and prove that VSTC, STC, and LTC produce materially
-   different, bounded work without changing rules or evaluator semantics.
-2. Add and verify the 512 MiB Antichess transposition-table capability as a
-   separate hypothesis; the final panel must not silently clamp `Hash=512` to
-   1 MiB.
-3. Certify the current Fairy-Stockfish comparator and the selected opening
-   book against the exact Antichess fixtures and `AC_REFEREE_V1`.
-4. Freeze a project-local panel harness and the complete stopping and
-   invalidation contract before the first game.
+1. **CLOSED:** clock-responsive iterative search passed, merged, and completed
+   post-merge CI.
+2. **CLOSED:** bounded TT512 r2 passed its one-shot fixed-work rule, merged,
+   and completed post-merge CI.
+3. **CLOSED:** the v2 input certification ran once and passed all 56 focused
+   positions, all 202 opening positions, positive and negative network probes,
+   879 referee checks, and a two-game non-strength plumbing smoke.
+4. **NEXT GATE:** freeze the final project-local strength runner, deterministic
+   schedule, stopping formula, invalidation contract, time margins, and host
+   lease under a separate immutable preregistration, then review and merge it
+   before the first panel game.
 
-Until all four blockers close, no canary, VSTC, STC, LTC, Elo, OpenBench, or
-release claim is authorized by this document.
+Until blocker four closes through exact-head review, merge, and post-merge CI,
+no VSTC, STC, LTC, Elo, OpenBench, or release claim is authorized by this
+document.

@@ -1,0 +1,38 @@
+{
+  "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+  "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+  "certification_execution_count": 0,
+  "files": {
+    ".github/workflows/antichess-correctness.yml": "a80be2f518ba9c47f548e09204a19344546f25204055fdb0addfeaf543e2c49c",
+    "tests/antichess/test_s3_panel_harness_v1.py": "8732b2e38572434731475fd4e412906aacd831cca5691354f2999bce2c0611fc",
+    "tools/strength/audit_fsf_pair_smoke_v1.py": "81183d37622bac702a69b61b1adc07b55b3c4f99998ba003cdc133e53b52e8cd",
+    "tools/strength/panel_contract_v1.py": "1796ed289abea1c78c0848e284bb6d12e0ea91b1b600afb1bf5a12bc67198131",
+    "tools/strength/run_fsf_pair_smoke_v1.py": "b07143c6322d34a9e8694bec4f7c7c7ce9c811c6be0e0a069c2a450070a58c78",
+    "tools/strength/verify_fsf_panel_inputs_v1.py": "b4de129e2207f53f545f4c287986663bab9068b48576c36a753aedf73f2f7f3f"
+  },
+  "implementation_commit": "bc7341515c1fa296a8819b23439097e3efe3feb7",
+  "implementation_tree": "9901d07cc326327c2998dd1483931e42d0e3dc63",
+  "local_checks": {
+    "compileall": "PASS",
+    "fixture_contract": "PASS",
+    "harness_self_tests": {
+      "checks": 20,
+      "status": "PASS"
+    }
+  },
+  "non_claims": [
+    "No candidate panel binary was built by this implementation freeze.",
+    "No certification execution or plumbing smoke ran.",
+    "No strength game, Elo, LOS, OpenBench, DATAGEN, release, or monitoring inference is permitted."
+  ],
+  "plumbing_smoke_games": 0,
+  "preregistration_commit": "c37ac744093b1a9972fa66305a198e0d02669a91",
+  "preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:05:10Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_S3_PANEL_CERT_V1_IMPLEMENTATION_FREEZE",
+  "schema_version": 1,
+  "status": "IMPLEMENTED_UNEXECUTED",
+  "strength_games": 0
+}

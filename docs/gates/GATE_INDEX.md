@@ -55,10 +55,19 @@ append-only; a gate transition requires a new receipt or addendum.
   depth was three. PR #10, exact-head review, merge `42ff5b6c`, winner ancestry,
   post-merge run `33469289068`, and its downloaded artifact are verified. No
   result-aware rerun or retuning is allowed.
-- The candidate advertises the required 512 MiB capacity, but the three-TC
-  panel remains closed until the exact Fairy-Stockfish comparator, book,
-  `AC_REFEREE_V1`, runner, time controls, seeds, colors, invalidations, and
-  stopping rule pass a separate fail-closed certification.
+- The candidate advertises the required 512 MiB capacity. The v2 panel-input
+  certification ran once and passed exact three-way legal-set agreement on all
+  56 focused positions and all 202 book positions, including 103 book capture
+  positions. Both engines loaded the exact `dd3c` bytes, both negative probes
+  failed closed, all 879 referee checks passed, and the two-game plumbing smoke
+  had no protocol defect. This is engineering/correctness evidence with zero
+  strength games.
+- The external 202-position Antichess EPD and `dd3c` network remain local-only
+  with unresolved provenance/license boundaries. The three-TC panel remains
+  closed until a separate final strength preregistration freezes the exact
+  runner, schedule, time controls, colors, stopping rule, invalidations, time
+  margins, and exclusive host lease, then passes review, merge, and post-merge
+  CI.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.

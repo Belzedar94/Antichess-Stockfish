@@ -1,0 +1,40 @@
+{
+  "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+  "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+  "certification_execution_count": 0,
+  "files": {
+    ".github/workflows/antichess-correctness.yml": "a80be2f518ba9c47f548e09204a19344546f25204055fdb0addfeaf543e2c49c",
+    "tests/antichess/fixtures/s3-fsf-panel-cert-v2-addendum.json": "21f571ffc89b034398361a84afe56272a7382b6ce3b870c33afb1bfb68312c7e",
+    "tests/antichess/test_s3_panel_harness_v1.py": "32f9bf214add54e44d14eb4f0f7f8105c8e6948d4040fbffc3800a59d50e7dd2",
+    "tools/strength/audit_fsf_pair_smoke_v1.py": "81183d37622bac702a69b61b1adc07b55b3c4f99998ba003cdc133e53b52e8cd",
+    "tools/strength/panel_contract_v1.py": "1796ed289abea1c78c0848e284bb6d12e0ea91b1b600afb1bf5a12bc67198131",
+    "tools/strength/run_fsf_pair_smoke_v1.py": "b07143c6322d34a9e8694bec4f7c7c7ce9c811c6be0e0a069c2a450070a58c78",
+    "tools/strength/verify_fsf_panel_inputs_v1.py": "86c3d9feb3098b480443c1cb694964137da133a13af4f5c297e8e6591ef26ef8"
+  },
+  "implementation_commit": "5d0786d8cdd01e61522d7e3d375c639724c18e94",
+  "implementation_tree": "62d160951872b4fbb959ab39c7528c32f838aa5c",
+  "local_checks": {
+    "compileall": "PASS",
+    "fixture_contract": "PASS",
+    "harness_self_tests": {
+      "checks": 21,
+      "status": "PASS"
+    }
+  },
+  "non_claims": [
+    "No v2 certification probe or plumbing smoke ran before this freeze.",
+    "No strength game, Elo, LOS, OpenBench, DATAGEN, release, or monitoring inference is permitted."
+  ],
+  "plumbing_smoke_games": 0,
+  "predecessor_v1_failure_receipt_sha256": "0750d484113eccfba2434ae06dd12fb1368db0651b0eede0c5dab918ea1e6302",
+  "preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:20:36Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_S3_PANEL_CERT_V2_IMPLEMENTATION_FREEZE",
+  "schema_version": 1,
+  "status": "IMPLEMENTED_UNEXECUTED",
+  "strength_games": 0,
+  "v2_addendum_sha256": "21f571ffc89b034398361a84afe56272a7382b6ce3b870c33afb1bfb68312c7e",
+  "v2_preregistration_receipt_sha256": "ea270e2c8cee9682ac932071d1395eda8992fbcd8025ea953f029dc3e1038326"
+}
