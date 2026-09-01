@@ -2,8 +2,8 @@
 
 ## Status
 
-**LOCAL ONE-SHOT COMPARISON, INHERITED CORRECTNESS, AND OFFICIAL CI PASS.
-REVIEW, MERGE, AND POST-MERGE CLOSURE REMAIN OPEN.**
+**CLOSED ENGINEERING PASS. THE ONE-SHOT COMPARISON, INHERITED CORRECTNESS,
+EXACT-HEAD REVIEW, MERGE, WINNER ANCESTRY, AND POST-MERGE CI ARE VERIFIED.**
 
 This is deterministic fixed-work engineering evidence only. It is not speed,
 Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring
@@ -227,3 +227,22 @@ SHA-256
 
 No pull request, merge, post-merge CI, game, or strength result is implied by
 these checks.
+
+## Merge and post-merge closure
+
+Pull request #10 persisted exact-head review `5073963642` before merge. Its
+reproducible-build and Linux ASan/UBSan checks passed at head
+`32e971c19b0e6c7bfc4f5d2171085b4556b830c7`. Merge commit
+`42ff5b6c493ad8dd0fd6ee0284a50dcf7662b3b9` has that exact head as its second
+parent and preserves official Stockfish ancestry; Fairy-Stockfish remains
+outside ancestry.
+
+Post-merge workflow run `33469289068` passed reproducible-build job
+`99735556577` and Linux ASan/UBSan job `99735556429`. Its downloaded artifact
+contains two byte-identical Linux binaries with SHA-256
+`6386645cdf648aae9289709786c419edade5dab5ddfa4097a89397a5fd27f49c`.
+
+This closes only the TT512 engineering capability. No game or strength panel
+is admitted until the exact Fairy-Stockfish comparator, book, AC_REFEREE_V1,
+runner, time controls, colors, seeds, invalidations, and stopping rule are
+separately certified and frozen.
