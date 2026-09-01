@@ -56,9 +56,32 @@ constexpr Value antichess_claim_value(Value value, bool claimable) {
     return claimable ? std::max(VALUE_DRAW, value) : value;
 }
 
+constexpr TimePoint AntichessClockOverhead   = 20;
+constexpr int       AntichessClockHorizon    = 40;
+constexpr int       AntichessClockMaxDepth   = 64;
+constexpr u64       AntichessClockCheckNodes = 64;
+
+constexpr TimePoint
+antichess_game_clock_budget(TimePoint remaining, TimePoint increment, int movesToGo) {
+    const int       horizon    = movesToGo ? std::clamp(movesToGo, 1, 50) : AntichessClockHorizon;
+    const TimePoint available  = std::max(TimePoint(1), remaining - AntichessClockOverhead);
+    const TimePoint allocation = std::max(TimePoint(1), remaining / horizon + 3 * increment / 4);
+    return std::min(available, allocation);
+}
+
+TimePoint antichess_clock_budget(const Search::LimitsType& limits, Color us) {
+    if (limits.movetime > 0)
+        return std::max(TimePoint(1), limits.movetime - AntichessClockOverhead);
+
+    return antichess_game_clock_budget(limits.time[us], limits.inc[us], limits.movestogo);
+}
+
 static_assert(antichess_claim_value(-1, true) == VALUE_DRAW);
 static_assert(antichess_claim_value(1, true) == 1);
 static_assert(antichess_claim_value(-1, false) == -1);
+static_assert(antichess_game_clock_budget(2000, 20, 0) == 65);
+static_assert(antichess_game_clock_budget(10000, 100, 0) == 325);
+static_assert(antichess_game_clock_budget(30000, 300, 0) == 975);
 
 }
 
@@ -154,9 +177,17 @@ void Engine::go(Search::LimitsType& limits) {
             return;
         }
 
-        const int depth = std::clamp(limits.depth ? limits.depth : 4, 1, 8);
+        const bool explicitDepth = limits.depth > 0;
+        const bool clocked       = useAlphaBeta && !explicitDepth
+                          && (limits.movetime > 0 || limits.time[pos.side_to_move()] > 0);
+        const int       depth = std::clamp(explicitDepth ? limits.depth : 4, 1, 8);
+        const TimePoint deadline =
+          clocked ? limits.startTime + antichess_clock_budget(limits, pos.side_to_move()) : 0;
         std::array<StateInfo, MAX_PLY + 1> searchStates;
-        u64                                nodes = 0;
+        u64                                nodes       = 0;
+        bool                               interrupted = false;
+
+        const auto deadlineReached = [&]() { return clocked && now() >= deadline; };
 
         const auto orderedMoves = [](const Position& position) {
             MoveList<LEGAL>   legal(position);
@@ -170,6 +201,11 @@ void Engine::go(Search::LimitsType& limits) {
         std::function<Value(int, int, Value, Value)> search =
           [&](int remaining, int ply, Value alpha, Value beta) -> Value {
             ++nodes;
+            if (clocked && nodes % AntichessClockCheckNodes == 0 && deadlineReached())
+            {
+                interrupted = true;
+                return VALUE_DRAW;
+            }
 
             if (pos.antichess_variant_end())
             {
@@ -183,8 +219,7 @@ void Engine::go(Search::LimitsType& limits) {
             const bool claimable = pos.antichess_threefold();
             if (remaining == 0)
             {
-                const Value leaf =
-                  useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
+                const Value leaf = useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
                 return antichess_claim_value(leaf, claimable);
             }
 
@@ -203,6 +238,8 @@ void Engine::go(Search::LimitsType& limits) {
                   useAlphaBeta ? -search(remaining - 1, ply + 1, -beta, -alpha)
                                : -search(remaining - 1, ply + 1, -VALUE_INFINITE, VALUE_INFINITE);
                 pos.undo_move(move);
+                if (interrupted)
+                    return VALUE_DRAW;
                 best = std::max(best, score);
 
                 if (useAlphaBeta)
@@ -258,27 +295,76 @@ void Engine::go(Search::LimitsType& limits) {
         }
 
         const bool claimable = pos.antichess_threefold();
-        Value      bestScore = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+        Value      bestScore = VALUE_DRAW;
         Move       bestMove  = rootMoves.front();
 
-        for (Move move : rootMoves)
-        {
-            pos.do_move(move, searchStates[0]);
-            Value score = -search(depth - 1, 1, -VALUE_INFINITE, VALUE_INFINITE);
-            pos.undo_move(move);
-            if (score > bestScore || (score == bestScore && is_win(score)))
+        const auto searchRoot = [&](int currentDepth, Value& completedScore, Move& completedMove) {
+            Value iterationScore = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+            Move  iterationMove  = rootMoves.front();
+
+            for (Move move : rootMoves)
             {
-                bestScore = score;
-                bestMove  = move;
+                if (deadlineReached())
+                {
+                    interrupted = true;
+                    break;
+                }
+
+                pos.do_move(move, searchStates[0]);
+                Value score = -search(currentDepth - 1, 1, -VALUE_INFINITE, VALUE_INFINITE);
+                pos.undo_move(move);
+                if (interrupted)
+                    break;
+
+                if (score > iterationScore || (score == iterationScore && is_win(score)))
+                {
+                    iterationScore = score;
+                    iterationMove  = move;
+                }
             }
+
+            if (interrupted)
+                return false;
+
+            completedScore = iterationScore;
+            completedMove  = iterationMove;
+            return true;
+        };
+
+        int completedDepth = 0;
+        if (clocked)
+        {
+            for (int currentDepth = 1; currentDepth <= AntichessClockMaxDepth; ++currentDepth)
+            {
+                if (deadlineReached())
+                    break;
+
+                interrupted = false;
+                Value iterationScore;
+                Move  iterationMove;
+                if (!searchRoot(currentDepth, iterationScore, iterationMove))
+                    break;
+
+                bestScore      = iterationScore;
+                bestMove       = iterationMove;
+                completedDepth = currentDepth;
+            }
+        }
+        else
+        {
+            interrupted          = false;
+            const bool completed = searchRoot(depth, bestScore, bestMove);
+            assert(completed);
+            (void) completed;
+            completedDepth = depth;
         }
 
         std::string pv = UCIEngine::move(bestMove, false);
         if (updateContext.onUpdateFull)
         {
             Search::InfoFull info{};
-            info.depth    = depth;
-            info.selDepth = depth;
+            info.depth    = completedDepth;
+            info.selDepth = completedDepth;
             info.multiPV  = 1;
             info.score    = Score(bestScore, pos);
             info.timeMs   = std::max<usize>(1, now() - limits.startTime);

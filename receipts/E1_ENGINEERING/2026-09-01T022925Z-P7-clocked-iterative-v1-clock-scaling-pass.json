@@ -1,0 +1,138 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-09-01T02:29:25Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_CLOCKED_ITERATIVE_SINGLE_PREREGISTERED_SCALING_PASS_NOT_STRENGTH",
+  "experiment_id": "p7-clocked-iterative-v1-r1",
+  "adds_to": {
+    "path": "receipts/E1_ENGINEERING/2026-09-01T022018Z-P7-clocked-candidate-build-freeze.json",
+    "sha256": "f527a0c6feecb112c33c844019d7d6da7f0c5151a70e2872fe77423b4e5e6b39"
+  },
+  "frozen_identity": {
+    "branch": "antichess/p7-clocked-iterative-v1-prereg",
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "implementation_commit": "aea46065e72ebcb11f28eb9e8b1bacfad258f535",
+    "implementation_tree": "124cf9b2d2272a5ef90fc50d94cca68f9a37d719",
+    "build_freeze_commit": "2f2745b4f881a8041328bf9c7937531d55d48038",
+    "candidate_binary_path": ".local/evidence/P7-clocked-iterative-v1-candidate-build-20260901T021425Z/antichess-stockfish-run-2.exe",
+    "candidate_binary_sha256": "ba17e95b257528fa3eec28b5f0e8e16d1c856dffc701117fe704d992086f4b0b",
+    "candidate_binary_bytes": 4234769,
+    "fixture_sha256": "b73c5bed59b8a314861cfbbef6a9b7c5c73c63ae62f4ad303b1a8c98796d97fa",
+    "runner_sha256": "bde9e5df5847f6e0b88fe6d9ff2509905378d463217ab9da74ac4e89a58199f5",
+    "external_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "external_network_redistributed": false
+  },
+  "execution": {
+    "attempt": 1,
+    "attempts_allowed": 1,
+    "optional_stopping": false,
+    "started_at_utc": "2026-09-01T02:27:17.3158157Z",
+    "ended_at_utc": "2026-09-01T02:27:21.8854172Z",
+    "exit_code": 0,
+    "phase": "clock-scaling",
+    "timeout_seconds": 10,
+    "evidence_directory": ".local/evidence/P7-clocked-iterative-v1-clock-scaling-20260901T022607Z",
+    "record_path": "clock-scaling-record.json",
+    "record_sha256": "a8f010e720d0a26b6a26c99afe924a98beb1d73e08aa6a45aac4451dde5e6876",
+    "record_bytes": 13152,
+    "stdout_path": "harness-stdout.log",
+    "stdout_sha256": "e2a0d9dd44e3451ac5ab94a15007d2622ff3f3508122142237fe54497ed45c0e",
+    "stdout_bytes": 268,
+    "outcome": "PASS"
+  },
+  "clock_scaling": {
+    "balanced_blocks": 3,
+    "game_clock_records": 9,
+    "movetime_records": 1,
+    "rungs": {
+      "VSTC": {
+        "hard_budget_ms": 65,
+        "nodes_by_block": [17088, 17408, 17536],
+        "aggregate_nodes": 52032,
+        "median_depth": 3,
+        "maximum_wall_ms": 62
+      },
+      "STC": {
+        "hard_budget_ms": 325,
+        "nodes_by_block": [86720, 87104, 88384],
+        "aggregate_nodes": 262208,
+        "median_depth": 4,
+        "maximum_wall_ms": 344
+      },
+      "LTC": {
+        "hard_budget_ms": 975,
+        "nodes_by_block": [264448, 265728, 265472],
+        "aggregate_nodes": 795648,
+        "median_depth": 5,
+        "maximum_wall_ms": 985
+      }
+    },
+    "stc_to_vstc_aggregate_nodes_ratio": 5.03936039360394,
+    "ltc_to_stc_aggregate_nodes_ratio": 3.03441542592141,
+    "movetime_probe": {
+      "requested_ms": 250,
+      "hard_budget_ms": 230,
+      "depth": 4,
+      "nodes": 62592,
+      "engine_time_ms": 230,
+      "wall_time_ms": 234,
+      "bestmove": "g2g3"
+    }
+  },
+  "independent_audit": {
+    "embedded_transcript_lines": 128,
+    "canonical_lf_transcript_bytes": 5832,
+    "canonical_lf_transcript_sha256": "1487395fb6efc21603713388f027ba042968249692d7aff7983d439922d963fc",
+    "legacy_network_loaded_messages": 11,
+    "single_thread_messages": 11,
+    "bestmove_lines": 10,
+    "error_illegal_timeout_crash_exception_lines": 0,
+    "postrun_target_processes": 0,
+    "time_losses": 0
+  },
+  "decision_rule": {
+    "all_searches_completed_depth_at_least_one": true,
+    "all_wall_and_engine_times_within_hard_budget_plus_250_ms": true,
+    "all_game_clock_wall_times_strictly_below_base_time": true,
+    "stc_to_vstc_ratio_at_least_1_5": true,
+    "ltc_to_stc_ratio_at_least_1_5": true,
+    "median_depth_nondecreasing": true,
+    "ltc_median_depth_strictly_above_vstc": true,
+    "fixed_depth_identity_previously_passed": true,
+    "outcome": "PASS"
+  },
+  "resource_lease": {
+    "host": "DESKTOP-XD38UAF",
+    "owner_project": "Antichess-Stockfish",
+    "resource": "CPU_TIMING_EXCLUSIVE",
+    "supervisor_pid": 37732,
+    "started_at_utc": "2026-09-01T02:26:07.932Z",
+    "ended_at_utc": "2026-09-01T02:28:35.261Z",
+    "active_lease_sha256": "bc369e92ee73300d42e03f09cd6e3199cf68085947bd2436c4ae0484df9ea42c",
+    "ended_lease_sha256": "9b8469334b9cd40d8a7cfb1e7b939fd567cec1aebd6bb338690145b6ac85df66",
+    "clean_host_snapshots": 2,
+    "foreign_processes_modified": false,
+    "restoration": "CPU timing lease ended and its supervisor exited after the evidence was frozen."
+  },
+  "decision": {
+    "clock_responsive_iterative_deepening": "PASS",
+    "clock_scaling_attempt_consumed": true,
+    "result_aware_retuning": false,
+    "fixed_depth_default_changed": false,
+    "hash_above_1_mib_admitted": false,
+    "strength_panel_admitted": false,
+    "strength_claim": false
+  },
+  "non_claims": [
+    "This is clock-control and work-scaling engineering evidence, not game, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring evidence.",
+    "The external legacy network remains local-only and is not a release asset, embedded default, public alias, or redistributable artifact.",
+    "Hash remains capped at 1 MiB; the separate Antichess transposition-table gate remains closed.",
+    "No three-time-control game was executed."
+  ],
+  "next_safe_action": "Run the full inherited local correctness suite against the frozen implementation, then open a non-draft pull request and require review, winner ancestry, merge, and post-merge official CI before starting the separate Hash-512 Antichess transposition-table preregistration."
+}

@@ -1,0 +1,103 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-09-01T02:06:05Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_PARENT_FIXED_DEPTH_BASELINE_NOT_TIMING_OR_STRENGTH",
+  "experiment_id": "p7-clocked-iterative-v1-r1",
+  "preregistration_identity": {
+    "commit": "d070249aa973d592d1a346a6e7f1b292dd78b97a",
+    "tree": "89eba2fc751f53094133045aa1748c8022dced5c",
+    "document_sha256": "77870fb32487289339b2837abf111b185ed0b8fd830795fca6aac0c3b834263f",
+    "fixture_sha256": "b73c5bed59b8a314861cfbbef6a9b7c5c73c63ae62f4ad303b1a8c98796d97fa",
+    "runner_sha256": "bde9e5df5847f6e0b88fe6d9ff2509905378d463217ab9da74ac4e89a58199f5",
+    "preregistration_receipt_sha256": "4fb22e57571447e984ea0c37ded62d4070cd55b364c94707ea4ac447f1166ce5"
+  },
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "f7b0f22659ffbe6c1fb1704269bd811d8b5cc22c",
+    "p7_engine_merge": "fcdd4f0ecf2b397b24dad426d940526b3160241f",
+    "parent_windows_binary_path": ".local/evidence/P7-alpha-beta-v1-candidate-build-20260831T102105Z/antichess-stockfish-run-2.exe",
+    "parent_windows_binary_sha256": "1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac",
+    "parent_fixed_work_record_sha256": "acf19303c56dfcda4eddfc4ae254305ac7f5c3548404d9dc0d63e7fbde503e8c",
+    "candidate_implementation_commit": null,
+    "candidate_windows_binary_sha256": null
+  },
+  "execution": {
+    "phase": "fixed-depth",
+    "command_class": "direct UCI deterministic fixed work",
+    "evaluator": "engineering-neutral",
+    "search": "alpha-beta-v1",
+    "threads": 1,
+    "hash_mib": 1,
+    "depth": 4,
+    "cases": 13,
+    "exact_score_type_score_bestmove_nodes_cases": 13,
+    "observed_aggregate_nodes": 12893,
+    "result": "PASS",
+    "clock_scaling_executed": false,
+    "games_executed": 0,
+    "attempt_consumed": "PARENT_FIXED_DEPTH_BASELINE_ONLY",
+    "clock_scaling_attempt_consumed": false
+  },
+  "frozen_local_evidence": {
+    "record": {
+      "path": ".local/evidence/P7-clocked-iterative-v1-fixed-baseline-20260901T020416Z/fixed-depth-record.json",
+      "sha256": "6e9b7a2f3dd38880f3383bd39b82a43992a391e7f9c8212af0fd63ef3b162d66",
+      "bytes": 15441,
+      "schema": "ANTICHESS_P7_CLOCKED_ITERATIVE_V1_RESULT",
+      "passed": true
+    },
+    "embedded_transcript": {
+      "container": "fixed-depth-record.json transcripts.fixed_depth",
+      "lines": 154,
+      "canonicalization": "UTF-8 lines joined with LF and one final LF",
+      "sha256": "4576cdfa1d11201316dbde03b6bad774e83bc88d52797e56f3a87f7f2bdb5560"
+    },
+    "lease": {
+      "path": ".local/resource-leases/antichess-p7-clocked-iterative-v1-fixed-baseline.lock",
+      "sha256": "73b151babc90fd842e242ea7149a52f17e32d5cbcf8b49ca1e9fa00bfc010c80",
+      "bytes": 1890,
+      "resource": "CPU_FIXED_WORK_EXCLUSIVE",
+      "status": "ENDED",
+      "outcome": "PASS"
+    }
+  },
+  "resource_audit": {
+    "preflight_clean_snapshots": 2,
+    "preflight_snapshot_interval_seconds": 8,
+    "preflight_active_foreign_chess_processes": 0,
+    "preflight_open_foreign_leases": 0,
+    "foreign_processes_modified": false,
+    "postflight_active_foreign_chess_engines": 0,
+    "postflight_active_foreign_cutechess": 0,
+    "worktree_dirty_during_execution": false
+  },
+  "official_ci": {
+    "preregistration_push_run": 33441350544,
+    "run_url": "https://github.com/Belzedar94/Antichess-Stockfish/actions/runs/33441350544",
+    "head_sha": "d070249aa973d592d1a346a6e7f1b292dd78b97a",
+    "conclusion": "success",
+    "reproducible_build_job": 99650068952,
+    "reproducible_build_conclusion": "success",
+    "asan_ubsan_job": 99650069388,
+    "asan_ubsan_conclusion": "success"
+  },
+  "decision": {
+    "fixed_depth_baseline_admitted": true,
+    "candidate_implementation_admitted": true,
+    "clock_scaling_admitted": false,
+    "strength_panel_admitted": false,
+    "reason": "The exact parent binary reproduced all 13 preregistered score, bestmove, and node identities. Candidate implementation may now begin, but it must be frozen before the one clock-scaling execution."
+  },
+  "non_claims": [
+    "The execution is deterministic fixed-work evidence; its elapsed times are not evidence.",
+    "No clock-scaling search, game, Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "No Fairy-Stockfish comparison or 3-TC panel was executed."
+  ],
+  "next_safe_action": "Implement only the preregistered clock-responsive completed-iteration iterative-deepening hypothesis in a separate commit, then run inherited correctness and freeze a dual clean candidate build before the one clock-scaling execution."
+}
