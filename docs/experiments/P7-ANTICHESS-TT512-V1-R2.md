@@ -2,8 +2,8 @@
 
 ## Status
 
-**PREREGISTERED. No r2 candidate implementation, build, comparator record, or
-candidate comparison exists.**
+**LOCAL ONE-SHOT CANDIDATE COMPARISON PASS. INHERITED CORRECTNESS, OFFICIAL CI,
+REVIEW, MERGE, AND POST-MERGE CLOSURE REMAIN OPEN.**
 
 This is deterministic fixed-work engineering evidence only. It is not speed,
 Elo, strength, OpenBench, DATAGEN, model-selection, release, or monitoring
@@ -188,3 +188,28 @@ rule changes, and result adjudication.
 A PASS admits only FSF/book/referee and panel-harness certification before any
 three-time-control game. It does not establish strength, start a game, change
 the default search, authorize OpenBench, or authorize a release.
+
+## Recorded local comparison
+
+The exact one-shot candidate comparison passed on 2026-09-01. All 14 Hash-1
+and Hash-512 candidate records matched the frozen comparator score type, score,
+and best move, and no candidate case exceeded its comparator node count.
+
+- comparator aggregate nodes: 1,453,898;
+- candidate Hash-1 aggregate nodes: 932,063;
+- candidate Hash-512 aggregate nodes: 924,190;
+- Hash-512 reduction versus comparator: 36.433642525129%;
+- Hash-512 usable hits: 225,429;
+- Hash-512 cutoffs: 217,606;
+- signal cases with a cutoff: 6; and
+- maximum TT remaining depth observed: 3.
+
+The frozen context-key relations, warmed-history isolation, Hash range,
+invalid-value persistence, and every required reset/invalidation check passed.
+The local record SHA-256 is
+`c1ae8a015366ac7e48cc7dca9d9b1b69dcb76fbf67aa6f49338f38228eb4e4e5`.
+The one-shot attempt is consumed and must not be repeated or retuned.
+
+This result admits inherited local correctness and official CI only. It is not
+timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or
+monitoring evidence, and it does not admit the three-time-control panel.
