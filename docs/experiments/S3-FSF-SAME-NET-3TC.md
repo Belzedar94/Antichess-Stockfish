@@ -2,25 +2,28 @@
 
 ## Status
 
-**READINESS NOT ADMITTED. No games have been run.**
+**ENGINE CAPABILITIES CLOSED; PANEL-INPUT CERTIFICATION PREREGISTERED. No games
+have been run.**
 
 The owner requires Antichess-Stockfish to beat the strongest available
 Fairy-Stockfish comparator before Antichess NNUE V2 work begins. Both engines
 must load the exact same legacy network bytes. This is a whole-engine strength
 comparison; it cannot attribute any result to NNUE.
 
-The current candidate cannot yet execute the requested Atomic house protocol.
-It advertises `Threads` and `Hash` with a maximum of 1, and its Antichess UCI
-clock path replaces every clock-controlled search with a fixed depth-4 search.
-The frozen VSTC capability probe accepted `2000+20` but returned depth 4 in
-102 ms. Running the panel now would not be a valid three-time-control test.
+The readiness audit originally found no clock-responsive search and a
+one-MiB Hash ceiling. Those two engine blockers are now closed by the reviewed
+clocked-iterative and bounded TT512 hypotheses. The exact post-governance
+candidate source is `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`; its
+panel Windows binary remains pending the separately preregistered dual-clean
+build and input certification. Running the panel before that certification
+would still be invalid.
 
 ## Frozen identities already available
 
-- Candidate implementation commit:
-  `cae4d60f68e1ec2356c318bb9637736a5a504730`.
-- Candidate Windows binary SHA-256:
-  `1dfc55b2c9d1c37f459d425f345710d76600594e48d21e8bd90e2907abf42fac`.
+- Exact candidate source commit:
+  `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`.
+- Candidate Windows binary SHA-256: pending the preregistered exact-source
+  dual-clean build.
 - Candidate options intended for the panel: `UCI_Variant=antichess`,
   `Antichess_Evaluator=legacy-v1`, and
   `Antichess_Search=alpha-beta-v1`.
@@ -76,16 +79,16 @@ inherited. The final Antichess contract must instead freeze:
 
 ## Admission blockers
 
-1. Add clock-responsive iterative deepening as one separately preregistered
-   search hypothesis and prove that VSTC, STC, and LTC produce materially
-   different, bounded work without changing rules or evaluator semantics.
-2. Add and verify the 512 MiB Antichess transposition-table capability as a
-   separate hypothesis; the final panel must not silently clamp `Hash=512` to
-   1 MiB.
-3. Certify the current Fairy-Stockfish comparator and the selected opening
-   book against the exact Antichess fixtures and `AC_REFEREE_V1`.
-4. Freeze a project-local panel harness and the complete stopping and
-   invalidation contract before the first game.
+1. **CLOSED:** clock-responsive iterative search passed, merged, and completed
+   post-merge CI.
+2. **CLOSED:** bounded TT512 r2 passed its one-shot fixed-work rule, merged,
+   and completed post-merge CI.
+3. **PREREGISTERED, UNEXECUTED:** certify the current Fairy-Stockfish
+   comparator and all 202 positions of the selected local opening suite against
+   the exact Antichess fixtures and `AC_REFEREE_V1`.
+4. **PREREGISTERED, UNIMPLEMENTED:** create and fail-closed test the
+   project-local panel harness, stopping formula, schedule, and invalidation
+   contract before a final strength preregistration.
 
 Until all four blockers close, no canary, VSTC, STC, LTC, Elo, OpenBench, or
 release claim is authorized by this document.

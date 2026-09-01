@@ -59,6 +59,11 @@ append-only; a gate transition requires a new receipt or addendum.
   panel remains closed until the exact Fairy-Stockfish comparator, book,
   `AC_REFEREE_V1`, runner, time controls, seeds, colors, invalidations, and
   stopping rule pass a separate fail-closed certification.
+- `s3-fsf-panel-cert-v1-r1` preregisters that certification before its harness
+  exists or any probe runs. The only book candidate is an external, local-only
+  202-position Antichess EPD with unresolved provenance and license; every
+  position must pass exact three-way legal-set agreement or the whole book is
+  rejected. This preregistration authorizes zero strength games.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.
