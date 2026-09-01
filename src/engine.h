@@ -121,6 +121,17 @@ class Engine {
     std::string                          thread_binding_information_as_string() const;
 
    private:
+    struct AntichessTTStatistics {
+        u64 probes       = 0;
+        u64 hits         = 0;
+        u64 usableHits   = 0;
+        u64 cutoffs      = 0;
+        u64 stores       = 0;
+        int maxRemaining = 0;
+    };
+
+    void reset_antichess_tt_statistics();
+
     const std::filesystem::path binaryDirectory;
 
     NumaReplicationContext numaContext;
@@ -138,6 +149,7 @@ class Engine {
     Search::SearchManager::UpdateContext  updateContext;
     std::function<void(std::string_view)> onVerifyNetwork;
     std::map<NumaIndex, SharedHistories>  sharedHists;
+    AntichessTTStatistics                 antichessTTStatistics;
 };
 
 }  // namespace Stockfish

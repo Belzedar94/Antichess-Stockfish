@@ -237,3 +237,37 @@
   the exact head commit. If the record is late, disclose the ordering and close
   it in a separate post-merge governance addendum; never backdate it.
 - **Gate:** P7, P14, and P15.
+
+## INC-SEARCH-002 — An ordered history key eliminated true transpositions
+
+- **Symptom:** the frozen TT512 v1 design required every reversible state key
+  in newest-to-oldest order while also requiring useful TT hits, cutoffs, and
+  at least 15% aggregate node reduction.
+- **False inference:** a history-complete key could remain fully path-specific
+  and still recognize ordinary transpositions reached through different move
+  orders.
+- **Cause:** two paths that form a transposition necessarily have different
+  intermediate ordered histories. Hashing that complete order deliberately
+  gives them different TT keys, so useful reuse can occur only on an identical
+  path or through an accidental collision.
+- **Prevention:** before implementation, prove both semantic sufficiency and
+  reuse equivalence for every proposed context key. Bound any deliberate
+  history abstraction by remaining search depth, freeze the proof and negative
+  fixtures in a new preregistration, and reject an internally contradictory
+  contract without compiling or consuming its candidate attempt.
+- **Gate:** P7, P14, and P15.
+
+## INC-BUILD-003 — A command-line flag replaced the official build flags
+
+- **Symptom:** the first TT512-r2 wrapper invocation compiled with only
+  `-Werror`; the normal optimization, architecture, language, and link-time
+  optimization flags were absent from the emitted commands.
+- **False inference:** adding `CXXFLAGS=-Werror` on the Make command line would
+  append a diagnostic policy to the pinned release configuration.
+- **Cause:** GNU Make command-line variable precedence replaced the Makefile's
+  complete `CXXFLAGS` value instead of extending it.
+- **Prevention:** use the supported `EXTRACXXFLAGS` and `EXTRALDFLAGS` extension
+  variables, inspect the first emitted compiler and linker commands before
+  admitting a build, and abort before producing or comparing a candidate when
+  the pinned flags are absent.
+- **Gate:** P3, P7, P14, and P15.

@@ -1,0 +1,184 @@
+{
+  "schema": "ANTICHESS_P7_TT512_V1_R2_PREREG",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T03:25:06Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "experiment_id": "p7-antichess-tt512-v1-r2",
+  "status": "PREREGISTERED_INPUTS_UNEXECUTED",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "157213b8d6a0efca33d847fff90bf70262c985ae",
+    "candidate_parent_tree": "632d1483a9c08f362649ddc11149caedeb7c3405",
+    "clocked_engine_merge": "89bccf20f0ed197125c8e92b36057ec2e9373a99",
+    "r1_rejection_incident": "INC-SEARCH-002",
+    "comparator_implementation_commit": "aea46065e72ebcb11f28eb9e8b1bacfad258f535",
+    "comparator_src_identical_to_parent_engine": true,
+    "comparator_windows_binary_sha256": "ba17e95b257528fa3eec28b5f0e8e16d1c856dffc701117fe704d992086f4b0b",
+    "comparator_windows_binary_bytes": 4234769,
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "candidate_windows_binary_sha256": null
+  },
+  "configuration": {
+    "runner": "tools/search/verify_antichess_tt512_v1.py",
+    "protocol": "direct UCI",
+    "search": "alpha-beta-v1",
+    "evaluator": "legacy-v1",
+    "external_network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "external_network_distribution": "local-only; no redistribution, default, embedding, or alias",
+    "threads": 1,
+    "comparator_hash_mib": 1,
+    "candidate_hash_controls_mib": [1, 512],
+    "maximum_tt_remaining_depth": 3,
+    "root_move_order": "sorted UCI",
+    "root_window": "independent full window for every root move",
+    "timeout_seconds_per_command": 120,
+    "book": null,
+    "referee": null,
+    "time_control": null,
+    "games": 0
+  },
+  "hypothesis": "A bound-safe TT restricted to remaining depths zero through three and keyed by board, exact rule50, and canonical exact counts of states already seen at least twice preserves all results and reduces Hash-512 aggregate nodes by at least 15 percent.",
+  "safety_proof": {
+    "minimum_identical_full_position_cycle_plies": 4,
+    "maximum_tt_remaining_depth": 3,
+    "unique_historical_state_maximum_future_encounters": 1,
+    "unique_historical_state_maximum_count_after_horizon": 2,
+    "threefold_threshold": 3,
+    "fivefold_threshold": 5,
+    "repeated_states_retained": true,
+    "terminal_automatic_draw_and_claim_before_tt": true,
+    "tt_at_remaining_depth_above_horizon": false
+  },
+  "context_key_contract": {
+    "width_bits": 64,
+    "mixer": "deterministic avalanche fold into Stockfish Key",
+    "inputs": [
+      "current raw StateInfo key",
+      "exact rule50",
+      "sorted raw-key and exact-count pairs for reversible-history states with count at least two",
+      "retained pair count"
+    ],
+    "reversible_window": "available chain through min(rule50, pliesFromNull)",
+    "unique_history_states_omitted": true,
+    "pair_order": "ascending raw key",
+    "rolling_state_added": false,
+    "null_move_added": false,
+    "accepted_alias_risk": "ordinary finite-key and TT-cluster collision risk only"
+  },
+  "tt_contract": {
+    "reused_stockfish_components": ["allocation", "cluster indexing", "replacement", "generation", "hashfull"],
+    "stored_move": "none",
+    "stored_eval": "VALUE_NONE",
+    "stored_pv": false,
+    "move_ordering": false,
+    "minimum_usable_depth": "stored depth >= requested remaining depth",
+    "cutoffs": ["exact", "lower value >= beta", "upper value <= alpha"],
+    "window_tightening": false,
+    "interrupted_node_store": false,
+    "completed_depth_zero_store": true,
+    "mate_store": "win + ply; loss - ply",
+    "mate_load": "win - ply; loss + ply",
+    "orthodox_rule50_downgrade": false
+  },
+  "uci_contract": {
+    "hash_default_mib": 1,
+    "hash_minimum_mib": 1,
+    "hash_maximum_mib": 512,
+    "invalid_spin_values_ignored": [0, 513],
+    "bench_hash_mib": 1,
+    "default_search": "exhaustive-v1",
+    "tt_horizon": 3,
+    "diagnostic_fields": [
+      "tt_enabled", "tt_horizon", "tt_context_key", "tt_probes", "tt_hits",
+      "tt_usable_hits", "tt_cutoffs", "tt_stores", "tt_max_remaining", "tt_hashfull"
+    ],
+    "clear_events": [
+      "ucinewgame", "Clear Hash", "Hash resize", "Antichess_Evaluator change",
+      "successful EvalFile load", "failed EvalFile load"
+    ]
+  },
+  "cases": [
+    {"id": "tt_01_start_transpositions", "position": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_02_mandatory_capture_choice", "position": "8/8/8/2p1p3/3B4/8/8/8 w - - 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_03_check_ignored_cycles", "position": "4r3/8/8/8/8/8/8/4K3 w - - 0 1", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_04_multiple_kings_parser_boundary", "position": "K3K3/8/8/8/8/8/8/7k w - - 0 1", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_05_en_passant_and_capture_choice", "position": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_06_quiet_promotion", "position": "7k/P7/8/8/8/8/8/8 w - - 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_07_capture_promotion", "position": "1r5k/P7/8/8/8/8/8/8 w - - 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_08_check_does_not_suppress_quiets", "position": "rnb1kbnr/pppp1ppp/4p3/8/6Pq/5P2/PPPPP2P/RNBQKBNR w - - 1 3", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_09_forced_knight_capture", "position": "8/8/3n2N1/8/8/8/8/8 w - - 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_10_en_passant_mandatory_filter", "position": "2b5/8/4p3/3pP3/3P4/8/8/2B5 w - d6 0 1", "depth": 8, "signal": false, "activity_required": true},
+    {"id": "tt_11_claimable_repetition_history", "position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_12_forced_win_with_available_claim", "position": "7r/8/8/8/8/8/8/R7 w - - 0 1 moves a1a2 h8h7 a2a1 h7h8 a1a2 h8h7 a2a1 h7h8", "depth": 6, "signal": true, "activity_required": true},
+    {"id": "tt_13_rule50_child_boundary", "position": "6n1/8/8/8/8/8/8/RN6 b - - 99 1", "depth": 4, "signal": false, "activity_required": false},
+    {"id": "tt_14_no_legal_move_terminal", "position": "8/p7/8/P7/8/8/8/8 w - - 0 1", "depth": 4, "signal": false, "activity_required": false}
+  ],
+  "context_key_relations": {
+    "raw_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+    "claim_history_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1",
+    "rule50_zero_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1",
+    "rule50_ninety_nine_position": "6n1/8/8/8/8/8/8/RN6 b - - 99 1",
+    "en_passant_position": "8/8/8/3pPp2/4P3/8/8/8 w - d6 0 1",
+    "no_en_passant_position": "8/8/8/3pPp2/4P3/8/8/8 w - - 0 1",
+    "unique_history_transposition_a": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1 moves g1f3 g8f6 b1c3 b8c6",
+    "unique_history_transposition_b": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 1 moves b1c3 b8c6 g1f3 g8f6",
+    "count_two_history_position": "6n1/8/8/8/8/8/8/RN6 b - - 4 1 moves g8f6 b1c3 f6g8 c3b1",
+    "count_three_history_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1",
+    "required": {
+      "raw_repeat_equal": true,
+      "claim_repeat_equal": true,
+      "raw_vs_claim_different": true,
+      "rule50_zero_vs_ninety_nine_different": true,
+      "en_passant_vs_none_different": true,
+      "unique_history_transpositions_equal": true,
+      "count_two_vs_count_three_different": true
+    }
+  },
+  "isolation_cases": [
+    {"id": "claim_history_does_not_contaminate_raw", "warm_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1 moves g8f6 b1c3 f6g8 c3b1 g8f6 b1c3 f6g8 c3b1", "probe_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1", "depth": 5},
+    {"id": "rule50_history_does_not_contaminate_raw", "warm_position": "6n1/8/8/8/8/8/8/RN6 b - - 98 1", "probe_position": "6n1/8/8/8/8/8/8/RN6 b - - 0 1", "depth": 5}
+  ],
+  "decision_rule": {
+    "exact_score_type_score_bestmove_hash1_and_hash512": true,
+    "candidate_nodes_lte_comparator_every_case": true,
+    "minimum_hash512_aggregate_node_reduction_fraction": 0.15,
+    "hash512_aggregate_nodes_lte_hash1": true,
+    "activity_required_cases_have_probes_and_stores": true,
+    "minimum_signal_cases_with_cutoff": 2,
+    "aggregate_usable_hits_positive": true,
+    "aggregate_cutoffs_positive": true,
+    "maximum_tt_remaining_depth": 3,
+    "protocol_contract_exact": true,
+    "context_key_relations_exact": true,
+    "isolation_score_and_bestmove_exact": true,
+    "attempts": 1,
+    "optional_stopping": false,
+    "result_aware_changes": false,
+    "failure_action": "REJECT_LOCALLY_WITH_ENGLISH_POST_MORTEM"
+  },
+  "required_inherited_checks": [
+    "full fixture contract", "candidate UCI state and search verifier",
+    "legacy claim-at-horizon regression", "legacy loader positive and fail-closed negatives",
+    "legacy scalar full-refresh parity", "notation fixtures",
+    "deterministic exhaustive default bench at Hash 1", "dual clean reproducible build",
+    "Linux ASan and UBSan CI"
+  ],
+  "excluded_features": [
+    "orthodox search path", "TT move ordering", "aspiration", "SEE", "null move",
+    "qsearch", "LMR", "extensions", "history ordering", "additional pruning",
+    "evaluator changes", "rule changes", "result adjudication"
+  ],
+  "execution": {
+    "comparator_record": null,
+    "candidate_record": null,
+    "candidate_comparison_executed": false,
+    "games_executed": 0
+  },
+  "non_claims": [
+    "No r2 candidate implementation exists at preregistration.",
+    "No game, Elo, strength, speed, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "A pass admits only comparator, book, referee, and panel-harness certification before any three-time-control game."
+  ]
+}

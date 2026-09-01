@@ -60,6 +60,56 @@ constexpr TimePoint AntichessClockOverhead   = 20;
 constexpr int       AntichessClockHorizon    = 40;
 constexpr int       AntichessClockMaxDepth   = 64;
 constexpr u64       AntichessClockCheckNodes = 64;
+constexpr int       AntichessTTHorizon       = 3;
+
+constexpr Key antichess_tt_mix(Key value) {
+    value ^= value >> 30;
+    value *= 0xbf58476d1ce4e5b9ULL;
+    value ^= value >> 27;
+    value *= 0x94d049bb133111ebULL;
+    return value ^ (value >> 31);
+}
+
+Key antichess_tt_context_key(const Position& pos) {
+    const StateInfo* state = pos.state();
+    const int        end   = std::min(state->rule50, state->pliesFromNull);
+
+    std::vector<Key> history;
+    history.reserve(end + 1);
+    for (int distance = 0; distance <= end && state; ++distance, state = state->previous)
+        history.push_back(state->key);
+    std::sort(history.begin(), history.end());
+
+    Key key = antichess_tt_mix(pos.state()->key ^ 0x243f6a8885a308d3ULL);
+    key = antichess_tt_mix(key ^ antichess_tt_mix(Key(pos.rule50_count()) ^ 0x13198a2e03707344ULL));
+
+    usize retainedPairs = 0;
+    for (usize begin = 0; begin < history.size();)
+    {
+        usize endIndex = begin + 1;
+        while (endIndex < history.size() && history[endIndex] == history[begin])
+            ++endIndex;
+
+        const usize count = endIndex - begin;
+        if (count >= 2)
+        {
+            key = antichess_tt_mix(key ^ antichess_tt_mix(history[begin] ^ 0xa4093822299f31d0ULL)
+                                   ^ antichess_tt_mix(Key(count) ^ 0x082efa98ec4e6c89ULL));
+            ++retainedPairs;
+        }
+        begin = endIndex;
+    }
+
+    return antichess_tt_mix(key ^ antichess_tt_mix(Key(retainedPairs) ^ 0x452821e638d01377ULL));
+}
+
+constexpr Value antichess_value_to_tt(Value value, int ply) {
+    return is_win(value) ? value + ply : is_loss(value) ? value - ply : value;
+}
+
+constexpr Value antichess_value_from_tt(Value value, int ply) {
+    return is_win(value) ? value - ply : is_loss(value) ? value + ply : value;
+}
 
 constexpr TimePoint
 antichess_game_clock_budget(TimePoint remaining, TimePoint increment, int movesToGo) {
@@ -124,7 +174,7 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
       }));
 
     options.add(  //
-      "Hash", Option(1, 1, 1, [this](const Option& o) {
+      "Hash", Option(1, 1, 512, [this](const Option& o) {
           set_tt_size(o);
           return std::nullopt;
       }));
@@ -137,9 +187,12 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
 
     options.add("UCI_Variant", Option("antichess var antichess", "antichess"));
 
-    options.add(
-      "Antichess_Evaluator",
-      Option("engineering-neutral var engineering-neutral var legacy-v1", "engineering-neutral"));
+    options.add("Antichess_Evaluator",
+                Option("engineering-neutral var engineering-neutral var legacy-v1",
+                       "engineering-neutral", [this](const Option&) {
+                           search_clear();
+                           return std::nullopt;
+                       }));
 
     options.add("Antichess_Search",
                 Option("exhaustive-v1 var exhaustive-v1 var alpha-beta-v1", "exhaustive-v1"));
@@ -176,6 +229,8 @@ void Engine::go(Search::LimitsType& limits) {
                 updateContext.onBestmove(UCIEngine::move(Move::none()), "");
             return;
         }
+
+        tt.new_search();
 
         const bool explicitDepth = limits.depth > 0;
         const bool clocked       = useAlphaBeta && !explicitDepth
@@ -216,19 +271,58 @@ void Engine::go(Search::LimitsType& limits) {
             if (pos.antichess_automatic_draw())
                 return VALUE_DRAW;
 
-            const bool claimable = pos.antichess_threefold();
-            if (remaining == 0)
-            {
-                const Value leaf = useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
-                return antichess_claim_value(leaf, claimable);
-            }
-
-            Value best = claimable ? VALUE_DRAW : -VALUE_INFINITE;
+            const bool  claimable   = pos.antichess_threefold();
+            const Value alphaBefore = alpha;
+            Value       best        = claimable ? VALUE_DRAW : -VALUE_INFINITE;
             if (useAlphaBeta)
             {
                 alpha = std::max(alpha, best);
                 if (alpha >= beta)
                     return best;
+            }
+
+            const bool              ttEligible = useAlphaBeta && remaining <= AntichessTTHorizon;
+            Key                     ttKey      = 0;
+            std::optional<TTWriter> ttWriter;
+            if (ttEligible)
+            {
+                ++antichessTTStatistics.probes;
+                antichessTTStatistics.maxRemaining =
+                  std::max(antichessTTStatistics.maxRemaining, remaining);
+                ttKey                        = antichess_tt_context_key(pos);
+                auto [ttHit, ttData, writer] = tt.probe(ttKey);
+                ttWriter.emplace(writer);
+
+                if (ttHit)
+                {
+                    ++antichessTTStatistics.hits;
+                    if (ttData.depth >= remaining && is_valid(ttData.value)
+                        && ttData.bound != BOUND_NONE)
+                    {
+                        ++antichessTTStatistics.usableHits;
+                        const Value ttValue = antichess_value_from_tt(ttData.value, ply);
+                        if (ttData.bound == BOUND_EXACT
+                            || ((ttData.bound & BOUND_LOWER) && ttValue >= beta)
+                            || ((ttData.bound & BOUND_UPPER) && ttValue <= alpha))
+                        {
+                            ++antichessTTStatistics.cutoffs;
+                            return ttValue;
+                        }
+                    }
+                }
+            }
+
+            if (remaining == 0)
+            {
+                const Value leaf = useLegacyNetwork ? legacyNetwork.evaluate(pos) : VALUE_DRAW;
+                best             = std::max(best, leaf);
+                if (ttWriter)
+                {
+                    ttWriter->write(ttKey, antichess_value_to_tt(best, ply), false, BOUND_EXACT,
+                                    remaining, Move::none(), VALUE_NONE, tt.generation());
+                    ++antichessTTStatistics.stores;
+                }
+                return best;
             }
 
             for (Move move : orderedMoves(pos))
@@ -248,6 +342,16 @@ void Engine::go(Search::LimitsType& limits) {
                     if (alpha >= beta)
                         break;
                 }
+            }
+
+            if (ttWriter)
+            {
+                const Bound bound = best >= beta        ? BOUND_LOWER
+                                  : best <= alphaBefore ? BOUND_UPPER
+                                                        : BOUND_EXACT;
+                ttWriter->write(ttKey, antichess_value_to_tt(best, ply), false, bound, remaining,
+                                Move::none(), VALUE_NONE, tt.generation());
+                ++antichessTTStatistics.stores;
             }
             return best;
         };
@@ -286,7 +390,7 @@ void Engine::go(Search::LimitsType& limits) {
                 info.nodes    = 0;
                 info.nps      = 0;
                 info.pv       = fallback;
-                info.hashfull = 0;
+                info.hashfull = useAlphaBeta ? tt.hashfull() : 0;
                 updateContext.onUpdateFull(info);
             }
             if (updateContext.onBestmove)
@@ -371,7 +475,7 @@ void Engine::go(Search::LimitsType& limits) {
             info.nodes    = nodes;
             info.nps      = 1000 * nodes / info.timeMs;
             info.pv       = pv;
-            info.hashfull = 0;
+            info.hashfull = useAlphaBeta ? tt.hashfull() : 0;
             updateContext.onUpdateFull(info);
         }
         if (updateContext.onBestmove)
@@ -390,6 +494,7 @@ void Engine::search_clear() {
 
     tt.clear(threads);
     threads.clear();
+    reset_antichess_tt_statistics();
 
     // TODO: does not work with multiple instances
     // The exact Antichess profile has no certified tablebase backend.
@@ -476,7 +581,16 @@ std::string Engine::antichess_info() const {
        << "|network_format=" << (legacyNetwork.loaded() ? "legacy-v1" : "none") << "|network_file="
        << (legacyNetwork.loaded() ? legacyNetwork.source_path().filename().u8string() : "none")
        << "|network_description_bytes="
-       << (legacyNetwork.loaded() ? legacyNetwork.description().size() : 0);
+       << (legacyNetwork.loaded() ? legacyNetwork.description().size() : 0)
+       << "|tt_enabled=" << (options["Antichess_Search"] == "alpha-beta-v1")
+       << "|tt_horizon=" << AntichessTTHorizon << "|tt_context_key=0x" << std::hex
+       << antichess_tt_context_key(pos) << std::dec << "|tt_probes=" << antichessTTStatistics.probes
+       << "|tt_hits=" << antichessTTStatistics.hits
+       << "|tt_usable_hits=" << antichessTTStatistics.usableHits
+       << "|tt_cutoffs=" << antichessTTStatistics.cutoffs
+       << "|tt_stores=" << antichessTTStatistics.stores
+       << "|tt_max_remaining=" << antichessTTStatistics.maxRemaining
+       << "|tt_hashfull=" << tt.hashfull();
 
     return ss.str();
 }
@@ -524,7 +638,10 @@ void Engine::resize_threads() {
 void Engine::set_tt_size(usize mb) {
     wait_for_search_finished();
     tt.resize(mb, threads);
+    reset_antichess_tt_statistics();
 }
+
+void Engine::reset_antichess_tt_statistics() { antichessTTStatistics = {}; }
 
 void Engine::set_ponderhit(bool b) { threads.main_manager()->ponder = b; }
 
@@ -544,6 +661,8 @@ void Engine::verify_network() const {
 }
 
 std::optional<std::string> Engine::load_legacy_network(const std::filesystem::path& file) {
+
+    search_clear();
 
     if (file.empty())
     {
