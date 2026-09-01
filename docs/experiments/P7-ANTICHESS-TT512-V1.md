@@ -2,8 +2,12 @@
 
 ## Status
 
-**PREREGISTERED. No candidate implementation exists, no comparator record has
-been generated, and the one-shot candidate comparison has not been executed.**
+**REJECTED_ENGINEERING before candidate implementation, build, or comparison.**
+
+The no-TT comparator record was completed and frozen, but design review before
+the first candidate commit found that the ordered-history key below prevents
+legitimate transposition reuse by construction. The one-shot candidate
+comparison was never executed.
 
 This is a deterministic fixed-work engineering experiment. It is not Elo,
 strength, speed, OpenBench, DATAGEN, model-selection, release, or monitoring
@@ -223,3 +227,20 @@ A PASS admits only comparator/book/referee certification and sealing of the
 same-network three-time-control panel. It does not establish strength, make
 `alpha-beta-v1` the default, start a game, authorize OpenBench, or authorize a
 release.
+
+## Recorded rejection
+
+The comparator phase passed 14 cases with 1,453,898 aggregate nodes; its local
+record SHA-256 is
+`4ca0fbc94eccf0d28e58a6c89b3a5c02495c3ebffb4063abd283a1445af91766`.
+
+The candidate hypothesis was then rejected without a build or candidate
+search. Two different paths that reach a true transposition necessarily have
+different ordered state sequences. Including the full ordered sequence in the
+TT key therefore makes those paths distinct; useful hits could arise only from
+identical paths or accidental collisions, contradicting the preregistered hit,
+cutoff, and 15% node-reduction requirements.
+
+No threshold, corpus, or key definition was changed in place. A successor
+hypothesis must use a new preregistration and prove a bounded history horizon
+before any candidate code. This rejection is tracked as `INC-SEARCH-002`.

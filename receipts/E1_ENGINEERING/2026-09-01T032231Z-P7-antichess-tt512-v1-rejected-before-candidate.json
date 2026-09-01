@@ -1,0 +1,59 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-09-01T03:22:31Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "hypothesis_outcome": "REJECTED_ENGINEERING",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_TT512_V1_DESIGN_REJECTION_BEFORE_CANDIDATE_NOT_STRENGTH",
+  "experiment_id": "p7-antichess-tt512-v1-r1",
+  "preregistration": {
+    "commit": "7368cbdc2dec9a41340f1e6e1f843109f4965030",
+    "tree": "29f03bfc65aa058b37f33066eb6f0e2ba131eb58",
+    "receipt_sha256": "c1789db529d6a1155d81c6cb705e6bd48eaf46a1407c7b1a75767507fc2fd478"
+  },
+  "completed_comparator": {
+    "freeze_commit": "24d344bbdd611d6612b2c133ade1c86e9f553447",
+    "freeze_tree": "37df28aae991e7968f6f0c99c9a12ecd3a526d32",
+    "receipt_sha256": "51dc9b0afc75259690b36a3fca507320debd98f399e7114171918147bfb3279e",
+    "record_sha256": "4ca0fbc94eccf0d28e58a6c89b3a5c02495c3ebffb4063abd283a1445af91766",
+    "cases": 14,
+    "aggregate_nodes": 1453898,
+    "outcome": "PASS_NO_TT_FIXED_WORK_BASELINE"
+  },
+  "rejection": {
+    "incident": "INC-SEARCH-002",
+    "symptom": "The key contract included the complete ordered reversible history while the same experiment required ordinary transposition hits and cutoffs.",
+    "false_inference": "A fully path-specific ordered history key could still identify a position reached through a different move order as the same transposition.",
+    "cause": "Different paths necessarily contain different ordered intermediate states, so the frozen key separates every legitimate path transposition by design.",
+    "prevention": "Require a semantic-equivalence and reuse-equivalence proof before freezing a TT context key; use a separately preregistered bounded history abstraction rather than changing an immutable contract in place.",
+    "gate": "P7_P14_P15",
+    "decision": "REJECT_WITHOUT_RETUNING_OR_CANDIDATE_EXECUTION"
+  },
+  "execution_status": {
+    "candidate_source_commit": null,
+    "candidate_tree": null,
+    "candidate_binary": null,
+    "candidate_builds": 0,
+    "candidate_searches": 0,
+    "candidate_comparison_executed": false,
+    "candidate_attempt_consumed": false,
+    "games_executed": 0,
+    "uncommitted_design_probe_fully_reverted": true,
+    "worktree_clean_after_reversion": true
+  },
+  "authority": {
+    "external_review": "UNAVAILABLE_BEFORE_SUBMISSION",
+    "fallback_used": false,
+    "owner_authorized_continuation": true
+  },
+  "non_claims": [
+    "The comparator result is not a candidate or strength result.",
+    "No candidate implementation, build, comparison, game, Elo, speed, OpenBench, DATAGEN, model-selection, release, or monitoring evidence was created.",
+    "This rejection does not alter the closed alpha-beta or clocked-iterative results."
+  ],
+  "next_safe_action": "Commit this rejection and incident, then create a new r2 preregistration with a proved remaining-depth horizon and no candidate code."
+}
