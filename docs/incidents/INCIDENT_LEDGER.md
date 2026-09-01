@@ -302,3 +302,52 @@
   the nonexistent basename must retain the `antichess` selector before a
   fail-closed load assertion is meaningful.
 - **Gate:** P5, P14, and P15.
+
+## INC-S3-003 — Two Windows host names disagreed at authorization validation
+
+- **Symptom:** the first final authorization was rejected before runner
+  execution because its host was `DESKTOP-XD38UAF`, while the frozen runner
+  resolved `DESKTOP-OS8DSOT`. No output root or strength game was created.
+- **False inference:** either the host changed or a matching Windows
+  `COMPUTERNAME` value was sufficient for every runtime identity check.
+- **Cause:** the authorization used the Windows environment/CIM alias, while
+  the runner's normative CPython 3.12 `platform.node()` source returned a
+  different name for the same machine.
+- **Prevention:** derive authorization and lease host identity from the same
+  pinned runtime used by the runner, record other host names only as aliases,
+  and require a dry validation before any engine or output creation.
+- **Gate:** P7, P14, and P15.
+
+## INC-S3-004 — A PSReadLine rendering failure did not prove launch failure
+
+- **Symptom:** submitting the long frozen runner command caused repeated
+  `ArgumentOutOfRangeException` failures while PSReadLine redrew the prompt.
+- **False inference:** a corrupted interactive prompt meant the command had
+  not executed and could safely be submitted again.
+- **Cause:** PSReadLine's display layer failed after PowerShell had accepted the
+  command; the runner and its owned Cute Chess tree were already active and
+  writing pair evidence.
+- **Prevention:** after any ambiguous wrapper or terminal failure, inspect the
+  create-once output root, exact process tree, lease, and ledger before retrying.
+  Prefer a short noninteractive wrapper for long frozen invocations and never
+  duplicate a command while any owned evidence or process exists.
+- **Gate:** P7, P14, and P16.
+
+## INC-STRENGTH-002 — Source freshness and specialization did not imply strength
+
+- **Symptom:** with identical `dd3c` network bytes, Hash 512, one thread, the
+  same openings, and the certified referee, the candidate scored 1 win and 101
+  losses at VSTC and hit the preregistered 0.0% loss gate.
+- **False inference:** starting from current official Stockfish and removing
+  multi-variant overhead made a win over Fairy-Stockfish likely before the
+  dedicated search had comparable strength machinery.
+- **Cause:** source ancestry and specialization were mistaken for effective
+  search architecture. The candidate's deliberately isolated alpha-beta,
+  iterative-deepening, and bounded-TT work had proved correctness, scaling, and
+  fixed-work reduction, not whole-engine strength. The match does not establish
+  which individual search component caused the gap.
+- **Prevention:** keep correctness, capability, speed, and strength evidence
+  separate; preregister whole-engine gates; reject failed candidates without
+  retuning; and admit a future panel only after one structural hypothesis at a
+  time passes independent engineering fixtures and untouched validation.
+- **Gate:** P7, P14, and P15.
