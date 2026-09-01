@@ -2,7 +2,7 @@
 
 ## Status
 
-**LOCAL ONE-SHOT CANDIDATE COMPARISON PASS. INHERITED CORRECTNESS, OFFICIAL CI,
+**LOCAL ONE-SHOT COMPARISON, INHERITED CORRECTNESS, AND OFFICIAL CI PASS.
 REVIEW, MERGE, AND POST-MERGE CLOSURE REMAIN OPEN.**
 
 This is deterministic fixed-work engineering evidence only. It is not speed,
@@ -213,3 +213,17 @@ The one-shot attempt is consumed and must not be repeated or retuned.
 This result admits inherited local correctness and official CI only. It is not
 timing, Elo, strength, OpenBench, DATAGEN, model-selection, release, or
 monitoring evidence, and it does not admit the three-time-control panel.
+
+## Inherited correctness and official CI
+
+The exact frozen Windows candidate subsequently passed the complete inherited
+local fixture, UCI, deterministic-bench, legacy-loader, mutation-negative, and
+legacy scalar-parity suites. Official workflow run `33468543528` passed both
+the reproducible-build job `99733354223` and Linux ASan/UBSan job
+`99733353989` at exact head `0c95c0e6bb9edfeb6dca3a2ec2abbc8fa33e7ea3`.
+The downloaded Linux artifact contained two byte-identical binaries with
+SHA-256
+`7d4634daf2760757dfa75c965ea2d9d6c152f2beea5b9bc9bc07d1edb48101c8`.
+
+No pull request, merge, post-merge CI, game, or strength result is implied by
+these checks.
