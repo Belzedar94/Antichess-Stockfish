@@ -271,3 +271,34 @@
   admitting a build, and abort before producing or comparing a candidate when
   the pinned flags are absent.
 - **Gate:** P3, P7, P14, and P15.
+
+## INC-BUILD-004 — A repository-local detached worktree exceeded the Windows path limit
+
+- **Symptom:** `git worktree add` failed before checkout while materializing
+  long receipt filenames under a deeply nested `.local/worktrees` path. No
+  compiler process started.
+- **False inference:** keeping an isolated worktree inside the canonical
+  repository automatically made its Windows path safe.
+- **Cause:** the canonical repository path plus the proposed worktree suffix
+  left insufficient path budget for tracked long filenames.
+- **Prevention:** calculate or probe checkout path budget before a clean build,
+  use an explicit short detached-worktree root when required, check every
+  native Git exit code before continuing, and preserve checkout failures
+  separately from compiler evidence.
+- **Gate:** P3, P14, and P15.
+
+## INC-S3-002 — A missing-network probe bypassed Fairy-Stockfish's variant selector
+
+- **Symptom:** the first S3 certification stopped when the comparator accepted
+  `missing-fsf-network.nnue`, announced classical evaluation, and returned a
+  best move. No legal-set audit or game ran.
+- **False inference:** any nonexistent `.nnue` path exercised the comparator's
+  required-network failure path.
+- **Cause:** Fairy-Stockfish first selects a variant network by matching the
+  filename against `antichess` or its configured alias. The synthetic basename
+  matched neither, so NNUE was intentionally deselected before file loading.
+- **Prevention:** negative assets must preserve every routing predicate of the
+  positive asset and mutate only the condition under test. For this comparator,
+  the nonexistent basename must retain the `antichess` selector before a
+  fail-closed load assertion is meaningful.
+- **Gate:** P5, P14, and P15.

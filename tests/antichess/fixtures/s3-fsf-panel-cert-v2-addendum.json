@@ -1,0 +1,35 @@
+{
+  "change_control": {
+    "all_other_v1_inputs_and_decision_rules_unchanged": true,
+    "changed_field": "comparator_negative_network_basename",
+    "new_value": "antichess-missing-fsf-network.nnue",
+    "old_value": "missing-fsf-network.nnue",
+    "reason": "Preserve the comparator's antichess filename-routing predicate while testing only missing-file handling."
+  },
+  "execution": {
+    "certification_execution_count": 0,
+    "plumbing_smoke_games": 0,
+    "strength_games": 0
+  },
+  "predecessor": {
+    "failure_artifact": ".local/evidence/S3-panel-input-cert-20260901T051551Z/certification-failure.json",
+    "failure_artifact_sha256": "f3760105dd35c14a252b7f21b1d876aaa44df3b7de8579bd4168b258b9574a46",
+    "failure_classification": "HARNESS_NEGATIVE_INPUT_DID_NOT_PRESERVE_VARIANT_SELECTOR",
+    "v1_implementation_freeze_sha256": "db366d3aa507857f2ce43d446ee090a69663034fd5482ca539498198a700d687",
+    "v1_preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee"
+  },
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:17:14Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_S3_FSF_PANEL_CERT_V2_ADDENDUM",
+  "schema_version": 1,
+  "status": "PREREGISTERED_UNEXECUTED",
+  "unchanged_identities": {
+    "book_sha256": "6ec92e4e39a86f8d74504f7556fb27c02fe50fb2cac04951eb5ec01c8f1c2ec2",
+    "candidate_binary_sha256": "5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213",
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "comparator_binary_sha256": "ee0081d77a555ef073e56a04fff604af8d6408a1e2d0afc2e61cea23c11bb902",
+    "network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc"
+  }
+}

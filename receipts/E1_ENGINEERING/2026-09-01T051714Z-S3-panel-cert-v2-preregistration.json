@@ -1,0 +1,37 @@
+{
+  "authorized_change": {
+    "field": "comparator_negative_network_basename",
+    "new_value": "antichess-missing-fsf-network.nnue",
+    "old_value": "missing-fsf-network.nnue"
+  },
+  "certification_execution_count": 0,
+  "decision_rule": "All v1 checks remain mandatory; any v2 failure closes the panel and no v2 retry is allowed.",
+  "documents": {
+    "addendum_sha256": "21f571ffc89b034398361a84afe56272a7382b6ce3b870c33afb1bfb68312c7e",
+    "experiment_sha256": "8bfba596851dba6b9ae4e1d0a46762736ea42c9f7ca4b839f75f51ea7cbabc93",
+    "incident_ledger_sha256": "4c403fb9a845c658cedd1651547620c3b24a12351091148dafa8a884325f741f",
+    "v1_failure_receipt_sha256": "0750d484113eccfba2434ae06dd12fb1368db0651b0eede0c5dab918ea1e6302",
+    "v1_preregistration_sha256": "0aa9229ba4eb7c5ed0fc851774848ea6642856666c76e0947e36f0db72aab9ee"
+  },
+  "frozen_unchanged_inputs": {
+    "book_sha256": "6ec92e4e39a86f8d74504f7556fb27c02fe50fb2cac04951eb5ec01c8f1c2ec2",
+    "build_manifest_sha256": "89287356a40d3e10983b3ba96cc401dc205a4acef3219217de2b47147087e80d",
+    "candidate_binary_sha256": "5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213",
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "comparator_binary_sha256": "ee0081d77a555ef073e56a04fff604af8d6408a1e2d0afc2e61cea23c11bb902",
+    "network_sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+    "referee": "AC_REFEREE_V1"
+  },
+  "non_claims": [
+    "V2 is preregistered before its one-line implementation change.",
+    "No v2 certification probe, plumbing smoke, strength game, Elo, LOS, OpenBench, DATAGEN, release, or monitoring evidence exists."
+  ],
+  "plumbing_smoke_games": 0,
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:17:14Z",
+  "schema": "ANTICHESS_E1_S3_PANEL_CERT_V2_PREREGISTRATION",
+  "schema_version": 1,
+  "status": "PREREGISTERED_UNIMPLEMENTED_UNEXECUTED",
+  "strength_games": 0
+}
