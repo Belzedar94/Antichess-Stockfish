@@ -1,0 +1,172 @@
+{
+  "receipt_version": 1,
+  "receipt_class": "E1_ENGINEERING",
+  "recorded_at_utc": "2026-09-01T03:30:27Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "state_after_receipt": "GO_NEXT_PHASE",
+  "gate": "P7",
+  "gate_status": "IN_PROGRESS",
+  "evidence_class": "P7_ANTICHESS_TT512_R2_PREREGISTRATION_NOT_STRENGTH",
+  "experiment_id": "p7-antichess-tt512-v1-r2",
+  "source_identity": {
+    "official_stockfish_commit": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "candidate_parent_commit": "157213b8d6a0efca33d847fff90bf70262c985ae",
+    "candidate_parent_tree": "632d1483a9c08f362649ddc11149caedeb7c3405",
+    "clocked_engine_merge": "89bccf20f0ed197125c8e92b36057ec2e9373a99",
+    "comparator_implementation_commit": "aea46065e72ebcb11f28eb9e8b1bacfad258f535",
+    "comparator_windows_binary_sha256": "ba17e95b257528fa3eec28b5f0e8e16d1c856dffc701117fe704d992086f4b0b",
+    "comparator_windows_binary_bytes": 4234769,
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "candidate_windows_binary_sha256": null,
+    "official_stockfish_is_ancestor": true,
+    "fairy_stockfish_comparator_is_ancestor": false,
+    "src_diff_comparator_implementation_to_parent": "EMPTY"
+  },
+  "prior_rejection": {
+    "experiment_id": "p7-antichess-tt512-v1-r1",
+    "incident": "INC-SEARCH-002",
+    "outcome": "REJECTED_ENGINEERING_BEFORE_CANDIDATE",
+    "cause": "The ordered complete-history key separated every legitimate path transposition by design.",
+    "r2_is_new_hypothesis": true
+  },
+  "frozen_artifacts": {
+    "document": {
+      "path": "docs/experiments/P7-ANTICHESS-TT512-V1-R2.md",
+      "sha256": "a64bf0a6806e2cef77b6c2530bc67c942567e1aa65635cf1c3a59602038d0a85",
+      "bytes": 8638
+    },
+    "fixture": {
+      "path": "tests/antichess/fixtures/p7-antichess-tt512-v1-r2-prereg.json",
+      "sha256": "ef511070204d17ef29e6d333a89b9b3b9513a5d648d98802526294a95928af87",
+      "bytes": 10083,
+      "fixed_work_cases": 14,
+      "signal_cases": 6,
+      "isolation_cases": 2
+    },
+    "runner": {
+      "path": "tools/search/verify_antichess_tt512_v1.py",
+      "sha256": "fdfcb26ebbeb8bc02662a2fddc8b4db6d4df21819f09e691aeac784de6634803",
+      "bytes": 31587,
+      "syntax_parse": "PASS",
+      "help_probe": "PASS_NO_ENGINE_EXECUTION"
+    },
+    "external_network": {
+      "sha256": "dd3cbe53cd4e1ca5b7f41cf090873ebe732d84d27f9ed7b14c62ff7a633712cc",
+      "distribution": "LOCAL_ONLY_NO_REDISTRIBUTION_DEFAULT_EMBEDDING_OR_ALIAS"
+    }
+  },
+  "one_hypothesis": {
+    "name": "three_ply_history_equivalent_antichess_tt512_bound_cutoffs",
+    "independent_variable": "Antichess-specific TT probe, store, and cutoff reuse at remaining depths zero through three plus honest UCI Hash capacity through 512 MiB",
+    "fixed_invariants": [
+      "LICHESS_ANTICHESS_V1 rules and terminal precedence",
+      "alpha-beta-v1 recursive semantics",
+      "independent full-window root searches",
+      "sorted UCI root and internal move order",
+      "mandatory-capture legal move generator",
+      "claimable draw virtual score-zero option",
+      "legacy-v1 evaluator with exact external dd3c bytes",
+      "Threads 1",
+      "exhaustive-v1 remains the default and TT-free"
+    ],
+    "excluded_features": [
+      "orthodox search path",
+      "TT move ordering",
+      "aspiration",
+      "SEE",
+      "null move",
+      "qsearch",
+      "LMR",
+      "extensions",
+      "history ordering",
+      "additional pruning",
+      "evaluator changes",
+      "rule changes",
+      "result adjudication"
+    ]
+  },
+  "bounded_history_proof": {
+    "minimum_identical_full_position_cycle_plies": 4,
+    "maximum_tt_remaining_depth": 3,
+    "unique_historical_state_maximum_future_encounters": 1,
+    "unique_historical_state_maximum_count_after_horizon": 2,
+    "threefold_threshold": 3,
+    "fivefold_threshold": 5,
+    "states_seen_at_least_twice_retained_with_exact_counts": true,
+    "terminal_automatic_draw_and_claim_before_tt": true,
+    "probe_or_store_above_horizon": false
+  },
+  "history_context_contract": {
+    "key_width_bits": 64,
+    "canonical_order": true,
+    "inputs": [
+      "current raw StateInfo key",
+      "exact rule50",
+      "sorted raw-key and exact-count pairs for reversible-history states with count at least two",
+      "retained pair count"
+    ],
+    "unique_history_states_omitted": true,
+    "rolling_state_added": false,
+    "null_move_added": false,
+    "required_positive_relation": "equal final board and rule50 reached through different unique-history move orders produce equal context keys",
+    "required_negative_relations": [
+      "claim history",
+      "exact repeated-state count",
+      "rule50",
+      "en-passant"
+    ]
+  },
+  "fixed_decision_rule": {
+    "exact_score_type_score_bestmove_hash1_and_hash512": true,
+    "candidate_nodes_lte_comparator_every_case": true,
+    "minimum_hash512_aggregate_node_reduction_fraction": 0.15,
+    "hash512_aggregate_nodes_lte_hash1": true,
+    "activity_required_cases_have_probes_and_stores": true,
+    "minimum_signal_cases_with_cutoff": 2,
+    "aggregate_usable_hits_positive": true,
+    "aggregate_cutoffs_positive": true,
+    "maximum_tt_remaining_depth": 3,
+    "hash_contract": "default 1 min 1 max 512; invalid 0 and 513 ignored",
+    "context_key_relations_exact": true,
+    "history_and_rule50_isolation_exact": true,
+    "candidate_comparison_attempts": 1,
+    "optional_stopping": false,
+    "result_aware_extension": false,
+    "failure_action": "REJECT_LOCALLY_WITH_ENGLISH_POST_MORTEM"
+  },
+  "execution_status": {
+    "candidate_code_exists": false,
+    "r2_comparator_baseline_record": null,
+    "candidate_comparison_record": null,
+    "candidate_comparison_executed": false,
+    "engine_or_search_execution_during_preregistration": false,
+    "games_executed": 0
+  },
+  "external_review": {
+    "status": "UNAVAILABLE_BEFORE_SUBMISSION",
+    "verdict": null,
+    "fallback_used": false,
+    "owner_authorized_continuation": true
+  },
+  "required_before_implementation": [
+    "commit and push this immutable r2 preregistration",
+    "recheck exclusive-host ownership",
+    "run the r2 comparator-baseline phase once against the exact frozen no-TT Windows binary",
+    "freeze the r2 comparator record, transcript, invocation, and SHA-256 in an immutable E1 addendum"
+  ],
+  "required_after_implementation": [
+    "freeze candidate commit, tree, toolchain, dual clean build logs, and binary hash before comparison",
+    "execute the candidate-compare phase exactly once on an exclusive host",
+    "run the complete inherited correctness, loader, parity, deterministic bench, reproducibility, and sanitizer gates",
+    "non-draft pull request, premerge review, merge, winner ancestry, and postmerge CI"
+  ],
+  "non_claims": [
+    "No r2 candidate implementation exists in this receipt.",
+    "No r2 comparator search or candidate comparison has been executed by this preregistration.",
+    "No game, Elo, strength, speed, OpenBench, DATAGEN, model-selection, release, or monitoring inference is permitted.",
+    "A pass admits only comparator, book, referee, and panel-harness certification before any three-time-control game."
+  ],
+  "next_safe_action": "Commit and push this r2 preregistration, then acquire a fixed-work lease and execute only the frozen r2 comparator-baseline phase."
+}

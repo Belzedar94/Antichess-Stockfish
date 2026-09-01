@@ -30,6 +30,7 @@ TT_COUNTER_FIELDS = (
     "tt_usable_hits",
     "tt_cutoffs",
     "tt_stores",
+    "tt_max_remaining",
     "tt_hashfull",
 )
 
@@ -261,6 +262,7 @@ def run_cases(
     timeout: float,
 ) -> tuple[list[dict[str, Any]], list[str]]:
     records: list[dict[str, Any]] = []
+    maximum_tt_remaining = int(fixture["configuration"]["maximum_tt_remaining_depth"])
     with UciEngine(executable, timeout) as engine:
         expected_hash = (1, 1, 512) if expect_tt else (1, 1, 1)
         require(engine.hash_contract() == expected_hash, "Hash option contract drift")
@@ -270,9 +272,17 @@ def run_cases(
             if expect_tt:
                 fields = result["diagnostic"]
                 require(fields["tt_enabled"] == "1", f"{case['id']}: TT is not enabled")
+                require(
+                    int(fields["tt_horizon"]) == maximum_tt_remaining,
+                    f"{case['id']}: TT horizon drift",
+                )
                 require(int(fields["hash_mb"]) == hash_mib, f"{case['id']}: Hash drift")
                 for name in TT_COUNTER_FIELDS:
                     require(name in fields, f"{case['id']}: missing {name}")
+                require(
+                    int(fields["tt_max_remaining"]) <= maximum_tt_remaining,
+                    f"{case['id']}: TT used above the frozen horizon",
+                )
                 require(
                     result["info_hashfull"] == int(fields["tt_hashfull"]),
                     f"{case['id']}: hashfull diagnostic mismatch",
@@ -301,6 +311,7 @@ def compare_mode(
     usable_hits = 0
     cutoffs = 0
     activity_all = True
+    maximum_tt_remaining_observed = 0
     for expected, actual in zip(baseline, observed, strict=True):
         require(expected["id"] == actual["id"], "case order or identity mismatch")
         exact = exact_result(expected, actual)
@@ -317,6 +328,9 @@ def compare_mode(
             case_cutoffs = int(fields["tt_cutoffs"])
             usable_hits += usable
             cutoffs += case_cutoffs
+            maximum_tt_remaining_observed = max(
+                maximum_tt_remaining_observed, int(fields["tt_max_remaining"])
+            )
             if actual["activity_required"]:
                 activity = probes > 0 and stores > 0
                 activity_all = activity_all and activity
@@ -340,6 +354,7 @@ def compare_mode(
         "aggregate_usable_hits": usable_hits,
         "aggregate_cutoffs": cutoffs,
         "signal_cases_with_cutoff": signal_cutoff_cases,
+        "maximum_tt_remaining_observed": maximum_tt_remaining_observed,
         "cases": cases,
     }
 
@@ -358,12 +373,18 @@ def verify_context_relations(
         r50_99 = engine.context_key(str(contract["rule50_ninety_nine_position"]))
         ep = engine.context_key(str(contract["en_passant_position"]))
         no_ep = engine.context_key(str(contract["no_en_passant_position"]))
+        unique_a = engine.context_key(str(contract["unique_history_transposition_a"]))
+        unique_b = engine.context_key(str(contract["unique_history_transposition_b"]))
+        count_two = engine.context_key(str(contract["count_two_history_position"]))
+        count_three = engine.context_key(str(contract["count_three_history_position"]))
         relations = {
             "raw_repeat_equal": raw_a == raw_b,
             "claim_repeat_equal": claim_a == claim_b,
             "raw_vs_claim_different": raw_a != claim_a,
             "rule50_zero_vs_ninety_nine_different": r50_zero != r50_99,
             "en_passant_vs_none_different": ep != no_ep,
+            "unique_history_transpositions_equal": unique_a == unique_b,
+            "count_two_vs_count_three_different": count_two != count_three,
         }
         require(relations == contract["required"], "context-key relation drift")
         values = {
@@ -373,6 +394,10 @@ def verify_context_relations(
             "rule50_ninety_nine": r50_99,
             "en_passant": ep,
             "no_en_passant": no_ep,
+            "unique_history_transposition_a": unique_a,
+            "unique_history_transposition_b": unique_b,
+            "count_two_history": count_two,
+            "count_three_history": count_three,
         }
         transcript = list(engine.transcript)
     return {"passed": True, "relations": relations, "values": values}, transcript
@@ -420,12 +445,14 @@ def verify_protocol_and_resets(
     require(not missing_network.exists(), "negative EvalFile probe unexpectedly exists")
     start = str(fixture["cases"][0]["position"])
     records: dict[str, Any] = {}
+    expected_horizon = int(fixture["configuration"]["maximum_tt_remaining_depth"])
     with UciEngine(executable, timeout) as engine:
         require(engine.hash_contract() == (1, 1, 512), "candidate Hash declaration drift")
         engine.send("position startpos")
         initial = engine.diagnostic()
         require(initial["search"] == "exhaustive-v1", "default search changed")
         require(initial["tt_enabled"] == "0", "default exhaustive search enabled TT")
+        require(int(initial["tt_horizon"]) == expected_horizon, "TT horizon drift")
         require(int(initial["hash_mb"]) == 1, "default Hash changed")
         require(counters_are_zero(initial), "initial TT counters are not zero")
 
@@ -533,10 +560,10 @@ def main() -> int:
     output_path = args.output.resolve()
     runner_path = Path(__file__).resolve()
     record: dict[str, Any] = {
-        "schema": "ANTICHESS_P7_TT512_V1_RESULT",
+        "schema": "ANTICHESS_P7_TT512_V1_R2_RESULT",
         "schema_version": 1,
         "phase": args.phase,
-        "experiment_id": "p7-antichess-tt512-v1-r1",
+        "experiment_id": "p7-antichess-tt512-v1-r2",
         "evidence_class": "DETERMINISTIC_FIXED_WORK_ENGINEERING_NOT_STRENGTH",
         "fixture_sha256": sha256(fixture_path),
         "runner_sha256": sha256(runner_path),
@@ -558,7 +585,11 @@ def main() -> int:
     try:
         require(args.timeout_seconds > 0, "timeout must be positive")
         fixture = load_json(fixture_path)
-        require(fixture.get("schema") == "ANTICHESS_P7_TT512_V1_PREREG", "wrong fixture")
+        require(
+            fixture.get("schema") == "ANTICHESS_P7_TT512_V1_R2_PREREG",
+            "wrong fixture",
+        )
+        require(fixture.get("experiment_id") == record["experiment_id"], "experiment drift")
         require(
             fixture.get("status") == "PREREGISTERED_INPUTS_UNEXECUTED",
             "fixture status drift",
@@ -647,6 +678,10 @@ def main() -> int:
                     hash512_cmp["aggregate_cutoffs"] > 0,
                     hash512_cmp["signal_cases_with_cutoff"]
                     >= int(rule["minimum_signal_cases_with_cutoff"]),
+                    hash1_cmp["maximum_tt_remaining_observed"]
+                    <= int(rule["maximum_tt_remaining_depth"]),
+                    hash512_cmp["maximum_tt_remaining_observed"]
+                    <= int(rule["maximum_tt_remaining_depth"]),
                 )
             )
             record["candidate_hash1"] = {"records": hash1, "comparison": hash1_cmp}
@@ -660,6 +695,13 @@ def main() -> int:
                 "required_reduction_fraction": float(
                     rule["minimum_hash512_aggregate_node_reduction_fraction"]
                 ),
+                "maximum_tt_remaining_depth": int(rule["maximum_tt_remaining_depth"]),
+                "hash1_maximum_tt_remaining_observed": hash1_cmp[
+                    "maximum_tt_remaining_observed"
+                ],
+                "hash512_maximum_tt_remaining_observed": hash512_cmp[
+                    "maximum_tt_remaining_observed"
+                ],
             }
             require(comparison_passed, "fixed-work TT decision rule failed")
 
