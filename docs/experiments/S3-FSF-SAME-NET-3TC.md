@@ -2,13 +2,16 @@
 
 ## Status
 
-**PREREGISTERED; RUNNER NOT IMPLEMENTED; NO STRENGTH GAME AUTHORIZED OR RUN.**
+**RUNNER IMPLEMENTED AND FROZEN; REVIEW, MERGE, POST-MERGE CI, AND FINAL
+AUTHORIZATION PENDING. NO STRENGTH GAME AUTHORIZED OR RUN.**
 
-The exact engine capabilities and panel inputs are closed. This document now
-freezes the final experiment design before implementation of the project-local
-runner. A separate immutable authorization containing the reviewed runner
-hash, test hash, merge identity, post-merge CI, output root, and active host
-lease is still mandatory before the first strength game.
+The exact engine capabilities, panel inputs, and experiment design are closed.
+The project-local runner is implemented at `f9b41392b4df0811c6636ab352a8bee0edd02bac`.
+Its authoritative pre-review freeze addendum has SHA-256
+`11df8fca8544be75c08f540b13861e6f0c788d07d5390ba6ffdac314c2056cab`.
+A separate immutable authorization containing the reviewed runner hash, test
+hash, merge identity, post-merge CI, output root, and active host lease is still
+mandatory before the first strength game.
 
 The objective is a whole-engine comparison between the specialized
 Antichess-Stockfish candidate and the current Fairy-Stockfish master, with the
@@ -105,11 +108,11 @@ The schedule is reconstructed from the external book and must match the
 certified identity above. Its FEN content remains local evidence because the
 book is not redistributable.
 
-## Planned runner and evidence
+## Implemented runner and evidence
 
-The planned Windows-only standard-library runner is
+The Windows-only standard-library runner is
 `tools/strength/run_fsf_same_net_3tc_v1.py`, with tests at
-`tests/antichess/test_s3_strength_runner_v1.py`. It will launch the exact
+`tests/antichess/test_s3_strength_runner_v1.py`. It launches the exact
 patched Cute Chess referee once per pair, at concurrency one, with a 200 ms
 time margin and a 900-second no-completed-pair watchdog. It may terminate only
 its own newly created controller and engine descendants, with a bounded
@@ -118,9 +121,11 @@ its own newly created controller and engine descendants, with a bounded
 Each pair directory must contain its exact opening, launch record, raw UCI log,
 PGN, and referee audit. Each TC must contain an append-only pair ledger, WLD,
 pentanomial, Elo, confidence interval, LOS, defect counts, and terminal result.
-The campaign must also contain preflight and postflight fingerprints, aggregate
-result, and lease closure. Output roots are create-once and cannot be
-overwritten.
+The campaign must also contain preflight and postflight fingerprints and its
+aggregate result. After the runner exits, the operator-owned finalization step
+must create `lease-end.json` in that output root; this closure cannot authorize
+games and must never be written before the runner finishes. Output roots are
+create-once and cannot be overwritten.
 
 Every PGN move is replayed through `AC_REFEREE_V1`; the final position and
 winner must agree with the PGN. There is no score-based draw or resign
@@ -140,12 +145,12 @@ authorization.
 
 ## Remaining admission gate
 
-This preregistration freezes method and inputs only. Before the first strength
-game, the runner and tests must be implemented without changing this contract,
-frozen by SHA-256, pass local correctness checks, receive exact-head review,
-merge, and pass post-merge CI. A final immutable authorization must then bind
-those identities to a new output root and an active exclusive host lease after
-two clean resource snapshots.
+The immutable preregistration freezes method and inputs, and the runner and
+tests are now implemented and frozen by SHA-256 with 38 local tests passing.
+Before the first strength game, this exact branch must receive exact-head
+review, merge, and pass post-merge CI. A final immutable authorization must
+then bind those identities to a new output root and an active exclusive host
+lease after two clean resource snapshots.
 
 Until all of those conditions hold, no VSTC, STC, LTC, WLD, pentanomial, Elo,
 LOS, OpenBench, DATAGEN, model-selection, release, or monitoring claim is
