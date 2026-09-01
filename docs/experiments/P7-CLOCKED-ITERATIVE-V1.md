@@ -162,3 +162,23 @@ changes, rule changes, or result adjudication.
 A PASS admits only a separate Hash-512/Antichess-TT preregistration. It does
 not admit the Fairy-Stockfish match, establish strength, change the default
 search option, or authorize a release.
+
+## Recorded outcome
+
+The hypothesis passed its first and only clock-scaling execution. The frozen
+VSTC/STC/LTC aggregate node counts were 52,032, 262,208, and 795,648; the
+adjacent ratios were 5.0394 and 3.0344, and median completed depths were 3, 4,
+and 5. The separate `movetime` probe completed depth 4 within its frozen
+budget. No time loss, timeout, crash, or inherited correctness failure was
+observed.
+
+Pull request #8 merged the exact reviewed head as
+`89bccf20f0ed197125c8e92b36057ec2e9373a99`; post-merge official run
+`33463542558` passed reproducible-build and Linux ASan/UBSan jobs, and its
+downloaded artifact was reverified byte-for-byte. The GitHub review record was
+persisted after merge rather than before it; that disclosed governance
+deviation is tracked as `INC-REVIEW-003` and does not create strength evidence.
+
+The next admitted search work is a new, separately preregistered Antichess
+transposition-table hypothesis. `Hash` remains capped at 1 MiB, so the
+three-time-control panel remains closed.
