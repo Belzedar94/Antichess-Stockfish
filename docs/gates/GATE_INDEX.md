@@ -60,8 +60,10 @@ append-only; a gate transition requires a new receipt or addendum.
   56 focused positions and all 202 book positions, including 103 book capture
   positions. Both engines loaded the exact `dd3c` bytes, both negative probes
   failed closed, all 879 referee checks passed, and the two-game plumbing smoke
-  had no protocol defect. This is engineering/correctness evidence with zero
-  strength games.
+  had no protocol defect. PR #12, exact-head review `5074338974`, merge
+  `3df08453`, winner ancestry, identical winner/merge trees, and post-merge run
+  `33474221364` are verified. This is engineering/correctness evidence with
+  zero strength games.
 - The external 202-position Antichess EPD and `dd3c` network remain local-only
   with unresolved provenance/license boundaries. The three-TC panel remains
   closed until a separate final strength preregistration freezes the exact

@@ -1,0 +1,83 @@
+{
+  "certification": {
+    "book_legal_positions": 202,
+    "book_mandatory_capture_positions": 103,
+    "certification_result_sha256": "5a5a9600cd2ae455c0daefce7b91c12fb73d4280c57e7d195c235551eba01ae5",
+    "focused_legal_positions": 56,
+    "focused_mandatory_capture_positions": 14,
+    "panel_input_pass_receipt_sha256": "74ae97afa1738f15a68339c6e646ffc1b25ebdac955c6615c3b3ae36d9b5bc5e",
+    "plumbing_smoke_games": 2,
+    "referee_checks": 879,
+    "status": "PASS_ADMITS_SEPARATE_S3_STRENGTH_PREREGISTRATION_ONLY",
+    "strength_games": 0
+  },
+  "ci": {
+    "exact_head_pull_request": {
+      "head_sha": "5cd4263714a6d7f6cc578aaa874e0c79c989feed",
+      "jobs": {
+        "linux_asan_ubsan": 99749547709,
+        "reproducible_build_and_frozen_contracts": 99749547794
+      },
+      "run_id": 33474068449,
+      "status": "SUCCESS"
+    },
+    "exact_head_push": {
+      "head_sha": "5cd4263714a6d7f6cc578aaa874e0c79c989feed",
+      "jobs": {
+        "linux_asan_ubsan": 99748994386,
+        "reproducible_build_and_frozen_contracts": 99748994568
+      },
+      "run_id": 33473884538,
+      "status": "SUCCESS"
+    },
+    "postmerge": {
+      "head_sha": "3df08453caa6462992fb27fdad731ed8fa9e0844",
+      "jobs": {
+        "linux_asan_ubsan": 99749999349,
+        "reproducible_build_and_frozen_contracts": 99749999177
+      },
+      "run_id": 33474221364,
+      "status": "SUCCESS"
+    }
+  },
+  "lineage": {
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "fairy_stockfish_comparator_is_ancestor": false,
+    "merge_commit": "3df08453caa6462992fb27fdad731ed8fa9e0844",
+    "merge_tree": "ae6253ad6ee096432dd8e42ea45cbda854eccbd6",
+    "official_stockfish_pin_is_ancestor": true,
+    "winner_head": "5cd4263714a6d7f6cc578aaa874e0c79c989feed",
+    "winner_head_is_merge_ancestor": true,
+    "winner_tree": "ae6253ad6ee096432dd8e42ea45cbda854eccbd6",
+    "winner_tree_equals_merge_tree": true
+  },
+  "non_claims": [
+    "The panel-input certification and its plumbing smoke are engineering/correctness evidence, not strength evidence.",
+    "No VSTC, STC, LTC, Elo, LOS, OpenBench, DATAGEN, model-selection, release, or monitoring claim is made.",
+    "The external network and opening suite remain local-only and are not redistributed.",
+    "The stable release gate still requires explicit owner G15 after a complete verified draft."
+  ],
+  "pull_request": {
+    "base": "official-stockfish/dev-20260829-8bc5caa2",
+    "exact_head_review_commit": "5cd4263714a6d7f6cc578aaa874e0c79c989feed",
+    "exact_head_review_id": 5074338974,
+    "merge_method": "merge",
+    "number": 12,
+    "state": "MERGED"
+  },
+  "resource_restoration": {
+    "candidate_worktree_clean": true,
+    "lease_end_sha256": "ef1627d327aae2d642837e0688dbbd7161b81ac1c8df5b645b43127d1e55a2a2",
+    "lease_final_sha256": "d2e80f8280051bcebb52e081e5d3d437173cce5734ec93af86b8ae91c640eed9",
+    "owned_engine_or_cutechess_processes_remaining": 0,
+    "status": "ENDED"
+  },
+  "next_safe_action": "Preregister the final S3 same-network three-time-control strength panel on a clean branch from merge 3df08453, freezing the exact runner, schedule, VSTC/STC/LTC commands, colors, time margins, stopping rule, invalidations, output hashes, and exclusive host lease before any strength game.",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "recorded_at_utc": "2026-09-01T05:37:39.3316386Z",
+  "referee": "AC_REFEREE_V1",
+  "schema": "ANTICHESS_E1_S3_PANEL_INPUT_CERT_V2_POSTMERGE_CLOSURE",
+  "schema_version": 1,
+  "status": "GO_NEXT_PHASE"
+}
