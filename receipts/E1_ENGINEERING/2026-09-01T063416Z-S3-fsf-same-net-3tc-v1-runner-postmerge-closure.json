@@ -1,0 +1,100 @@
+{
+  "schema": "ANTICHESS_E1_S3_FSF_SAME_NET_3TC_V1_RUNNER_POSTMERGE_CLOSURE",
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-01T06:34:16.9488416Z",
+  "project": "Antichess-Stockfish",
+  "profile": "LICHESS_ANTICHESS_V1",
+  "referee": "AC_REFEREE_V1",
+  "status": "GO_NEXT_PHASE",
+  "runner": {
+    "experiment_id": "s3-fsf-same-net-3tc-v1-r1",
+    "preregistration_commit": "2541eff3ef071f7eef13509a8355a1312ea9ce39",
+    "preregistration_sha256": "96272e45f1c6404f86673e769bb7fe0a16de4c1d2ec5249f4be7d4e71f222862",
+    "implementation_commit": "f9b41392b4df0811c6636ab352a8bee0edd02bac",
+    "authoritative_review_head": "ee0cf036dd73cec023d4721bcd88023c575b7609",
+    "runner_sha256": "9c2977b93825c95d136fb244542dd081ad4e874654813e80340133debad774f6",
+    "runner_tests_sha256": "acd0ffe2d415d84c40c9e87dce6f08ff8c5d2f08443193d7ca28ab77f8cc8c8c",
+    "freeze_receipt_sha256": "913f01213e7b07a36272be20e8ca9f44d9ba2eff696a3177305bc4c0ffbe1576",
+    "authoritative_freeze_addendum_sha256": "11df8fca8544be75c08f540b13861e6f0c788d07d5390ba6ffdac314c2056cab",
+    "local_tests": 38,
+    "local_tests_status": "PASS",
+    "source_or_engine_files_changed": false,
+    "strength_games": 0
+  },
+  "ci": {
+    "exact_head_push": {
+      "head_sha": "ee0cf036dd73cec023d4721bcd88023c575b7609",
+      "run_id": 33477846652,
+      "jobs": {
+        "reproducible_build_and_frozen_contracts": 99760762434,
+        "linux_asan_ubsan": 99760762607
+      },
+      "status": "SUCCESS"
+    },
+    "exact_head_pull_request": {
+      "head_sha": "ee0cf036dd73cec023d4721bcd88023c575b7609",
+      "run_id": 33477849748,
+      "jobs": {
+        "reproducible_build_and_frozen_contracts": 99760771405,
+        "linux_asan_ubsan": 99760771236
+      },
+      "status": "SUCCESS"
+    },
+    "postmerge": {
+      "head_sha": "328ef9f247b780c6b8a1de3abbe5fb5ad86e8870",
+      "run_id": 33478013819,
+      "jobs": {
+        "reproducible_build_and_frozen_contracts": 99761252379,
+        "linux_asan_ubsan": 99761252378
+      },
+      "status": "SUCCESS"
+    }
+  },
+  "lineage": {
+    "official_stockfish_pin": "8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6",
+    "official_stockfish_pin_is_ancestor": true,
+    "candidate_source_commit": "d08da0c88b7b933eb3c94e6c10a91e0a04f9f769",
+    "candidate_source_tree": "31fbae40bd620737a44ee336f8f8596649c027f9",
+    "fairy_stockfish_comparator_is_ancestor": false,
+    "winner_head": "ee0cf036dd73cec023d4721bcd88023c575b7609",
+    "winner_tree": "5d99971257906f259884502e8792212208ad5cd4",
+    "merge_commit": "328ef9f247b780c6b8a1de3abbe5fb5ad86e8870",
+    "merge_tree": "5d99971257906f259884502e8792212208ad5cd4",
+    "winner_head_is_second_parent": true,
+    "winner_tree_equals_merge_tree": true
+  },
+  "pull_request": {
+    "number": 14,
+    "base": "official-stockfish/dev-20260829-8bc5caa2",
+    "state": "MERGED",
+    "merge_method": "merge",
+    "exact_head_review_commit": "ee0cf036dd73cec023d4721bcd88023c575b7609",
+    "exact_head_review_id": 5074678688
+  },
+  "resource_restoration": {
+    "candidate_worktree_clean_before_receipt": true,
+    "strength_lease_acquired": false,
+    "owned_engine_or_cutechess_processes_remaining": 0,
+    "strength_games": 0,
+    "status": "NO_STRENGTH_RESOURCE_WAS_ACQUIRED"
+  },
+  "authorization_boundary": {
+    "final_strength_authorization_exists": false,
+    "active_strength_lease_exists": false,
+    "strength_games_allowed": 0,
+    "remaining_before_first_game": [
+      "merge this closure receipt and verify its post-merge CI",
+      "record two clean read-only resource snapshots",
+      "acquire a new exclusive Antichess strength lease",
+      "create a local immutable authorization binding the exact merge, CI, review, assets, runner, tests, snapshots, lease, and output root"
+    ]
+  },
+  "next_safe_action": "Merge and post-merge verify this closure receipt, then take two clean resource snapshots, acquire the exclusive Antichess strength lease, seal the create-once final authorization, and launch the frozen three-TC runner exactly once.",
+  "non_claims": [
+    "Runner engineering, CI, and the prior plumbing smoke are not strength evidence.",
+    "No VSTC, STC, LTC, WLD, pentanomial, Elo, LOS, OpenBench, DATAGEN, model-selection, release, or monitoring conclusion exists.",
+    "The external network and opening suite remain local-only and are not redistributed.",
+    "Fairy-Stockfish remains a comparator only and is not candidate ancestry or a rules authority.",
+    "Stable release remains gated by explicit owner G15 after a complete verified draft."
+  ]
+}
