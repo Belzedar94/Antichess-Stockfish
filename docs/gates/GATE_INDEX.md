@@ -41,10 +41,15 @@ append-only; a gate transition requires a new receipt or addendum.
   same-network three-TC strength baseline against a frozen Fairy-Stockfish
   comparator. Both engines must use the exact same `dd3c` bytes; the result is
   a whole-engine comparison and cannot be attributed to NNUE.
-- The current P7 candidate is not admitted to that panel: it advertises
-  `Hash max 1` and maps clock-controlled Antichess searches to fixed depth 4.
-  Clock-responsive iterative deepening and 512 MiB transposition-table support
-  require separate preregistered search hypotheses before strength games.
+- `p7-clocked-iterative-v1-r1` consumed its single preregistered clock-scaling
+  execution and passed the frozen engineering rule: aggregate work scaled from
+  52,032 to 262,208 to 795,648 nodes across VSTC/STC/LTC, median completed
+  depth increased from 3 to 4 to 5, and no time loss occurred. This is not
+  strength evidence; review, merge, winner ancestry, and post-merge CI remain
+  required for this capability.
+- The candidate is still not admitted to the three-TC panel because it
+  advertises `Hash max 1`. A separate preregistered 512 MiB Antichess
+  transposition-table hypothesis must pass before strength games.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.
