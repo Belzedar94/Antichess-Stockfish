@@ -34,6 +34,7 @@ jobs:
           git merge-base --is-ancestor 8bc5caa2e4b1d4c189b1428e93158b10d3edb0b6 HEAD
           python3 tools/reference/verify_fixture_contract.py
           python3 tests/antichess/test_s3_panel_harness_v1.py
+          python3 tests/antichess/test_s3_strength_runner_v1.py
 
       - name: Build twice from clean state
         run: |
@@ -118,5 +119,6 @@ jobs:
         run: |
           python3 tools/reference/verify_fixture_contract.py
           python3 tests/antichess/test_s3_panel_harness_v1.py
+          python3 tests/antichess/test_s3_strength_runner_v1.py
           python3 tools/candidate/verify_uci_fixtures.py --engine src/stockfish
           python3 tools/candidate/verify_bench.py --engine src/stockfish

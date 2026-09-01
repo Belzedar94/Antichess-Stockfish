@@ -58,7 +58,9 @@ FORBIDDEN_LOG_PATTERNS = {
     "illegal_move": re.compile(r"\billegal move\b", re.IGNORECASE),
     "stall": re.compile(r"\bstall(?:ed)?\b", re.IGNORECASE),
     "time_loss": re.compile(
-        r"\blost on time\b|\btime forfeit\b|\btime loss\b", re.IGNORECASE
+        r"\blost on time\b|\bloses on time\b|\bforfeit(?:ed|s)? on time\b|"
+        r"\btime forfeit\b|\btime loss\b",
+        re.IGNORECASE,
     ),
     "controller_timeout": re.compile(r"\bcontroller timeout\b", re.IGNORECASE),
 }
