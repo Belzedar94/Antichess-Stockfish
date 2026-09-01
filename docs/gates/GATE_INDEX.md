@@ -4,7 +4,7 @@ Allowed terminal states are `GO_NEXT_PHASE`, `BLOCKED_DISCOVERY`,
 `NO_VALID_BASELINE`, `REJECTED_ENGINEERING`, `REJECTED_MODEL`,
 `REJECTED_STRENGTH`, `REJECTED_RELEASE`, and `RELEASED_MONITORED`.
 
-Current project state: **`GO_NEXT_PHASE`**.
+Current project state: **`REJECTED_STRENGTH`**.
 
 This file is a human-readable index. Committed receipts are authoritative and
 append-only; a gate transition requires a new receipt or addendum.
@@ -19,7 +19,7 @@ append-only; a gate transition requires a new receipt or addendum.
 | P5 | Evaluator and legacy-network boundary | PASS | Scalar full-refresh parity covers 58 exact values and all material buckets; loader passes 82 checks including claim-at-horizon and remains fail-closed |
 | P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | PR #3 and its post-merge CI certify the corrected engine; PR #4 and exact-head post-merge run `33310697041` close the recertification governance record; manifest V2 and immutable tag `baseline/lichess-antichess-v1-d08cc316` remain verified |
 | P7 | Search-hypothesis readiness | PASS | The one-shot `alpha-beta-v1` comparison passed all 13 exact score/bestmove cases and reduced aggregate nodes from 175,492 to 12,893 (92.65%); clocked iterative search scaled work and completed depth across all three frozen rungs; bounded TT512 r2 matched all 14 scores/bestmoves with no per-case node increase and reduced aggregate nodes from 1,453,898 to 924,190 (36.43%); PRs #5, #8, and #10, winner ancestry, expanded correctness, reproducible builds, ASan/UBSan, merges `fcdd4f0e`, `89bccf20`, and `42ff5b6c`, and post-merge runs `33414973265`, `33463542558`, and `33469289068` are verified |
-| P8 | Antichess DATAGEN schema and labels | DEFERRED_FOR_STRENGTH_BASELINE | Own magic/schema, physical records, and golden perspective labels remain deferred until the owner-ordered same-network three-TC Fairy-Stockfish baseline panel is preregistered and resolved |
+| P8 | Antichess DATAGEN schema and labels | BLOCKED_BY_S3_REJECTED_STRENGTH | The owner-ordered same-network panel rejected the current candidate at VSTC: 1 win, 101 losses, 0 draws, displayed LOS 0.0%; no NNUE V2 pipeline is admitted |
 | P9 | Producer/consumer handshake and G0 | BLOCKED_BY_P8 | Exact counts, framing, legality, results, recovery, quarantine |
 | P10 | Official public-build DATAGEN canary | BLOCKED_BY_P9 | Production path proves the exact versioned dialect contract |
 | P11 | Leased scale and split audit | BLOCKED_BY_P10 | Unique chunks, exact totals, trajectory-level split evidence |
@@ -37,10 +37,13 @@ append-only; a gate transition requires a new receipt or addendum.
 - `p7-alpha-beta-v1-r2` consumed its one planned candidate comparison under an
   exclusive host lease and passed the frozen decision rule. No result-aware
   rerun, retuning, corpus change, or threshold change is allowed.
-- Before P8 or any NNUE V2 work begins, preregister and resolve the owner-ordered
-  same-network three-TC strength baseline against a frozen Fairy-Stockfish
-  comparator. Both engines must use the exact same `dd3c` bytes; the result is
-  a whole-engine comparison and cannot be attributed to NNUE.
+- The owner-ordered same-network three-TC panel is consumed. VSTC reached the
+  first eligible pair boundary at 102 games and rejected the candidate with
+  W/L/D 1/101/0 and displayed LOS `0.0%`. STC and LTC correctly did not run.
+  This is a whole-engine result and cannot be attributed to the shared NNUE.
+- The rejected experiment cannot be repeated, extended, retuned, or reinterpreted.
+  P8 and NNUE V2 remain closed under the owner's requirement that the dedicated
+  engine first exceed the frozen Fairy-Stockfish comparator.
 - `p7-clocked-iterative-v1-r1` consumed its single preregistered clock-scaling
   execution and passed the frozen engineering rule: aggregate work scaled from
   52,032 to 262,208 to 795,648 nodes across VSTC/STC/LTC, median completed
@@ -65,11 +68,12 @@ append-only; a gate transition requires a new receipt or addendum.
   `33474221364` are verified. This is engineering/correctness evidence with
   zero strength games.
 - The external 202-position Antichess EPD and `dd3c` network remain local-only
-  with unresolved provenance/license boundaries. The three-TC panel remains
-  closed until a separate final strength preregistration freezes the exact
-  runner, schedule, time controls, colors, stopping rule, invalidations, time
-  margins, and exclusive host lease, then passes review, merge, and post-merge
-  CI.
+  with unresolved provenance/license boundaries. They were used only by the
+  frozen local panel and were not copied into the repository or redistributed.
+- Any future strength candidate requires a new structural hypothesis, exact
+  correctness and reproducibility closure, a new experiment identity, an
+  untouched validation policy, and a fresh lease-bound authorization. These
+  102 game outcomes may be used to reject this candidate, not to tune parameters.
 - No DATAGEN or NNUE V2 work may begin before its preceding gates pass.
 - No official OpenBench Antichess work before a versioned client/server/referee
   mapping passes the same differential fixtures in the production path.

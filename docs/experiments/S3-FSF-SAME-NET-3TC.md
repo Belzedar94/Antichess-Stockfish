@@ -2,21 +2,45 @@
 
 ## Status
 
-**RUNNER IMPLEMENTED AND FROZEN; REVIEW, MERGE, POST-MERGE CI, AND FINAL
-AUTHORIZATION PENDING. NO STRENGTH GAME AUTHORIZED OR RUN.**
+**REJECTED_STRENGTH. VSTC REACHED 102 VALID GAMES AND CLOSED AT THE
+PREREGISTERED 0.0% CANDIDATE-LOSS GATE. STC AND LTC DID NOT RUN.**
 
-The exact engine capabilities, panel inputs, and experiment design are closed.
-The project-local runner is implemented at `f9b41392b4df0811c6636ab352a8bee0edd02bac`.
-Its authoritative pre-review freeze addendum has SHA-256
-`11df8fca8544be75c08f540b13861e6f0c788d07d5390ba6ffdac314c2056cab`.
-A separate immutable authorization containing the reviewed runner hash, test
-hash, merge identity, post-merge CI, output root, and active host lease is still
-mandatory before the first strength game.
+The exact engine capabilities, panel inputs, and experiment design were closed
+before execution. The project-local runner was frozen at
+`f9b41392b4df0811c6636ab352a8bee0edd02bac`, merged through
+`328ef9f247b780c6b8a1de3abbe5fb5ad86e8870`, and verified by post-merge CI
+run `33478013819`. Governance closure merge
+`ab39d3c97bb44b74744f7e102902d3f1b1392371` passed post-merge CI run
+`33478461188`. The final local authorization SHA-256 was
+`b454a760d8d7a4819c43788aa5eb39bab7d2910868e8940b0038bb9ffe6311ba`.
 
 The objective is a whole-engine comparison between the specialized
 Antichess-Stockfish candidate and the current Fairy-Stockfish master, with the
 same legacy network bytes loaded by both engines. The result cannot isolate
 NNUE quality.
+
+## Strength result
+
+The runner executed VSTC from 2026-09-01 06:59:43Z through 07:05:11Z and
+stopped at the first eligible decision boundary. The result is final for this
+experiment identity.
+
+| Field | Result |
+| --- | --- |
+| terminal state | `REJECTED_STRENGTH` |
+| VSTC decision | `REJECTED_LOSS_GATE` |
+| completed pairs / games | 51 / 102 |
+| candidate W/L/D | 1 / 101 / 0 |
+| pentanomial | 50 at 0.0; 1 at 1.0; all other buckets 0 |
+| displayed LOS | `0.0%` |
+| descriptive Elo / frozen legacy `elo95` field | -801.73 / -305.28 |
+| referee defects | 0 |
+| STC / LTC | not run, as preregistered |
+
+The Elo estimate is descriptive only. The terminal decision is the frozen
+one-decimal LOS gate, not an Elo threshold. The result compares whole engines
+using the same network bytes and does not identify the cause of the strength
+gap.
 
 ## Frozen competitors and inputs
 
@@ -143,16 +167,20 @@ under this experiment identity. Evidence is preserved, the incident is
 diagnosed, and any full TC restart from pair one requires a new immutable
 authorization.
 
-## Remaining admission gate
+## Terminal closure
 
-The immutable preregistration freezes method and inputs, and the runner and
-tests are now implemented and frozen by SHA-256 with 38 local tests passing.
-Before the first strength game, this exact branch must receive exact-head
-review, merge, and pass post-merge CI. A final immutable authorization must
-then bind those identities to a new output root and an active exclusive host
-lease after two clean resource snapshots.
+All 51 pair directories contain the exact opening, launch record, raw UCI log,
+PGN, and referee audit pinned by the append-only ledger. Independent closure
+rechecked 255 artifact hashes and sizes, 102 color-balanced games, 3,918 plies
+with clock comments, and 2,236 compulsory-capture positions. There were no
+illegal moves, time losses, crashes, disconnects, stalls, controller timeouts,
+nonzero controller exits, or referee defects. The runner postflight reported no
+input drift. The active lease bytes were preserved before the live lock was
+marked `ENDED`; no owned descendant or chess-engine process remained.
 
-Until all of those conditions hold, no VSTC, STC, LTC, WLD, pentanomial, Elo,
-LOS, OpenBench, DATAGEN, model-selection, release, or monitoring claim is
-authorized. Stable publication remains subject to an explicit owner G15
-decision after a complete verified draft.
+This experiment is consumed. It must not be replayed, extended, filtered, or
+used for result-aware parameter tuning. P8, NNUE V2, OpenBench, release, and
+publication remain closed. A future candidate needs a separately preregistered
+structural hypothesis, an untouched validation policy, a new experiment
+identity, and a fresh lease-bound authorization. Stable publication remains
+subject to an explicit owner G15 decision after a complete verified draft.
