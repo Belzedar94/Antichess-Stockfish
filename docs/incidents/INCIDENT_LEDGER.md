@@ -256,3 +256,18 @@
   fixtures in a new preregistration, and reject an internally contradictory
   contract without compiling or consuming its candidate attempt.
 - **Gate:** P7, P14, and P15.
+
+## INC-BUILD-003 — A command-line flag replaced the official build flags
+
+- **Symptom:** the first TT512-r2 wrapper invocation compiled with only
+  `-Werror`; the normal optimization, architecture, language, and link-time
+  optimization flags were absent from the emitted commands.
+- **False inference:** adding `CXXFLAGS=-Werror` on the Make command line would
+  append a diagnostic policy to the pinned release configuration.
+- **Cause:** GNU Make command-line variable precedence replaced the Makefile's
+  complete `CXXFLAGS` value instead of extending it.
+- **Prevention:** use the supported `EXTRACXXFLAGS` and `EXTRALDFLAGS` extension
+  variables, inspect the first emitted compiler and linker commands before
+  admitting a build, and abort before producing or comparing a candidate when
+  the pinned flags are absent.
+- **Gate:** P3, P7, P14, and P15.
