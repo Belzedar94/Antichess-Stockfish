@@ -2,8 +2,8 @@
 
 ## Status
 
-**ENGINE CAPABILITIES CLOSED; PANEL-INPUT CERTIFICATION PREREGISTERED. No games
-have been run.**
+**ENGINE CAPABILITIES AND PANEL-INPUT CERTIFICATION CLOSED; FINAL STRENGTH
+PREREGISTRATION NOT YET SEALED. No strength games have been run.**
 
 The owner requires Antichess-Stockfish to beat the strongest available
 Fairy-Stockfish comparator before Antichess NNUE V2 work begins. Both engines
@@ -14,16 +14,17 @@ The readiness audit originally found no clock-responsive search and a
 one-MiB Hash ceiling. Those two engine blockers are now closed by the reviewed
 clocked-iterative and bounded TT512 hypotheses. The exact post-governance
 candidate source is `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`; its
-panel Windows binary remains pending the separately preregistered dual-clean
-build and input certification. Running the panel before that certification
-would still be invalid.
+panel Windows binary is now reproducibly frozen, and the separately
+preregistered input certification passed once. Running the panel before its
+final strength preregistration, exact-head review, and merge closure would
+still be invalid.
 
 ## Frozen identities already available
 
 - Exact candidate source commit:
   `d08da0c88b7b933eb3c94e6c10a91e0a04f9f769`.
-- Candidate Windows binary SHA-256: pending the preregistered exact-source
-  dual-clean build.
+- Candidate Windows binary SHA-256:
+  `5459225015a9734a3f0322b3fa4a9accdb74c5d3cb82a4efe371ae5715286213`.
 - Candidate options intended for the panel: `UCI_Variant=antichess`,
   `Antichess_Evaluator=legacy-v1`, and
   `Antichess_Search=alpha-beta-v1`.
@@ -41,8 +42,8 @@ would still be invalid.
 
 The Fairy-Stockfish build is admitted only as a comparator candidate. It is
 not candidate ancestry, a rules authority, or strength evidence. Its focused
-dialect behavior still must be checked against `AC_REFEREE_V1` before the
-panel preregistration can be sealed.
+dialect behavior and all 202 selected opening positions now agree exactly with
+the candidate and `AC_REFEREE_V1` on legal move sets.
 
 ## Atomic house protocol to preserve
 
@@ -83,12 +84,14 @@ inherited. The final Antichess contract must instead freeze:
    post-merge CI.
 2. **CLOSED:** bounded TT512 r2 passed its one-shot fixed-work rule, merged,
    and completed post-merge CI.
-3. **PREREGISTERED, UNEXECUTED:** certify the current Fairy-Stockfish
-   comparator and all 202 positions of the selected local opening suite against
-   the exact Antichess fixtures and `AC_REFEREE_V1`.
-4. **PREREGISTERED, UNIMPLEMENTED:** create and fail-closed test the
-   project-local panel harness, stopping formula, schedule, and invalidation
-   contract before a final strength preregistration.
+3. **CLOSED:** the v2 input certification ran once and passed all 56 focused
+   positions, all 202 opening positions, positive and negative network probes,
+   879 referee checks, and a two-game non-strength plumbing smoke.
+4. **NEXT GATE:** freeze the final project-local strength runner, deterministic
+   schedule, stopping formula, invalidation contract, time margins, and host
+   lease under a separate immutable preregistration, then review and merge it
+   before the first panel game.
 
-Until all four blockers close, no canary, VSTC, STC, LTC, Elo, OpenBench, or
-release claim is authorized by this document.
+Until blocker four closes through exact-head review, merge, and post-merge CI,
+no VSTC, STC, LTC, Elo, OpenBench, or release claim is authorized by this
+document.
