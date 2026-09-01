@@ -5,6 +5,11 @@
 **ENGINE CAPABILITIES AND PANEL-INPUT CERTIFICATION CLOSED; FINAL STRENGTH
 PREREGISTRATION NOT YET SEALED. No strength games have been run.**
 
+Certification PR #12 was reviewed at exact head `5cd42637`, merged as
+`3df08453`, and completed post-merge CI run `33474221364`. The winner tree is
+identical to the merge tree, official Stockfish remains in ancestry, and the
+Fairy-Stockfish comparator does not enter candidate ancestry.
+
 The owner requires Antichess-Stockfish to beat the strongest available
 Fairy-Stockfish comparator before Antichess NNUE V2 work begins. Both engines
 must load the exact same legacy network bytes. This is a whole-engine strength
