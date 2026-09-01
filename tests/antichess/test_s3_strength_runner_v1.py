@@ -10,7 +10,7 @@ import platform
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -58,6 +58,7 @@ from tools.strength.run_fsf_same_net_3tc_v1 import (  # noqa: E402
     gate_decision,
     pair_score_bucket,
     run_campaign,
+    run_pair,
     run_time_control,
     time_control_text,
     validate_compiler_output,
@@ -292,6 +293,28 @@ class RunnerFlowTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(aggregate["status"], "REJECTED_STRENGTH")
         self.assertEqual(calls, ["VSTC"])
+
+    def test_launch_receipt_failure_terminates_only_spawned_controller_tree(self) -> None:
+        opening = Opening(1, "8/8/8/8/8/8/8/8 w - -", "8/8/8/8/8/8/8/8 w - - 0 1", "a" * 64)
+        fake_process = Mock(pid=12345)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            paths = self.paths(root)
+            with (
+                patch("tools.strength.run_fsf_same_net_3tc_v1.subprocess.Popen", return_value=fake_process),
+                patch("tools.strength.run_fsf_same_net_3tc_v1.write_json_exclusive", side_effect=ContractError("disk failure")),
+                patch("tools.strength.run_fsf_same_net_3tc_v1.terminate_owned_tree", return_value=1) as terminate,
+                self.assertRaisesRegex(ContractError, "disk failure"),
+            ):
+                run_pair(
+                    paths,
+                    authorization_sha256="f" * 64,
+                    tc_name="VSTC",
+                    pair_index=1,
+                    opening=opening,
+                    pair_dir=root / "pair-00001",
+                )
+        terminate.assert_called_once_with(fake_process)
 
 
 class AuthorizationTests(unittest.TestCase):

@@ -653,32 +653,36 @@ def run_pair(
     environment["PATH"] = str(paths.qt_bin) + os.pathsep + environment.get("PATH", "")
     with raw_log_path.open("xb") as raw_log:
         process = subprocess.Popen(command, stdout=raw_log, stderr=subprocess.STDOUT, env=environment)
-        launch = {
-            "authorization_sha256": authorization_sha256,
-            "candidate_name": CANDIDATE_NAME,
-            "command": command,
-            "comparator_name": COMPARATOR_NAME,
-            "evidence_class": EVIDENCE_CLASS,
-            "event": event,
-            "experiment_id": EXPERIMENT_ID,
-            "opening_fen": opening.fen,
-            "opening_schedule_key": opening.schedule_key,
-            "opening_source_index": opening.source_index,
-            "pair_index": pair_index,
-            "pid": process.pid,
-            "profile": PROFILE,
-            "referee": REFEREE,
-            "started_at": started_at,
-            "tc_name": tc_name,
-            "time_control": tc,
-        }
-        write_json_exclusive(pair_dir / "launch.json", launch)
-        timed_out = False
         try:
-            return_code = process.wait(timeout=NO_COMPLETED_PAIR_TIMEOUT_SECONDS)
-        except subprocess.TimeoutExpired:
-            timed_out = True
-            return_code = terminate_owned_tree(process)
+            launch = {
+                "authorization_sha256": authorization_sha256,
+                "candidate_name": CANDIDATE_NAME,
+                "command": command,
+                "comparator_name": COMPARATOR_NAME,
+                "evidence_class": EVIDENCE_CLASS,
+                "event": event,
+                "experiment_id": EXPERIMENT_ID,
+                "opening_fen": opening.fen,
+                "opening_schedule_key": opening.schedule_key,
+                "opening_source_index": opening.source_index,
+                "pair_index": pair_index,
+                "pid": process.pid,
+                "profile": PROFILE,
+                "referee": REFEREE,
+                "started_at": started_at,
+                "tc_name": tc_name,
+                "time_control": tc,
+            }
+            write_json_exclusive(pair_dir / "launch.json", launch)
+            timed_out = False
+            try:
+                return_code = process.wait(timeout=NO_COMPLETED_PAIR_TIMEOUT_SECONDS)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                return_code = terminate_owned_tree(process)
+        except BaseException:
+            terminate_owned_tree(process)
+            raise
 
     raw_text = raw_log_path.read_text(encoding="utf-8", errors="replace")
     require(not timed_out, "pair exceeded the 900-second no-completed-pair watchdog")
