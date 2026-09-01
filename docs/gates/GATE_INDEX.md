@@ -18,7 +18,7 @@ append-only; a gate transition requires a new receipt or addendum.
 | P4 | Differential legal/result/notation correctness | PASS | The claim-at-horizon defect is fixed and frozen; exact candidate, legacy network, `AC_REFEREE_V1`, raw log, and 100-ply PGN audit pass |
 | P5 | Evaluator and legacy-network boundary | PASS | Scalar full-refresh parity covers 58 exact values and all material buckets; loader passes 82 checks including claim-at-horizon and remains fail-closed |
 | P6 | Sanitizers, deterministic digest, CI, baseline manifest/tag | PASS | PR #3 and its post-merge CI certify the corrected engine; PR #4 and exact-head post-merge run `33310697041` close the recertification governance record; manifest V2 and immutable tag `baseline/lichess-antichess-v1-d08cc316` remain verified |
-| P7 | Search-hypothesis readiness | PASS | The one-shot `alpha-beta-v1` comparison passed all 13 exact score/bestmove cases and reduced aggregate nodes from 175,492 to 12,893 (92.65%); PR #5, winner ancestry, expanded correctness, reproducible builds, ASan/UBSan, merge `fcdd4f0e`, and post-merge run `33414973265` are verified |
+| P7 | Search-hypothesis readiness | PASS | The one-shot `alpha-beta-v1` comparison passed all 13 exact score/bestmove cases and reduced aggregate nodes from 175,492 to 12,893 (92.65%); the separate clocked-iterative hypothesis scaled work and completed depth across all three frozen rungs; PRs #5 and #8, winner ancestry, expanded correctness, reproducible builds, ASan/UBSan, merges `fcdd4f0e` and `89bccf20`, and post-merge runs `33414973265` and `33463542558` are verified |
 | P8 | Antichess DATAGEN schema and labels | DEFERRED_FOR_STRENGTH_BASELINE | Own magic/schema, physical records, and golden perspective labels remain deferred until the owner-ordered same-network three-TC Fairy-Stockfish baseline panel is preregistered and resolved |
 | P9 | Producer/consumer handshake and G0 | BLOCKED_BY_P8 | Exact counts, framing, legality, results, recovery, quarantine |
 | P10 | Official public-build DATAGEN canary | BLOCKED_BY_P9 | Production path proves the exact versioned dialect contract |
@@ -45,8 +45,10 @@ append-only; a gate transition requires a new receipt or addendum.
   execution and passed the frozen engineering rule: aggregate work scaled from
   52,032 to 262,208 to 795,648 nodes across VSTC/STC/LTC, median completed
   depth increased from 3 to 4 to 5, and no time loss occurred. This is not
-  strength evidence; review, merge, winner ancestry, and post-merge CI remain
-  required for this capability.
+  strength evidence. PR #8, winner ancestry, merge `89bccf20`, post-merge run
+  `33463542558`, and the downloaded artifact are verified. The review was
+  persisted after merge and is disclosed under `INC-REVIEW-003`; future merge
+  guards require the exact-head review ID before mutation.
 - The candidate is still not admitted to the three-TC panel because it
   advertises `Hash max 1`. A separate preregistered 512 MiB Antichess
   transposition-table hypothesis must pass before strength games.

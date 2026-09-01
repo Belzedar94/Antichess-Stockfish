@@ -221,3 +221,19 @@
   effective UCI settings and work scaling, and reject any strength launch that
   silently clamps settings or ignores its clocks.
 - **Gate:** P7, P14, and P15.
+
+## INC-REVIEW-003 — The GitHub review record was persisted after merge
+
+- **Symptom:** pull request #8 was merged after its diff had been inspected and
+  all official checks had passed, but before the no-blocking-findings review
+  was submitted to GitHub. The review was persisted 57 seconds after merge.
+- **False inference:** completing the local review and observing an empty
+  review/comment queue was equivalent to freezing a review receipt before the
+  merge mutation.
+- **Cause:** the merge guard checked the exact head, mergeability, comments,
+  and CI conclusions but did not require a non-null review identifier.
+- **Prevention:** add the persisted review ID and submitted-at timestamp to the
+  pre-merge checklist, and reject the merge command unless that review targets
+  the exact head commit. If the record is late, disclose the ordering and close
+  it in a separate post-merge governance addendum; never backdate it.
+- **Gate:** P7, P14, and P15.
